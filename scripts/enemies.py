@@ -1,92 +1,101 @@
-### IMPORTING THE PACKAGES ########################################################################################################################################################
-import pygame
-### ENEMY CLASS ###################################################################################################################################################################
-class Enemy(object):
-	def __init__(self, number, level, x, y):
-		self.Number = number
-		self.Walking = True
-		self.X = x
-		self.Y = y
-		self.Image = pygame.image.load("images/enemy/E1.png").convert_alpha()
-		self.move = "R"
+from pygame.math import Vector2
+import enum
+from image import rotate_image
+from game_object import GameObject
 
-		self.CalculateStats(level)
+class Enemy(GameObject):
+	class Direction(enum.Enum):
+		Right = "R"
+		Up = "U"
+		Left = "L"
+		Down = "D"
+		Back = "B"
+		Enter = "E"
 
-	def CalculateStats(self, level):
-		self.maxHP = 10 * ((level//10) + 1)**2  
-		self.HP = self.maxHP
-		self.killMoney = ((level//5) + 1)*1
-		self.damage = (level//25) + 1
+	def __init__(self, id, level, x, y):
+		super().__init__((x + 32, y + 32))
+		self.load_image("enemy/E1.png")
+		self.id = id
+		self.is_walking = True	
+		self.direction = self.Direction.Right
+		self.calculate_stats(level)
+
+	def calculate_stats(self, level):
+		self.maxHP = 10 * ((level // 10) + 1)**2  
+		self.hp = self.maxHP
+		self.killMoney = ((level // 5) + 1)*1
+		self.damage = (level // 25) + 1
 		#self.MovSpeed = 1 + level*0.02
-		self.MovSpeed = 1
+		self.mov_speed = 1
 
-	def Destroy(self, game):
+	def destroy(self, game):
 		if self in game.enemies:
 			game.enemies.remove(self)
 
-	def DecreaseHP(self, damage, game):
+	def decrease_hp(self, damage, game):
 		if self in game.enemies:
-			self.HP -= damage
+			self.hp -= damage
 
-			if self.HP <= 0:
-				self.Destroy(game)
-				game.IncreaseMoney(self.killMoney)
+			if self.hp <= 0:
+				self.destroy(game)
+				game.increase_money(self.killMoney)
 
-	def GetColumn(self):
-		return (self.X//64) + 1
+	def get_column(self):
+		return (self.pos.x // 64) + 1
 
-	def GetRow(self):
-		return (self.Y//64) + 1
-	
-	def Move(self, map, gameSpeed):
-		self.RowNumber = 0
+	def get_row(self):
+		return (self.pos.y // 64) + 1
 
-		#-# Rotate Enemy #-#
-		for Row in map:
-			self.RowNumber += 1
-			self.ColumnNumber = 0
-			for Column in Row:
-				self.ColumnNumber += 1
-				if(len(Column) >= 2 and self.ColumnNumber == self.GetColumn() and self.RowNumber == self.GetRow() and self.X % 64 == 0 and self.Y % 64 == 0): 		
-					if(Column[1] == "R"):
-						if(self.move == "U"):
-							self.Image = pygame.transform.rotate(self.Image, -90)
-						if(self.move == "D"):
-							self.Image = pygame.transform.rotate(self.Image, +90)
-						self.move = "R"
-					elif(Column[1] == "U"):
-						if(self.move == "R"):
-							self.Image = pygame.transform.rotate(self.Image, +90)
-						if(self.move == "L"):
-							self.Image = pygame.transform.rotate(self.Image, -90)
-						self.move = "U"
-					elif(Column[1] == "L"):
-						if(self.move == "U"):
-							self.Image = pygame.transform.rotate(self.Image, +90)
-						if(self.move == "D"):
-							self.Image = pygame.transform.rotate(self.Image, -90)
-						self.move = "L"
-					elif(Column[1] == "D"):
-						if(self.move == "R"):
-							self.Image = pygame.transform.rotate(self.Image, -90)
-						if(self.move == "L"):
-							self.Image = pygame.transform.rotate(self.Image, +90)
-						self.move = "D"
+	def move(self, map, game_speed):
+		self.row_number = 0
+		self.rotate(map)
 
 		#-# Move Enemy #-#
-		if self.move == "R":
-			self.X += self.MovSpeed*gameSpeed
-		elif self.move == "U":
-			self.Y -= self.MovSpeed*gameSpeed
-		elif self.move == "L":
-			self.X -= self.MovSpeed*gameSpeed
-		elif self.move == "D":
-			self.Y += self.MovSpeed*gameSpeed
-		elif self.move == "B" or self.move == "E":
-			self.X += self.MovSpeed*gameSpeed
+		if self.direction == self.Direction.Right:
+			self.pos.x += self.mov_speed * game_speed
+		elif self.direction == self.Direction.Up:
+			self.pos.y -= self.mov_speed * game_speed
+		elif self.direction == self.Direction.Left:
+			self.pos.x -= self.mov_speed * game_speed
+		elif self.direction == self.Direction.Down:
+			self.pos.y += self.mov_speed * game_speed
+		elif self.direction == self.Direction.Back or self.direction == self.Direction.Enter:
+			self.pos.x -= self.mov_speed * game_speed
+		self.rect.center = self.pos
 
-	def Draw(self, surface):
+	def rotate(self, map):
+		for row in map:
+			self.row_number += 1
+			self.column_number = 0
+			for column in row:
+				self.column_number += 1
+				if(len(column) >= 2 and self.column_number == self.get_column() and self.row_number == self.get_row() and (self.pos.x - 32) % 64 == 0 and (self.pos.y - 32) % 64 == 0): 		
+					if(column[1] == "R"):
+						if(self.direction == self.Direction.Up):
+							self.image = rotate_image(self.image, -90)
+						if(self.direction == self.Direction.Down):
+							self.image = rotate_image(self.image, +90)
+						self.direction = self.Direction.Right
+					elif(column[1] == "U"):
+						if(self.direction == self.Direction.Right):
+							self.image = rotate_image(self.image, +90)
+						if(self.direction == self.Direction.Left):
+							self.image = rotate_image(self.image, -90)
+						self.direction = self.Direction.Up
+					elif(column[1] == "L"):
+						if(self.direction == self.Direction.Up):
+							self.image = rotate_image(self.image, +90)
+						if(self.direction == self.Direction.Down):
+							self.image = rotate_image(self.image, -90)
+						self.direction = self.Direction.Left
+					elif(column[1] == "D"):
+						if(self.direction == self.Direction.Right):
+							self.image = rotate_image(self.image, -90)
+						if(self.direction == self.Direction.Left):
+							self.image = rotate_image(self.image, +90)
+						self.direction = self.Direction.Down
 
-		surface.blit(self.Image, (self.X, self.Y))
+	def draw(self, surface):
+		surface.blit(self.image, self.rect)
 ### END OF CLASS ##################################################################################################################################################################
 
