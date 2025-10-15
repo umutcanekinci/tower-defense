@@ -1,7 +1,6 @@
-from pygame.math import Vector2
 import enum
-from image import rotate_image
-from game_object import GameObject
+from core.image import rotate_surface
+from core.game_object import GameObject
 
 class Enemy(GameObject):
 	class Direction(enum.Enum):
@@ -13,8 +12,7 @@ class Enemy(GameObject):
 		Enter = "E"
 
 	def __init__(self, id, level, x, y):
-		super().__init__((x + 32, y + 32))
-		self.load_image("enemy/E1.png")
+		super().__init__("enemy/E1", (x + 32, y + 32))
 		self.id = id
 		self.is_walking = True	
 		self.direction = self.Direction.Right
@@ -72,30 +70,26 @@ class Enemy(GameObject):
 				if(len(column) >= 2 and self.column_number == self.get_column() and self.row_number == self.get_row() and (self.pos.x - 32) % 64 == 0 and (self.pos.y - 32) % 64 == 0): 		
 					if(column[1] == "R"):
 						if(self.direction == self.Direction.Up):
-							self.image = rotate_image(self.image, -90)
+							self.image = rotate_surface(self.image, -90)
 						if(self.direction == self.Direction.Down):
-							self.image = rotate_image(self.image, +90)
+							self.image = rotate_surface(self.image, +90)
 						self.direction = self.Direction.Right
 					elif(column[1] == "U"):
 						if(self.direction == self.Direction.Right):
-							self.image = rotate_image(self.image, +90)
+							self.image = rotate_surface(self.image, +90)
 						if(self.direction == self.Direction.Left):
-							self.image = rotate_image(self.image, -90)
+							self.image = rotate_surface(self.image, -90)
 						self.direction = self.Direction.Up
 					elif(column[1] == "L"):
 						if(self.direction == self.Direction.Up):
-							self.image = rotate_image(self.image, +90)
+							self.image = rotate_surface(self.image, +90)
 						if(self.direction == self.Direction.Down):
-							self.image = rotate_image(self.image, -90)
+							self.image = rotate_surface(self.image, -90)
 						self.direction = self.Direction.Left
 					elif(column[1] == "D"):
 						if(self.direction == self.Direction.Right):
-							self.image = rotate_image(self.image, -90)
+							self.image = rotate_surface(self.image, -90)
 						if(self.direction == self.Direction.Left):
-							self.image = rotate_image(self.image, +90)
+							self.image = rotate_surface(self.image, +90)
 						self.direction = self.Direction.Down
-
-	def draw(self, surface):
-		surface.blit(self.image, self.rect)
-### END OF CLASS ##################################################################################################################################################################
 

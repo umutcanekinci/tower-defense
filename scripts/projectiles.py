@@ -1,15 +1,13 @@
-import pygame
 from pygame.math import Vector2
-from game_math import angle_between_points
-from game_object import GameObject
+from core.math import angle_between_points
+from core.game_object import GameObject
 
 class Projectile(GameObject):
 	EXPLODE_DISTANCE = 30
 	BULLET_SPEED = 1/5
 
 	def __init__(self, target, tower) -> None:
-		super().__init__(tower.pos)
-		self.load_image("bullets/"+str(tower.type)+"L"+str(tower.level)+".png")
+		super().__init__("bullets/"+str(tower.type)+"L"+str(tower.level), tower.pos)
 		self.type, self.target, self.tower, self.damage, self.speed = [tower.type, tower.level], target, tower, tower.damage, Vector2(0, -2)
 
 	def update(self, game) -> None:

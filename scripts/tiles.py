@@ -1,5 +1,5 @@
 from towers import *
-from image import load_image
+from core.image import load_image, scale_surface_by
 
 map =   [["0",    "0",    "0",    "0",    "0",    "0+B1", "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0+B8", "0",    "0",    "0",    "0"],
 			["0",    "0",    "0",    "0",    "0",    "0",    "0+B2", "0",    "0",    "0+B7", "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0"],
@@ -16,29 +16,24 @@ map =   [["0",    "0",    "0",    "0",    "0",    "0+B1", "0",    "0",    "0",  
 			["0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0+B5", "0",    "0",    "0",    "0+B7", "0",    "0",    "0+B1", "0",    "0"],
 			["0",    "0+B6", "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0"]]
 
-class Tile(object):
-	def __init__(self, type, col, row, Game):
-		self.type, self.row, self.col, self.image2 = type, row, col, None
-		self.x, self.y = self.col * 64, self.row * 64 
+class Tile(GameObject):
+	tiles = {"0": "tiles/grass", "1": "tiles/clay", "2": "tiles/stone", "3": "tiles/sand"}
 
-		if self.type[0] == "0":
-			self.image = load_image("tiles/grass.png")
-		elif self.type[0] == "1":
-			self.image = load_image("tiles/clay.png")
-		elif self.type[0] == "2":
-			self.image = load_image("tiles/stone.png")
-		elif self.type[0] == "3":
-			self.image = load_image("tiles/sand.png")
+	def __init__(self, type, col, row, Game):
+		super().__init__(self.tiles[type[0]], (col * 64 + 32, row * 64 + 32))
+		self.type, self.row, self.col, self.decoration = type, row, col, None
+
+		self.load_image(self.tiles[self.type[0]])
 
 		if len(self.type) > 2 and self.type[1] + self.type[2] == "+B":
-			self.image2 = load_image("tiles/B" + self.type[self.type.index("+B") + 2] + ".png")
+			self.decoration = GameObject("tiles/B" + self.type[self.type.index("+B") + 2], self.pos)
 
-	def draw(self, window):
-		window.blit(self.image, (self.x, self.y))
-		if self.image2 == None:
+	def draw(self, surface, game):
+		game.camera.draw(surface, self)
+		if self.decoration == None:
 			return
-		window.blit(self.image2, (self.x, self.y))
-	
+		game.camera.draw(surface, self.decoration)
+
 	def get_first_tile(self):
 		if len(self.type) > 1 and self.type[1] == "B":
 			return [self.col, self.row]

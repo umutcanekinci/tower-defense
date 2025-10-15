@@ -12,4 +12,3 @@ def angle_between_delta(delta: Vector2):
 def __angle_between(dy: float, dx: float):
     from math import atan2, degrees
     return degrees(atan2(dy, dx))
-
