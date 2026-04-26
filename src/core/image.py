@@ -1,10 +1,9 @@
-from email.mime import image
 import pygame
 
-def load_image(path, extension=".png"):
+def load_image(path: str, extension=".png"):
     if path == None:
         return None
-    return pygame.image.load("images/" + path + extension).convert_alpha()
+    return pygame.image.load("assets/images/" + path + extension).convert_alpha()
 
 def rotate_surface(image, angle):
     return pygame.transform.rotate(image, angle)

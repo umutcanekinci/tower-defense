@@ -1,24 +1,24 @@
 from typing import override
+import pygame
 from pygame.math import Vector2
 from core.image import load_image
-import pygame
-from core.gui_object import ImageObject
+from core.guiobject import ImageObject
 
 class GameObject(ImageObject):
 	def __init__(self, image_path: str, pos: Vector2):
 		super().__init__(image_path, pos)
 		self.is_rotated = False
-		self.pos = Vector2(pos)
-		self.rect.center = self.pos
+		self.position = Vector2(pos)
+		self.rect.center = self.position
 
 	def load_image(self, image_path: str) -> None:
 		self.image = load_image(image_path)
-		self.rect = self.image.get_rect(center = self.pos)
+		self.rect = self.image.get_rect(center = self.position)
 		self.is_rotated = False
 
 	def rotate_to_angle(self, angle: float) -> None:
 		self.rotated_image = pygame.transform.rotate(self.image, -angle - 90)
-		self.rect = self.rotated_image.get_rect(center = self.pos)
+		self.rect = self.rotated_image.get_rect(center = self.position)
 		self.is_rotated = True
 
 	@override

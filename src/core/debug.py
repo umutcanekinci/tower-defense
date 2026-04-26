@@ -1,6 +1,6 @@
 import pygame
 from typing import Iterable
-from core.colors import White
+from pygame_core.color import White
 
 class Debug:
     BORDER_COLOR = White

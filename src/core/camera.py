@@ -5,24 +5,20 @@ EDGE_SCROLL_ZONE = 30  # pixels from edge to start scrolling
 CAMERA_SPEED = 10      # pixels per frame
 
 class Camera():
-    def __init__(self, rect):
+    def __init__(self, rect, map_width=None, map_height=None):
         self.rect = rect
         self.scale = 1
+        self.min_x = -(map_width - rect.width) if map_width and map_width > rect.width else 0
+        self.min_y = -(map_height - rect.height) if map_height and map_height > rect.height else 0
 
     def draw(self, surface, entity):
-        scaled_image, scaled_rect = self.apply_scale_and_position(entity)
-        surface.blit(scaled_image, scaled_rect)
-
-    def apply_scale_and_position(self, entity):
-        scaled_image = self.apply_scale(entity)
+        image = entity.rotated_image if getattr(entity, 'is_rotated', False) else entity.image
+        scaled_image = scale_surface_by(image, self.scale)
         scaled_rect = scaled_image.get_rect(center=entity.rect.center)
-        return scaled_image, self.apply_position(scaled_rect)
+        surface.blit(scaled_image, self.apply_position(scaled_rect))
 
     def apply_position(self, rect):
         return rect.move(self.rect.topleft)
-
-    def apply_scale(self, entity):
-        return scale_surface_by(entity.image, self.scale)
 
     def update(self, target=None):
         # Optionally keep this for centering on a target
@@ -45,11 +41,8 @@ class Camera():
         if my < EDGE_SCROLL_ZONE:
             y += CAMERA_SPEED
 
-        # Clamp camera position
-        # x = min(0, x)
-        # y = min(0, y)
-        # x = max(-(self.width - screen_width), x)
-        # y = max(-(self.height - screen_height), y)
+        x = max(self.min_x, min(0, x))
+        y = max(self.min_y, min(0, y))
 
         self.rect.topleft = (x, y)
 
