@@ -4,7 +4,8 @@ from core.game_object import GameObject
 from core.image import load_image
 from core.math import angle_between_delta
 from game_state import GameState, TowerConfig
-from projectiles import Projectile
+from projectile import Projectile
+from pygame_core.asset_path import ImagePath
 from towers.base_tower import BaseTower
 
 
@@ -16,10 +17,10 @@ class GroundTower(BaseTower):
     without callers noticing.
     """
 
-    def __init__(self, tower_type: int, row: int, col: int, config: TowerConfig) -> None:
-        super().__init__(tower_type, row, col, config)
+    def __init__(self, tower_type: int, row: int, col: int, config: TowerConfig, assets) -> None:
+        super().__init__(tower_type, row, col, config, assets)
         self.platform = GameObject(
-            "towers/tower" + str(tower_type) + "platform1",
+            str(ImagePath("tower" + str(tower_type) + "platform1", folder="towers")),
             self.position,
         )
 

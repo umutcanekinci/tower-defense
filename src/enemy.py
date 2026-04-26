@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 from core.image import rotate_surface
 from core.game_object import GameObject
+from pygame_core.asset_path import ImagePath
 
 if TYPE_CHECKING:
     from core.protocols import IGameContext
@@ -18,7 +19,7 @@ class Enemy(GameObject):
         Enter = "E"
 
     def __init__(self, id: int, level: int, x: int, y: int) -> None:
-        super().__init__("enemy/E1", (x + 32, y + 32))
+        super().__init__(ImagePath("E1", folder="enemy"), (x + 32, y + 32))
         self.id          = id
         self.is_walking  = True
         self.direction   = self.Direction.Right

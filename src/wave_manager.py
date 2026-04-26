@@ -1,6 +1,6 @@
 import pygame
 
-from enemies import Enemy
+from enemy import Enemy
 from game_state import GameState
 
 

@@ -16,8 +16,8 @@ class PlaneTower(BaseTower):
 
     REMOVE_X = 1125
 
-    def __init__(self, tower_type: int, row: int, col: int, config: TowerConfig) -> None:
-        super().__init__(tower_type, row, col, config)
+    def __init__(self, tower_type: int, row: int, col: int, config: TowerConfig, assets) -> None:
+        super().__init__(tower_type, row, col, config, assets)
 
     def update_and_draw(self, game_state: GameState, enemies: list, camera, surface: pygame.Surface) -> None:
         self.level = game_state.plane_level

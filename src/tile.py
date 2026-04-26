@@ -22,25 +22,26 @@ TILEMAP = [
 
 
 class Tile(GameObject):
-    _TILE_IMAGES = {
-        "0": "tiles/grass",
-        "1": "tiles/clay",
-        "2": "tiles/stone",
-        "3": "tiles/sand",
+    _TILE_KEYS = {
+        "0": "tile_grass",
+        "1": "tile_clay",
+        "2": "tile_stone",
+        "3": "tile_sand",
     }
 
-    def __init__(self, tile_type: str, col: int, row: int) -> None:
-        super().__init__(self._TILE_IMAGES[tile_type[0]], (col * 64 + 32, row * 64 + 32))
-        self.type       = tile_type
-        self.row        = row
-        self.col        = col
+    def __init__(self, tile_type: str, col: int, row: int, assets) -> None:
+        base_image = assets.image_path(self._TILE_KEYS[tile_type[0]])
+        super().__init__(base_image, (col * 64 + 32, row * 64 + 32))
+
+        self.type = tile_type
+        self.row = row
+        self.col = col
         self.decoration = None
 
-        self.load_image(self._TILE_IMAGES[tile_type[0]])
-
         if len(tile_type) > 2 and tile_type[1:3] == "+B":
-            dec_id          = tile_type[tile_type.index("+B") + 2]
-            self.decoration = GameObject("tiles/B" + dec_id, self.position)
+            dec_id = tile_type[tile_type.index("+B") + 2]
+            dec_path = assets.image_path(f"tile_decoration_{dec_id}")
+            self.decoration = GameObject(dec_path, self.position)
 
     def draw(self, surface, camera) -> None:
         camera.draw(surface, self)

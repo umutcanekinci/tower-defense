@@ -1,7 +1,7 @@
 import pygame
 
 def load_image(path: str, extension=".png"):
-    if path == None:
+    if path is None:
         return None
     return pygame.image.load("assets/images/" + path + extension).convert_alpha()
 

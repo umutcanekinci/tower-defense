@@ -15,11 +15,14 @@ class BaseTower(GameObject):
     Concrete behaviour (update_and_draw / work) is left to subclasses (OCP/LSP).
     """
 
-    def __init__(self, tower_type: int, row: int, col: int, config: TowerConfig) -> None:
+    def __init__(self, tower_type: int, row: int, col: int,
+                 config: TowerConfig, assets) -> None:
+        asset_key = f"tower_{tower_type}_lvl1"  # tower_1_lvl1, tower_2_lvl1, etc.
         super().__init__(
-            "towers/tower" + str(tower_type) + "L1",
+            assets.image_path(asset_key),
             (col * 64 + 32, row * 64 + 32),
         )
+        self._assets = assets
         self._price_font = pygame.font.SysFont("ComicSansMs", 15)
         self.tower_type  = tower_type
         self.row         = row
@@ -106,9 +109,12 @@ class BaseTower(GameObject):
         ox, oy   = camera.rect.topleft
         draw_pos = self.position + Vector2(ox, oy)
 
-        sell_btn    = GuiObject("", draw_pos + Vector2( 20, -110), (50, 50), "button/sell")
-        upgrade_btn = GuiObject("", draw_pos + Vector2(-55, -105), (50, 50), "button/upgrade")
-        max_btn     = GuiObject("", draw_pos + Vector2(-60,  -85), (50, 25), "button/max")
+        sell_btn = GuiObject("", draw_pos + Vector2(20, -110), (50, 50),
+                             self._assets.image_path("btn_sell"))
+        upgrade_btn = GuiObject("", draw_pos + Vector2(-55, -105), (50, 50),
+                                self._assets.image_path("btn_upgrade"))
+        max_btn = GuiObject("", draw_pos + Vector2(-60, -85), (50, 25),
+                            self._assets.image_path("btn_max"))
 
         sell_text = self._price_font.render(str(self.sell_price) + " $", 2, White)
 
