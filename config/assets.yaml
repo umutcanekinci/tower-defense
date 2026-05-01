@@ -10,12 +10,8 @@ images:
   heart:             {folder: others, name: heart}
 
   # ── Menu buttons (normal + hover pairs) ───────────────────────────────
-  btn_play:          {folder: button, name: play}
-  btn_play_hover:    {folder: button, name: play2}
-  btn_contact:       {folder: button, name: contact_us}
-  btn_contact_hover: {folder: button, name: contact_us2}
-  btn_exit:          {folder: button, name: exit}
-  btn_exit_hover:    {folder: button, name: exit2}
+  btn:          {folder: ui, name: button_grey}
+  btn_hover:    {folder: ui, name: button_red}
   btn_back:          {folder: button, name: goBack}
   btn_back_hover:    {folder: button, name: goBack2}
 

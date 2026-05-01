@@ -14,19 +14,20 @@ class PlaneTower(BaseTower):
     in the original design.
     """
 
-    REMOVE_X = 1125
+    REMOVE_X = 22 * 64  # right edge of the tile map
 
     def __init__(self, tower_type: int, row: int, col: int, config: TowerConfig, assets) -> None:
         super().__init__(tower_type, row, col, config, assets)
 
-    def update_and_draw(self, game_state: GameState, enemies: list, camera, surface: pygame.Surface) -> None:
+    def update(self, game_state: GameState, enemies: list) -> None:
         self.level = game_state.plane_level
-        ox, oy    = camera.rect.topleft
-        shadow    = load_image("towers/tower" + str(self.tower_type) + "shadow" + str(self.level))
-
         if game_state.is_started and self.position.x <= self.REMOVE_X:
             self.position.x += self.speed
+            self.rect.center = self.position
 
+    def draw(self, game_state: GameState, camera, surface: pygame.Surface) -> None:
+        ox, oy = camera.rect.topleft
+        shadow = load_image("towers/tower" + str(self.tower_type) + "shadow" + str(self.level))
         surface.blit(shadow, (self.position.x - 20 + ox, self.position.y + 20 + oy))
 
         if game_state.selected_tower is self:

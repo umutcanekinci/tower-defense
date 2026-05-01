@@ -7,7 +7,9 @@ class IGameContext(Protocol):
     Any object that has these three members can be passed as a context — the
     full Game class satisfies this protocol, but so can lightweight test stubs.
     """
-    enemies: list
-    speed: int
+    enemies:    list
+    speed:      int
+    map_width:  int
+    map_height: int
 
     def increase_money(self, amount: int) -> None: ...

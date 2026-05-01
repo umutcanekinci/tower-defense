@@ -138,7 +138,10 @@ class BaseTower(GameObject):
         """Grid cell (row, col) that this tower occupies, or None for planes."""
         return (self.row, self.col)
 
-    def update_and_draw(self, game_state: GameState, enemies: list, camera, surface: pygame.Surface) -> None:
+    def update(self, game_state: GameState, enemies: list) -> None:
+        raise NotImplementedError
+
+    def draw(self, game_state: GameState, camera, surface: pygame.Surface) -> None:
         raise NotImplementedError
 
     def work(self, enemies: list, is_started: bool) -> None:

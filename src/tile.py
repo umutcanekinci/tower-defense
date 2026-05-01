@@ -1,5 +1,6 @@
+import pygame
+
 from core.game_object import GameObject
-from core.image import load_image, scale_surface_by
 
 TILEMAP = [
     ["0",    "0",    "0",    "0",    "0",    "0+B1", "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0+B8", "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0"   ],
@@ -20,6 +21,32 @@ TILEMAP = [
     ["0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0"   ],
 ]
 
+class Tilemap:
+    def __init__(self, level_data, assets) -> None:
+        self.tiles = level_data
+        self.assets = assets
+
+    def init(self, ) -> None:
+        self.create_tiles()
+
+    def create_tiles(self, ) -> None:
+        level_data = self.tiles
+        self.tiles: list[Tile] = []
+        for row_idx, row in enumerate(level_data):
+            for col_idx, tile_type in enumerate(row):
+                self.tiles.append(Tile(tile_type, col_idx, row_idx, self.assets))
+
+    def get_spawn_tile(self) -> list:
+        assert self.tiles is not None, "Tiles have not been initialized. Call init() before get_spawn_tile()."
+
+        for tile in self.tiles:
+            if tile.is_enemy_spawn_tile():
+                return [tile.col, tile.row]
+        return [None, None]
+
+    def draw(self, surface: pygame.Surface, camera) -> None:
+        for tile in self.tiles:
+            tile.draw(surface, camera)
 
 class Tile(GameObject):
     _TILE_KEYS = {
@@ -48,11 +75,10 @@ class Tile(GameObject):
         if self.decoration is not None:
             camera.draw(surface, self.decoration)
 
-    def get_first_tile(self) -> list:
-        """Return [col, row] of the enemy spawn tile, or [None, None]."""
-        if len(self.type) > 1 and self.type[1] == "B":
-            return [self.col, self.row]
-        return [None, None]
+    def is_enemy_spawn_tile(self) -> bool:
+        """Checks if the tile is an enemy spawn tile (type "1E") and returns its coordinates if true."""
+
+        return len(self.type) > 1 and self.type[1] == "B"
 
     def get_last_tile(self) -> list:
         if len(self.type) > 1 and self.type[1] == "E":

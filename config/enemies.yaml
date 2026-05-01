@@ -1,0 +1,8 @@
+# Enemy base stats — scaled up by +25% per wave level at runtime
+# damage = lives lost when the enemy reaches the exit
+
+enemies:
+  1: {hp: 10,  speed: 1.0, kill_money: 1,  damage: 1}
+  2: {hp: 35,  speed: 1.5, kill_money: 4,  damage: 1}
+  3: {hp: 100, speed: 1.0, kill_money: 10, damage: 2}
+  4: {hp: 300, speed: 0.7, kill_money: 25, damage: 3}

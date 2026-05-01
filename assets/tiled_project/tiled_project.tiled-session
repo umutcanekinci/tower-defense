@@ -1,0 +1,53 @@
+{
+    "activeFile": "tiled_tilemap.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "tiled_tilemap.tmx": {
+            "scale": 0.125,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 6172,
+                "y": 4096
+            }
+        },
+        "tiled_tilemap_64x64.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 19,
+                "y": -222
+            }
+        },
+        "tiled_tileset.tsx": {
+            "scaleInDock": 0.5,
+            "scaleInEditor": 0.5
+        },
+        "tiled_tileset_64x64.tsx": {
+            "scaleInDock": 1
+        }
+    },
+    "last.externalTilesetPath": "C:/Users/user/PycharmProjects/tower-defense/assets/tiled_project",
+    "last.imagePath": "C:/Users/user/PycharmProjects/tower-defense/assets/tiled_project",
+    "map.fixedSize": false,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 128,
+    "map.tileWidth": 128,
+    "openFiles": [
+        "tiled_tilemap.tmx",
+        "tiled_tileset.tsx"
+    ],
+    "project": "tiled_project.tiled-project",
+    "recentFiles": [
+        "tiled_tileset.tsx",
+        "tiled_tilemap.tmx",
+        "tiled_tilemap_64x64.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 128,
+        "width": 128
+    }
+}

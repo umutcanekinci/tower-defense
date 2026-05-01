@@ -1,80 +1,131 @@
 groups:
   menu_chrome:
-    background:
-      position: [0, 0]
-      size: WINDOW
-      asset: bg_main             # önceden: others/bg
     logo:
-      position: [CENTER, 50]
-      size: [868, 140]
-      asset: logo                # önceden: others/logo
+      position: [CENTER, 60]
+      size: [1085, 175]
+      asset: logo
+
+object_templates:
+  btn-sm:
+    size: [ 375, 100 ]
+    asset: btn
+    hover: btn_hover
+    nine_slice: 10
+  btn-lg:
+    size: [1000, 100]
+    asset: btn
+    hover: btn_hover
+    nine_slice: 10
+  menu_text:
+    type: text
+    font: Impact
+    font_size: 48
+
+  music_toggle:
+    position: [ 25, 25 ]
+    size: [ 80, 80 ]
+    asset: btn_music_pause
+    states:
+      paused:
+        asset: btn_music_resume
 
 panels:
   main_menu:
     extends: [menu_chrome]
     objects:
       play:
-        position: [CENTER, 250]
-        size: [802, 82]
-        asset: btn_play          # önceden: button/play
-        hover: btn_play_hover    # önceden: button/play2
+        extends: btn-lg
+        position: [CENTER, 300]
       contact:
-        position: [CENTER, 350]
-        size: [800, 80]
-        asset: btn_contact
-        hover: btn_contact_hover
+        extends: btn-lg
+        position: [CENTER, 420]
       exit:
-        position: [CENTER, 450]
-        size: [802, 82]
-        asset: btn_exit
-        hover: btn_exit_hover
+        extends: btn-lg
+        position: [CENTER, 540]
+
+      play_text:
+        extends: menu_text
+        position: [ CENTER, 320 ]
+        text: "PLAY"
+      contact_text:
+        extends: menu_text
+        position: [ CENTER, 440 ]
+        text: "CONTACT US"
+      exit_text:
+        extends: menu_text
+        position: [ CENTER, 560 ]
+        text: "EXIT"
+
+      music_toggle:
+        extends: music_toggle
 
   contact:
     extends: [menu_chrome]
     objects:
       social_media:
-        position: [CENTER, 200]
-        size: [600, 600]
+        position: [CENTER, 240]
+        size: [750, 750]
         asset: social_media
       back:
-        position: [70, 700]
-        size: [299, 84]
-        asset: btn_back
-        hover: btn_back_hover
+        extends: btn-sm
+        position: [93, 840]
+      back_text:
+        extends: menu_text
+        position: [235, 860]
+        text: "BACK"
+      music_toggle:
+        extends: music_toggle
 
   game:
     objects:
-      background:
-        position: [0, 0]
-        size: WINDOW
-        asset: bg_game           # extension artık burada değil — manifest'te tanımlı
       money_box:
-        position: [1144, 72]
-        size: [300, 125]
+        position: [1525, 86]
+        size: [375, 156]
         asset: money_box
       live_image:
-        position: [1245, 210]
-        size: [40, 40]
+        position: [1660, 252]
+        size: [50, 50]
         asset: heart
       buy_tower_1:
-        position: [1159, 265]
-        size: [128, 128]
+        position: [1545, 318]
+        size: [160, 160]
         asset: buy_tower_1
       buy_tower_2:
-        position: [1302, 265]
-        size: [128, 128]
+        position: [1736, 318]
+        size: [160, 160]
         asset: buy_tower_2
       buy_tower_3:
-        position: [1159, 455]
-        size: [128, 128]
+        position: [1545, 546]
+        size: [160, 160]
         asset: buy_tower_3
+      buy_tower_4:
+        position: [1736, 546]
+        size: [160, 160]
+        asset: buy_tower_4
+        states:
+          lvl2:
+            asset: buy_tower_4_lvl2
       upgrade_planes:
-        position: [1160, 730]
-        size: [270, 70]
-        asset: btn_upgrade_hover  # önceden: upgrade_planes2 (default)
-        hover: btn_upgrade        # önceden: upgrade_planes
+        position: [1547, 876]
+        size: [338, 88]
+        asset: btn_upgrade_hover
+        hover: btn_upgrade
       menu:
-        position: [1160, 820]
-        size: [270, 70]
-        asset: btn_menu_hover     # önceden: menu2 (default)
-        hover: btn_menu           # önceden: menu
+        position: [1547, 984]
+        size: [338, 88]
+        asset: btn_menu_hover
+        hover: btn_menu
+      start_pause_button:
+        position: [1640, 780]
+        size: [80, 80]
+        asset: btn_start
+        states:
+          pause:
+            asset: btn_pause
+      x2:
+        position: [1747, 780]
+        size: [80, 80]
+        asset: btn_2x
+        states:
+          active:
+            asset: btn_2x_active

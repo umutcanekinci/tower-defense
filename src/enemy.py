@@ -1,12 +1,15 @@
 import enum
 from typing import TYPE_CHECKING
 
+from config_loader import load_enemy_stats
 from core.image import rotate_surface
 from core.game_object import GameObject
 from pygame_core.asset_path import ImagePath
 
 if TYPE_CHECKING:
     from core.protocols import IGameContext
+
+_BASE_STATS: dict[int, tuple[int, float, int, int]] = load_enemy_stats()
 
 
 class Enemy(GameObject):
@@ -18,19 +21,22 @@ class Enemy(GameObject):
         Back  = "B"
         Enter = "E"
 
-    def __init__(self, id: int, level: int, x: int, y: int) -> None:
-        super().__init__(ImagePath("E1", folder="enemy"), (x + 32, y + 32))
+    def __init__(self, id: int, enemy_type: int, level: int, x: int, y: int) -> None:
+        super().__init__(ImagePath(f"E{enemy_type}", folder="enemy"), (x + 32, y + 32))
         self.id          = id
+        self.enemy_type  = enemy_type
         self.is_walking  = True
         self.direction   = self.Direction.Right
-        self._calculate_stats(level)
+        self._calculate_stats(enemy_type, level)
 
-    def _calculate_stats(self, level: int) -> None:
-        self.maxHP     = 10 * ((level // 10) + 1) ** 2
+    def _calculate_stats(self, enemy_type: int, level: int) -> None:
+        base_hp, speed, kill_money, damage = _BASE_STATS[enemy_type]
+        scale = 1.0 + (level - 1) * 0.25
+        self.maxHP     = int(base_hp * scale)
         self.hp        = self.maxHP
-        self.killMoney = ((level // 5) + 1) * 1
-        self.damage    = (level // 25) + 1
-        self.mov_speed = 1
+        self.killMoney = max(1, int(kill_money * scale))
+        self.damage    = damage
+        self.mov_speed = speed
 
     def destroy(self, ctx: "IGameContext") -> None:
         if self in ctx.enemies:

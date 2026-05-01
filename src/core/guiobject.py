@@ -1,6 +1,5 @@
-from typing import Union
+from typing import Union, Any
 import os
-import enum
 import pygame
 from pygame_core.asset_path import ImagePath
 from pygame_core.utils import Centerable
@@ -8,44 +7,74 @@ from core.image_object import ImageObject
 
 PathLike = Union[str, ImagePath, os.PathLike]
 
-class GuiObject(Centerable):
-	class STATE(enum.Enum):
-		NORMAL = 0
-		OVER = 1
 
+class GuiObject(Centerable):
 	def __init__(self, surface_size: tuple[int, int] = (0, 0),
 	             pos=("CENTER", "CENTER"),
 	             size=(None, None),
 	             image_path: PathLike = None,
-	             image_path2: PathLike = None) -> None:
-		self.state = self.STATE.NORMAL
-		self.images = {}
-		self.image_path = image_path
-		pos = self.resolve_pos(pos, surface_size, size)
-
+	             nine_slice: int = 0) -> None:
+		self._pos = self.resolve_pos(pos, surface_size, size)
+		self._size = size
+		self._nine_slice = nine_slice
+		self._state: Any = None
+		self.images: dict[Any, ImageObject] = {}
 		if image_path is not None:
-			self.images[self.STATE.NORMAL] = ImageObject(image_path, pos, size)
-		self.images[self.STATE.OVER] = (
-			ImageObject(image_path2, pos, size)
-			if image_path2 is not None
-			else self.images[self.STATE.NORMAL]
-		)
-		
+			self.images[None] = ImageObject(image_path, self._pos, self._size, nine_slice)
+
+	def add_state(self, state: Any, image_path: PathLike) -> None:
+		self.images[state] = ImageObject(image_path, self._pos, self._size, self._nine_slice)
+
+	def set_state(self, state: Any) -> None:
+		self._state = state
+
+	@property
+	def _active_image(self) -> ImageObject:
+		return self.images[self._state]
+
 	def is_mouse_over(self, mouse_pos) -> bool:
-		return self.images[self.state].is_mouse_over(mouse_pos)
-	
+		return self._active_image.is_mouse_over(mouse_pos)
+
 	def is_clicked(self, event, mouse_pos) -> bool:
-		return self.images[self.state].is_clicked(event, mouse_pos)
+		return self._active_image.is_clicked(event, mouse_pos)
 
 	def handle_event(self, event, mouse_pos: tuple) -> None:
-		self.state = self.STATE.OVER if self.images[self.state].is_mouse_over(mouse_pos) else self.STATE.NORMAL
+		pass
 
 	def draw(self, surface: pygame.Surface) -> None:
-		self.images[self.state].draw(surface)
+		self._active_image.draw(surface)
 
 	def get_info(self) -> tuple:
 		return "GUI Object Info:", {
-			"state": self.state.name,
-			"pos": self.images[self.state].rect.topleft,
-			"size": self.images[self.state].rect.size
+			"state": self._state,
+			"pos": self._active_image.rect.topleft,
+			"size": self._active_image.rect.size,
 		}
+
+
+class HoverableGuiObject(GuiObject):
+	def __init__(self, surface_size: tuple[int, int] = (0, 0),
+	             pos=("CENTER", "CENTER"),
+	             size=(None, None),
+	             image_path: PathLike = None,
+	             hover_image_path: PathLike = None,
+	             nine_slice: int = 0) -> None:
+		super().__init__(surface_size, pos, size, image_path, nine_slice)
+		self._hovered = False
+		self._hover_images: dict[Any, ImageObject] = {}
+		if hover_image_path is not None:
+			self._hover_images[None] = ImageObject(hover_image_path, self._pos, self._size, nine_slice)
+
+	def add_state(self, state: Any, image_path: PathLike, hover_image_path: PathLike = None) -> None:
+		super().add_state(state, image_path)
+		if hover_image_path is not None:
+			self._hover_images[state] = ImageObject(hover_image_path, self._pos, self._size, self._nine_slice)
+
+	@property
+	def _active_image(self) -> ImageObject:
+		if self._hovered and self._state in self._hover_images:
+			return self._hover_images[self._state]
+		return self.images[self._state]
+
+	def handle_event(self, event, mouse_pos: tuple) -> None:
+		self._hovered = self.images[self._state].is_mouse_over(mouse_pos)

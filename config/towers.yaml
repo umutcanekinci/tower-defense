@@ -1,0 +1,31 @@
+# Tower stats — all lists are per-level (index 0 = level 1, etc.)
+# speeds = milliseconds between shots (except type 4 which is movement speed)
+
+towers:
+  - type: 1
+    prices:    [70]
+    max_level: 1
+    ranges:    [150]
+    damages:   [20]
+    speeds:    [1000]
+
+  - type: 2
+    prices:    [350, 1000, 1750]
+    max_level: 3
+    ranges:    [110, 130, 150]
+    damages:   [40,  50,  70]
+    speeds:    [2000, 3000, 4000]
+
+  - type: 3
+    prices:    [500, 1250]
+    max_level: 2
+    ranges:    [90, 110]
+    damages:   [80, 120]
+    speeds:    [5000, 7000]
+
+  - type: 4
+    prices:    [700, 1600]
+    max_level: 2
+    ranges:    [35, 35]
+    damages:   [100, 200]
+    speeds:    [4, 2]

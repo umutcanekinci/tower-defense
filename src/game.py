@@ -4,142 +4,81 @@ import pygame
 from pygame.locals import Rect
 from pygame_core.application import Application
 from pygame_core.asset_manager import AssetManager
-from pygame_core.color import Green, Red, White
+from pygame_core.color import White
 from pygame_core.mouse import Mouse
 from pygame_core.panel_manager import PanelManager
-from pygame_core.panel_loader import PanelLoader
+from pygame_core.panel_loader_ext import PanelLoaderExt
 
+import panel_factory
+from config_loader import load_tower_config
 from core.camera import Camera
 from core.debug import Debug
-from core.guiobject import GuiObject
-from core.image import scale_surface
+from core.menu_background import MenuBackground
 from core.music_manager import SoundManager
+from core.splash_screen import SplashScreen
 from enemy import Enemy
-from game_state import GameState, TowerConfig
-from text import Text
-from tile import Tile, TILEMAP
-from towers import BaseTower, TowerFactory
+from game_hud import GameHUD
+from game_state import GameState
+from tile import TILEMAP, Tilemap
+from tower_placement import TowerPlacementController
+from towers import BaseTower
 from wave_manager import WaveManager
-import panel_factory
 
 
 class Game(Application):
     """Top-level orchestrator.
 
-    Responsibilities reduced to: wiring subsystems together, handling input,
-    and running the render pipeline.  All state lives in GameState; enemy
-    spawning logic lives in WaveManager; tower behaviour lives in tower classes.
+    Responsibilities: wiring subsystems, routing input per panel,
+    and running the update/draw pipeline.
     """
 
     # ── construction ──────────────────────────────────────────────────────────
 
     def __init__(self):
-        super().__init__((1440, 900), "TOWER DEFENSE", 165, Mouse(64))
+        super().__init__((1920, 1080), "TOWER DEFENSE", 165, Mouse(64))
 
-        self.game_state = GameState(start_money=10_000, start_lives=10)
-        self.game_state.add_money_listener(self._on_money_changed)
-        self.game_state.add_level_listener(self._on_level_changed)
-
-        self.tower_config = TowerConfig(
-            prices=[[70], [350, 1000, 1750], [500, 1250], [700, 1600]],
-            max_levels=[1, 3, 2, 2],
-            ranges=[[150], [110, 130, 150], [90, 110], [35, 35]],
-            damages=[[20], [40, 50, 70], [80, 120], [100, 200]],
-            speeds=[[1000], [2000, 3000, 4000], [5000, 7000], [4, 2]],
-        )
-
-        self.camera = Camera(Rect((0, 0), (1152, self.size[1])), 22 * 64, 16 * 64)
+        self.game_state   = GameState(start_money=10_000, start_lives=10)
+        self.tower_config = load_tower_config()
+        self.camera       = Camera(Rect((0, 0), (1536, self.size[1])), 22 * 64, 16 * 64)
 
         self.assets = AssetManager()
         self.assets.load_manifest("config/assets.yaml")
-
         missing = self.assets.validate()
         if missing:
             raise RuntimeError("Missing assets:\n" + "\n".join(missing))
 
-        # ── UI object dictionaries (menu / contact / game tabs) ────────────────
         self.panel_manager = PanelManager(starting_tab="main_menu")
-
-        loader = PanelLoader(self.panel_manager, self.size, self.assets)
-        loader.register("object", panel_factory.make_gui_object, default=True)
+        loader = PanelLoaderExt(self.panel_manager, self.size, self.assets)
+        loader.register("object", panel_factory.make_factory(self.assets), default=True)
+        loader.register("text",   panel_factory.make_text_factory(self.assets))
         loader.load("config/panels.yaml")
 
-        self.panel_manager.add_object("game", "start_pause_button",
-                                      GuiObject(self.size, (1230, 650), (64, 64),
-                                                self.assets.image_path("btn_start")))
-
-        _music_tabs = ("main_menu", "contact")
-        self._music_button_playing = GuiObject(self.size, (20, 20), (64, 64),
-                                               self.assets.image_path("btn_music_pause"))
-        self._music_button_paused = GuiObject(self.size, (20, 20), (64, 64),
-                                              self.assets.image_path("btn_music_resume"))
-
-        self.panel_manager.add_object_to_all(_music_tabs, "music_toggle", self._music_button_playing)
-
-        self.panel_manager.add_object("game", "buy_tower_4",
-                                      GuiObject(self.size, (1302, 455), (128, 128),
-                                                self.assets.image_path("buy_tower_4")))
-
-        self.panel_manager.add_object("game", "x2",
-                                      GuiObject(self.size, (1310, 650), (64, 64),
-                                                self.assets.image_path("btn_2x")))
-
-        self.live_texts = [
-            GuiObject(self.size, (1275, 195), (64, 64),
-                      self.assets.image_path(f"digit_{i}"))
-            for i in range(self.game_state.lives)
-        ]
-        self.live_text0 = GuiObject(self.size, (1305, 195), (64, 64),
-                                    self.assets.image_path("digit_0"))
-        # ── fonts ──────────────────────────────────────────────────────────────
-        self.font = pygame.font.SysFont("ComicSansMs", 40)
-        self.dollar_font = pygame.font.SysFont("ComicSansMs", 30)
-        self.fee_font = pygame.font.SysFont("ComicSansMs", 20)
-
-        # ── game-panel texts ──────────────────────────────────────────────────
-        self.money_text = Text(str(self.game_state.money), self.font, Green, (self.width - 255, 104))
-        self.level_text = Text("Level 1", self.font, White, (self.width - 215, 2))
-        self.dollar_text = Text("$", self.dollar_font, Green, (self.width - 60, 110))
-
-        self._fee_text_positions = [(1183, 412), (1326, 412), (1183, 602), (1326, 602)]
-        self._create_fee_texts()
-        self._check_purchasing_power(self.game_state.money)
-
-        self.fee_text_background = scale_surface(
-            self.panel_manager["game"]["money_box"].images[GuiObject.STATE.NORMAL].image, (100, 50)
-        )
-        self.tower_images = [
-            self.assets.get_image("tower_1_lvl1"),
-            self.assets.get_image("tower_2_lvl1"),
-            self.assets.get_image("tower_3_lvl1"),
-            self.assets.get_image("tower_4_lvl1"),
-            self.assets.get_image("tower_4_lvl2"),
-        ]
-
-        # ── game-object collections ────────────────────────────────────────────
-        self.towers: list[BaseTower] = []
-        self.enemies: list[Enemy] = []
-        self.tilemap = TILEMAP
-
-        # ── per-frame cursor state ─────────────────────────────────────────────
-        self.cursor_col = None
-        self.cursor_row = None
-        self.buying_tower_type = 0
-        self.tower_positions: list[tuple] = []
-
-        # ── tile overlay sprites ───────────────────────────────────────────────
-        self.block = self.assets.get_image("tile_block")
-        self.enable = self.assets.get_image("tile_enable")
-
-        # ── wave manager (set after tiles are loaded in run()) ────────────────
+        self.towers:       list[BaseTower] = []
+        self.enemies:      list[Enemy]     = []
+        self.level         = TILEMAP
+        self.tilemap       = Tilemap(TILEMAP, self.assets)
         self.wave_manager: WaveManager | None = None
         self.sound_manager = SoundManager(str(self.assets.sound_path("bg_music")))
 
-    # ── IGameContext interface (used by enemies / projectiles) ────────────────
+        self.hud = GameHUD(self.assets, self.size, self.game_state, self.tower_config, self.panel_manager)
+
+        self.tower_controller = TowerPlacementController(
+            self.towers, self.tower_config, self.assets, self.game_state,
+            self.camera, self.panel_manager)
+
+    # ── IGameContext interface ────────────────────────────────────────────────
 
     @property
     def speed(self) -> int:
         return self.game_state.speed
+
+    @property
+    def map_width(self) -> int:
+        return len(self.level[0]) * 64
+
+    @property
+    def map_height(self) -> int:
+        return len(self.level) * 64
 
     def increase_money(self, amount: int) -> None:
         self.game_state.increase_money(amount)
@@ -147,29 +86,59 @@ class Game(Application):
     # ── lifecycle ─────────────────────────────────────────────────────────────
 
     def run(self):
-        self._create_tiles()
+        SplashScreen(
+            ["assets/images/others/pygame_logo.png", "assets/images/others/kenney_logo.png"],
+            fade_ms=1500, hold_ms=1000,
+        ).run(self.window, self.clock, self._fps)
+        self.tilemap.create_tiles()
         self._init_wave_manager()
+        self.menu_bg = MenuBackground(
+            self.tilemap, len(self.level[0]), len(self.level), self.size)
+        self.menu_overlay = pygame.Surface(self.size, pygame.SRCALPHA)
+        self.menu_overlay.fill((0, 0, 0, 120))
         super().run()
 
-    def _create_tiles(self) -> None:
-        self.tiles: list[Tile] = []
-        for row_idx, row in enumerate(self.tilemap):
-            for col_idx, tile_type in enumerate(row):
-                self.tiles.append(Tile(tile_type, col_idx, row_idx, self.assets))
-
     def _init_wave_manager(self) -> None:
-        spawn_col, spawn_row = None, None
-        for tile in self.tiles:
-            col, row = tile.get_first_tile()
-            if col is not None:
-                spawn_col, spawn_row = col, row
-                break
+        spawn_col, spawn_row = self.tilemap.get_spawn_tile()
+        assert spawn_col is not None and spawn_row is not None, "No spawn tile found in level data"
+        self.wave_manager = WaveManager(spawn_x=spawn_col * 64 - 32, spawn_y=spawn_row * 64)
 
-        # Original spawn formula: x = col*64 - 32, y = row*64
-        self.wave_manager = WaveManager(
-            spawn_x=spawn_col * 64 - 32,
-            spawn_y=spawn_row * 64,
-        )
+    # ── update ────────────────────────────────────────────────────────────────
+
+    @override
+    def update(self) -> None:
+        if self.panel_manager.current_panel in ("main_menu", "contact"):
+            self.menu_bg.update()
+        if self.panel_manager.current_panel != "game": return
+        self.camera.update_with_mouse(self.mouse.position)
+        self.mouse.update()
+        self.tower_controller.update_cursor(self.mouse.position)
+        self._update_towers()
+        self._update_enemies()
+
+    def _update_towers(self) -> None:
+        self.towers[:] = [t for t in self.towers if not t.should_remove()]
+        self.tower_controller.tower_positions = []
+        for tower in self.towers:
+            tower.update(self.game_state, self.enemies)
+            pos = tower.get_blocking_position()
+            if pos:
+                self.tower_controller.tower_positions.append(pos)
+            for bullet in tower.bullets:
+                if self.game_state.is_started:
+                    bullet.update(self)
+
+    def _update_enemies(self) -> None:
+        if self.wave_manager:
+            self.wave_manager.update(self.enemies, self.game_state)
+        for enemy in self.enemies:
+            if enemy.position.x >= self.map_width - 32:
+                self.enemies.remove(enemy)
+                self.game_state.lives = max(0, self.game_state.lives - enemy.damage)
+                if self.game_state.lives == 0:
+                    self.exit()
+            elif self.game_state.is_started:
+                enemy.move(self.level, self.game_state.speed)
 
     # ── event handling ────────────────────────────────────────────────────────
 
@@ -181,7 +150,6 @@ class Game(Application):
             self._handle_contact_event(event)
         elif self.panel_manager.current_panel == "game":
             self._handle_game_event(event)
-
         self.panel_manager.handle_event(event, self.mouse.position)
         self.sound_manager.handle_event(event)
 
@@ -193,8 +161,7 @@ class Game(Application):
             self.panel_manager.current_panel = "contact"
         elif objects["exit"].is_clicked(event, self.mouse.position):
             self.on_exit()
-
-        if self.panel_manager["main_menu"]["music_toggle"].is_clicked(event, self.mouse.position):
+        if objects["music_toggle"].is_clicked(event, self.mouse.position):
             self._toggle_music()
 
     def _handle_contact_event(self, event) -> None:
@@ -205,268 +172,91 @@ class Game(Application):
             self._toggle_music()
 
     def _handle_game_event(self, event) -> None:
-        self.camera.update_with_mouse(self.mouse.position)
-
-        if self.mouse.position[0] < 1152:
-            ox, oy = self.camera.rect.topleft
-            self.cursor_col = (self.mouse.position[0] - ox) // 64
-            self.cursor_row = (self.mouse.position[1] - oy) // 64
-
         if self.panel_manager["game"]["menu"].is_clicked(event, self.mouse.position):
             self.panel_manager.current_panel = "main_menu"
             self.game_state.is_started = False
             return
-
-        if event.type == pygame.MOUSEBUTTONUP:
-            self._handle_tower_actions(event)
-            self._handle_tower_selection()
-            self._handle_tower_purchase()
-
+        self.tower_controller.handle_event(event, self.mouse.position)
         self._handle_upgrade_planes(event)
         self._handle_start_pause(event)
         self._handle_x2(event)
-        self._handle_buy_tower_buttons(event)
-
-    def _handle_tower_actions(self, event) -> None:
-        for tower in self.towers:
-            if self.game_state.selected_tower is not tower: continue
-
-            tower.sell(self.mouse.position, self.game_state, self.towers, self.camera)
-            tower.upgrade(self.mouse.position, self.game_state, self.camera)
-
-    def _handle_tower_selection(self) -> None:
-        if self.is_construct_mode(): return
-
-        clicked_tower = self.get_clicked_tower()
-
-        if not clicked_tower:
-            self.game_state.selected_tower = None
-            return
-
-        is_selected_clicked = self.game_state.selected_tower is clicked_tower
-        self.game_state.selected_tower = None if is_selected_clicked else clicked_tower
-
-    def is_construct_mode(self) -> bool:
-        return self.buying_tower_type != 0
-
-    def get_clicked_tower(self) -> BaseTower | None:
-        for tower in self.towers:
-            if self.cursor_col == tower.col and self.cursor_row == tower.row:
-                return tower
-        return None
-
-    def _handle_tower_purchase(self) -> None:
-        if self.mouse.position[0] > 1152 or not self.buying_tower_type: return
-        if (self.cursor_row, self.cursor_col) in self.block_tiles: return
-
-        tower = TowerFactory.create(
-            self.buying_tower_type, self.cursor_row, self.cursor_col, self.tower_config, self.assets)
-        if tower.get_blocking_position() is None:  # Plane — append to back
-            self.towers.append(tower)
-        else:  # Ground — insert below planes
-            self.towers.insert(0, tower)
-        self.game_state.decrease_money(tower.buy_price)
-        self.buying_tower_type = 0
 
     def _handle_upgrade_planes(self, event) -> None:
         panel = self.panel_manager["game"]
-        if (
-                panel["upgrade_planes"].is_clicked(event, self.mouse.position)
-                and self.game_state.money >= 5000
-                and self.game_state.plane_level == 1
-        ):
+        if not panel["upgrade_planes"].is_clicked(event, self.mouse.position): return
+        if self.game_state.money >= 5000 and self.game_state.plane_level == 1:
             self.game_state.decrease_money(5000)
-            panel["buy_tower_4"] = GuiObject(
-                self.size, (1302, 455), (128, 128),
-                self.assets.image_path("buy_tower_4_lvl2"))
+            panel["buy_tower_4"].set_state("lvl2")
             self.game_state.plane_level = 2
 
     def _handle_start_pause(self, event) -> None:
-        start_pause_button = self.panel_manager["game"]["start_pause_button"]
-        if not start_pause_button.is_clicked(event, self.mouse.position):
-            return
+        btn = self.panel_manager["game"]["start_pause_button"]
+        if not btn.is_clicked(event, self.mouse.position): return
         self.game_state.is_started = not self.game_state.is_started
-        asset_key = "btn_pause" if self.game_state.is_started else "btn_start"
-        self.panel_manager["game"]["start_pause_button"] = GuiObject(
-            self.size, (1230, 650), (64, 64),
-            self.assets.image_path(asset_key))
+        btn.set_state("pause" if self.game_state.is_started else None)
 
     def _handle_x2(self, event) -> None:
-        if not self.panel_manager["game"]["x2"].is_clicked(event, self.mouse.position):
-            return
+        x2 = self.panel_manager["game"]["x2"]
+        if not x2.is_clicked(event, self.mouse.position): return
         if self.game_state.speed == 1:
             self.game_state.speed = 2
-            self.panel_manager["game"]["x2"] = GuiObject(
-                self.size, (1310, 650), (64, 64),
-                self.assets.image_path("btn_2x_active"))
+            x2.set_state("active")
         else:
             self.game_state.speed = 1
-            self.panel_manager["game"]["x2"] = GuiObject(
-                self.size, (1310, 650), (64, 64),
-                self.assets.image_path("btn_2x"))
-
-    def _handle_buy_tower_buttons(self, event) -> None:
-        for i in range(4):
-            btn = self.panel_manager["game"][f"buy_tower_{i + 1}"]
-            if btn.is_clicked(event, self.mouse.position):
-                self.buying_tower_type = 0 if self.buying_tower_type == i + 1 else i + 1
-
-    # ── money / UI listeners ──────────────────────────────────────────────────
-
-    def _on_money_changed(self, money: int) -> None:
-        self.money_text.set(str(money))
-        self._check_purchasing_power(money)
-
-    def _on_level_changed(self, level: int) -> None:
-        self.level_text.set("Level " + str(level))
+            x2.set_state(None)
 
     def _toggle_music(self) -> None:
         self.sound_manager.toggle_paused()
-        btn = self._music_button_paused if self.sound_manager.is_paused else self._music_button_playing
+        state = "paused" if self.sound_manager.is_paused else None
         for tab in ("main_menu", "contact"):
-            self.panel_manager[tab]["music_toggle"] = btn
-
-    def _create_fee_texts(self) -> None:
-        self.fee_texts = [
-            Text(str(self.tower_config.prices[i][0]) + " $", self.fee_font, Green, pos)
-            for i, pos in enumerate(self._fee_text_positions)
-        ]
-
-    def _check_purchasing_power(self, money: int) -> None:
-        for i, fee_text in enumerate(self.fee_texts):
-            fee_text.set_color(Green if money >= self.tower_config.prices[i][0] else Red)
-
-        if money == 0:
-            self.money_text.set_color(Red)
-            self.dollar_text.set_color(Red)
-        else:
-            self.money_text.set_color(Green)
-            self.dollar_text.set_color(Green)
+            self.panel_manager[tab]["music_toggle"].set_state(state)
 
     # ── render pipeline ───────────────────────────────────────────────────────
 
     @override
     def draw(self):
+        self.window.fill((0, 0, 0))
+        if self.panel_manager.current_panel == "game":
+            self._draw_game()
+        elif self.panel_manager.current_panel in ("main_menu", "contact"):
+            self.menu_bg.draw(self.window)
+            self.window.blit(self.menu_overlay, (0, 0))
         self.panel_manager.draw(self.window)
 
-        if self.panel_manager.current_panel == "game":
-            self._draw_tiles()
-            self._draw_towers()
-            self._draw_enemies()
-            self._draw_game_borders()
-            self._draw_game_objects()
-
-            if self.buying_tower_type:
-                self._draw_buying_tower()
-
-    def _draw_tiles(self) -> None:
-        for tile in self.tiles:
-            tile.draw(self.window, self.camera)
+    def _draw_game(self) -> None:
+        self.tilemap.draw(self.window, self.camera)
+        self._draw_towers()
+        self._draw_enemies()
+        self._draw_game_borders()
+        self.hud.draw(self.window)
+        self.tower_controller.draw(self.window, self.level, self.mouse.position)
 
     def _draw_game_borders(self) -> None:
         lines = [
-            ((1, 0), (1, 1440), 4),
-            ((1151, 0), (1151, 900), 4),
-            ((1437, 0), (1437, 900), 4),
-            ((0, 1), (1440, 1), 4),
-            ((1150, 65), (1440, 65), 4),
-            ((1150, 200), (1440, 200), 4),
-            ((1150, 255), (1438, 255), 4),
-            ((1150, 640), (1440, 640), 4),
-            ((1150, 720), (1440, 720), 4),
-            ((1150, 810), (1440, 810), 4),
-            ((0, 897), (1440, 897), 4),
+            ((1,    0),    (1,    1080), 4),
+            ((1535, 0),    (1535, 1080), 4),
+            ((1916, 0),    (1916, 1080), 4),
+            ((0,    1),    (1920, 1),    4),
+            ((1534, 78),   (1920, 78),   4),
+            ((1534, 240),  (1920, 240),  4),
+            ((1534, 306),  (1917, 306),  4),
+            ((1534, 768),  (1920, 768),  4),
+            ((1534, 864),  (1920, 864),  4),
+            ((1534, 972),  (1920, 972),  4),
+            ((0,    1076), (1920, 1076), 4),
         ]
         for start, end, width in lines:
             pygame.draw.line(self.window, White, start, end, width)
 
     def _draw_towers(self) -> None:
-        self.tower_positions = []
-
-        for tower in [t for t in self.towers if t.should_remove()]:
-            self.towers.remove(tower)
-
         for tower in self.towers:
-            tower.update_and_draw(self.game_state, self.enemies, self.camera, self.window)
-
-            pos = tower.get_blocking_position()
-            if pos:
-                self.tower_positions.append(pos)
-
+            tower.draw(self.game_state, self.camera, self.window)
             for bullet in tower.bullets:
-                if self.game_state.is_started:
-                    bullet.update(self)
                 self.camera.draw(self.window, bullet)
 
     def _draw_enemies(self) -> None:
-        if self.wave_manager:
-            self.wave_manager.update(self.enemies, self.game_state)
-
-        for enemy in list(self.enemies):
-            if enemy.position.x >= self.width - 32:
-                self.enemies.remove(enemy)
-                self.game_state.lives = max(0, self.game_state.lives - enemy.damage)
-                if self.game_state.lives == 0:
-                    self.exit()
-            elif self.game_state.is_started:
-                enemy.move(self.tilemap, self.game_state.speed)
-                self.camera.draw(self.window, enemy)
-            else:
-                self.camera.draw(self.window, enemy)
-
-    def _draw_game_objects(self) -> None:
-        lives = self.game_state.lives
-        self.live_texts[lives if lives != 10 else 1].draw(self.window)
-        if lives == 10:
-            self.live_text0.draw(self.window)
-
-        self.level_text.draw(self.window)
-        self.money_text.draw(self.window)
-        self.dollar_text.draw(self.window)
-
-        for x, y in [(1173, 399), (1316, 399), (1173, 589), (1316, 589)]:
-            self.window.blit(self.fee_text_background, (x, y))
-        for fee_text in self.fee_texts:
-            fee_text.draw(self.window)
-
-    def _draw_buying_tower(self) -> None:
-        self.block_tiles: list[tuple] = []
-        ox, oy = self.camera.rect.topleft
-
-        for row_idx, row in enumerate(self.tilemap):
-            for col_idx, tile in enumerate(row):
-                sx = 64 * col_idx + ox
-                sy = 64 * row_idx + oy
-                buildable = (
-                                    (tile[0] in ("0", "3"))
-                                    and (row_idx, col_idx) not in self.tower_positions
-                            ) or self.buying_tower_type == 4
-                if buildable:
-                    self.window.blit(self.enable, (sx, sy))
-                else:
-                    self.window.blit(self.block, (sx, sy))
-                    self.block_tiles.append((row_idx, col_idx))
-
-        index = (
-            4 if self.buying_tower_type == 4 and self.game_state.plane_level == 2
-            else self.buying_tower_type - 1
-        )
-        mx, my = self.mouse.position
-        if mx >= 1152:
-            self.window.blit(self.tower_images[index], (mx - 32, my - 32))
-        else:
-            self.window.blit(self.tower_images[index], (self.cursor_col * 64 + ox, self.cursor_row * 64 + oy))
-
-            draw_range = self.tower_config.ranges[self.buying_tower_type - 1][0]
-            surf = pygame.Surface((draw_range * 2, draw_range * 2), pygame.SRCALPHA, 32)
-            pygame.draw.circle(surf, (128, 128, 128, 120), (draw_range, draw_range), draw_range, 0)
-            blocked = (self.cursor_row, self.cursor_col) in self.block_tiles
-            outline_color = (255, 0, 0, 120) if blocked else (0, 200, 0, 120)
-            pygame.draw.circle(surf, outline_color, (draw_range, draw_range), draw_range, 5)
-            self.window.blit(surf, (
-                self.cursor_col * 64 + 32 - draw_range + ox,
-                self.cursor_row * 64 + 32 - draw_range + oy,
-            ))
+        for enemy in self.enemies:
+            self.camera.draw(self.window, enemy)
 
     # ── debug ─────────────────────────────────────────────────────────────────
 
@@ -479,8 +269,7 @@ class Game(Application):
             self.camera.get_info(),
             self.panel_manager["main_menu"]["play"].get_info(),
         ]
-        debug_font = pygame.font.SysFont("Consolas", 20)
-        Debug.draw(self.window, debug_font, debug_info)
+        Debug.draw(self.window, pygame.font.SysFont("Consolas", 20), debug_info)
 
     # ── exit ──────────────────────────────────────────────────────────────────
 

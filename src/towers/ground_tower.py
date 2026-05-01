@@ -1,12 +1,16 @@
 import pygame
+from pygame.math import Vector2
 
 from core.game_object import GameObject
 from core.image import load_image
 from core.math import angle_between_delta
 from game_state import GameState, TowerConfig
-from projectile import Projectile
+from projectile import MuzzleFlash, Projectile
 from pygame_core.asset_path import ImagePath
 from towers.base_tower import BaseTower
+
+BARREL_FORWARD = 26  # px from tower center to barrel tip along aim direction
+BARREL_SPREAD  = 8   # px lateral offset from center for twin-barrel towers
 
 
 class GroundTower(BaseTower):
@@ -24,16 +28,17 @@ class GroundTower(BaseTower):
             self.position,
         )
 
-    def update_and_draw(self, game_state: GameState, enemies: list, camera, surface: pygame.Surface) -> None:
+    def update(self, game_state: GameState, enemies: list) -> None:
         self.now = pygame.time.get_ticks()
 
-        # Type-2 towers show a reload animation: swap to the "charging" sprite
-        # between shots, then back to idle once the cooldown is almost done.
         if self.tower_type == 2:
             self.image = load_image("towers/tower" + str(self.tower_type) + "L" + str(self.level) + "_")
             if self.now - self.last_reload_time > self.speed - 1000:
                 self.image = load_image("towers/tower" + str(self.tower_type) + "L" + str(self.level))
 
+        self.work(enemies, game_state.is_started)
+
+    def draw(self, game_state: GameState, camera, surface: pygame.Surface) -> None:
         cam_offset = camera.rect.topleft
         camera.draw(surface, self.platform)
 
@@ -41,7 +46,6 @@ class GroundTower(BaseTower):
             self.draw_range(surface, cam_offset)
             self.draw_selected_ui(surface, game_state, camera)
 
-        self.work(enemies, game_state.is_started)
         camera.draw(surface, self)
 
     def work(self, enemies: list, is_started: bool) -> None:
@@ -68,5 +72,22 @@ class GroundTower(BaseTower):
         return self.now - self.last_reload_time > self.speed
 
     def _shoot(self, target) -> None:
-        self.bullets.append(Projectile(target, self))
+        if self.tower_type in (1, 3):
+            for pos, deals_damage in self._muzzle_positions(target):
+                self.bullets.append(MuzzleFlash(target, self, pos, deals_damage))
+        else:
+            self.bullets.append(Projectile(target, self))
         self.last_reload_time = self.now
+
+    def _muzzle_positions(self, target) -> list[tuple[Vector2, bool]]:
+        fwd  = (target.position - self.position).normalize()
+        perp = Vector2(-fwd.y, fwd.x)
+        tip  = self.position + fwd * BARREL_FORWARD
+
+        twin = self.tower_type == 1 or (self.tower_type == 3 and self.level == 2)
+        if twin:
+            return [
+                (tip + perp * BARREL_SPREAD, True),
+                (tip - perp * BARREL_SPREAD, False),
+            ]
+        return [(tip, True)]
