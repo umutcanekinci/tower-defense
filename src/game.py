@@ -4,7 +4,6 @@ import pygame
 from pygame.locals import Rect
 from pygame_core.application import Application
 from pygame_core.asset_manager import AssetManager
-from pygame_core.color import White
 from pygame_core.mouse import Mouse
 from pygame_core.panel_manager import PanelManager
 from pygame_core.panel_loader_ext import PanelLoaderExt
@@ -19,6 +18,7 @@ from core.splash_screen import SplashScreen
 from enemy import Enemy
 from game_hud import GameHUD
 from game_state import GameState
+from pygame_core.unity.components.transform import Transform
 from tile import TILEMAP, Tilemap
 from tower_placement import TowerPlacementController
 from towers import BaseTower
@@ -48,7 +48,8 @@ class Game(Application):
             raise RuntimeError("Missing assets:\n" + "\n".join(missing))
 
         self.panel_manager = PanelManager(starting_tab="main_menu")
-        loader = PanelLoaderExt(self.panel_manager, self.size, self.assets)
+        window_transform = Transform((0, 0), self.size)
+        loader = PanelLoaderExt(self.panel_manager, window_transform, self.assets)
         loader.register("object", panel_factory.make_factory(self.assets), default=True)
         loader.register("text",   panel_factory.make_text_factory(self.assets))
         loader.load("config/panels.yaml")
@@ -60,7 +61,7 @@ class Game(Application):
         self.wave_manager: WaveManager | None = None
         self.sound_manager = SoundManager(str(self.assets.sound_path("bg_music")))
 
-        self.hud = GameHUD(self.assets, self.size, self.game_state, self.tower_config, self.panel_manager)
+        self.hud = GameHUD(self.assets, window_transform, self.game_state, self.tower_config, self.panel_manager)
 
         self.tower_controller = TowerPlacementController(
             self.towers, self.tower_config, self.assets, self.game_state,
@@ -246,7 +247,7 @@ class Game(Application):
             ((0,    1076), (1920, 1076), 4),
         ]
         for start, end, width in lines:
-            pygame.draw.line(self.window, White, start, end, width)
+            pygame.draw.line(self.window, "white", start, end, width)
 
     def _draw_towers(self) -> None:
         for tower in self.towers:

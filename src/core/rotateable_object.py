@@ -3,22 +3,26 @@ import pygame
 from pygame.math import Vector2
 from core.image import load_image
 from core.guiobject import ImageObject
+from pygame_core.unity.components.sprite_renderer2d import SpriteRenderer2D
 
-class GameObject(ImageObject):
+
+class RotateableObject(ImageObject):
 	def __init__(self, image_path: str, pos: Vector2):
-		super().__init__(image_path, pos)
+		ImageObject.__init__(self, image_path, pos)
 		self.is_rotated = False
 		self.position = Vector2(pos)
-		self.rect.center = self.position
+		self.rect.center = pos
 
 	def load_image(self, image_path: str) -> None:
 		self.image = load_image(image_path)
-		self.rect = self.image.get_rect(center = self.position)
+		self.rect.size =  self.image.get_size()
+		self.rect.center = self.position
 		self.is_rotated = False
 
 	def rotate_to_angle(self, angle: float) -> None:
-		self.rotated_image = pygame.transform.rotate(self.image, -angle - 90)
-		self.rect = self.rotated_image.get_rect(center = self.position)
+		self.rotated_image = pygame.transform.rotate(self.get_component(SpriteRenderer2D).image, -angle - 90)
+		self.rect.size =  self.rotated_image.get_size()
+		self.rect.center = self.position
 		self.is_rotated = True
 
 	@override

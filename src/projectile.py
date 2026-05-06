@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import pygame
 from pygame.math import Vector2
 
-from core.game_object import GameObject
+from core.rotateable_object import RotateableObject
 from core.math import angle_between_points
 from pygame_core.asset_path import ImagePath
 
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from core.protocols import IGameContext
 
 
-class Projectile(GameObject):
+class Projectile(RotateableObject):
     EXPLODE_DISTANCE = 30
     BULLET_SPEED     = 1 / 2
 
@@ -70,7 +70,7 @@ class Projectile(GameObject):
         self.rect.center = self.position
 
 
-class MuzzleFlash(GameObject):
+class MuzzleFlash(RotateableObject):
     """Instant-hit effect for tower types 1 and 3.
 
     Positioned at the barrel tip (pos). Deals damage on the first update tick

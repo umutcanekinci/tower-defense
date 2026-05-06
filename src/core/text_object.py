@@ -1,4 +1,6 @@
 import pygame
+
+from pygame_core.unity.components.transform import Transform
 from pygame_core.utils import Centerable
 
 
@@ -11,7 +13,7 @@ class TextObject(Centerable):
 
     def __init__(
         self,
-        surface_size: tuple[int, int],
+        parent: Transform,
         pos,
         text: str,
         font: pygame.font.Font,
@@ -20,7 +22,7 @@ class TextObject(Centerable):
         self._surface = font.render(text, True, self._parse_color(color))
 
         text_size = self._surface.get_size()
-        self._pos = super().resolve_pos(pos, surface_size, text_size)
+        self._pos = super().resolve_pos(pos, parent.size, text_size)
 
     def draw(self, surface: pygame.Surface) -> None:
         surface.blit(self._surface, self._pos)

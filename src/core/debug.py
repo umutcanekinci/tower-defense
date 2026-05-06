@@ -1,9 +1,8 @@
 import pygame
 from typing import Iterable
-from pygame_core.color import White
 
 class Debug:
-    BORDER_COLOR = White
+    BORDER_COLOR = "white"
     BORDER_WIDTH = 2
     PADDING = 10
     MARGIN = 10
@@ -14,7 +13,7 @@ class Debug:
     @staticmethod
     def draw(surface: pygame.Surface, font: pygame.font.Font, debug_info) -> None:
         debug_lines = Debug.get_debug_lines(debug_info)
-        debug_surfaces = [font.render(line, Debug.ANTIALIAS, White) for line in debug_lines]
+        debug_surfaces = [font.render(line, Debug.ANTIALIAS, "white") for line in debug_lines]
         width = max(surface.get_width() for surface in debug_surfaces)
         height = sum(surface.get_height() for surface in debug_surfaces)
 

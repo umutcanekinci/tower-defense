@@ -20,7 +20,10 @@ class PlaneTower(BaseTower):
         super().__init__(tower_type, row, col, config, assets)
 
     def update(self, game_state: GameState, enemies: list) -> None:
-        self.level = game_state.plane_level
+        new_level = game_state.plane_level
+        if new_level != self.level:
+            self.level = new_level
+            self.load_image(self._assets.image_path(f"tower_{self.tower_type}_lvl{self.level}"))
         if game_state.is_started and self.position.x <= self.REMOVE_X:
             self.position.x += self.speed
             self.rect.center = self.position

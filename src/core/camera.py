@@ -1,5 +1,6 @@
 import pygame
 from core.image import scale_surface_by
+from pygame_core.unity.components.sprite_renderer2d import SpriteRenderer2D
 
 EDGE_SCROLL_ZONE = 30  # pixels from edge to start scrolling
 CAMERA_SPEED = 10      # pixels per frame
@@ -12,7 +13,7 @@ class Camera():
         self.min_y = -(map_height - rect.height) if map_height and map_height > rect.height else 0
 
     def draw(self, surface, entity):
-        image = entity.rotated_image if getattr(entity, 'is_rotated', False) else entity.image
+        image = entity.rotated_image if getattr(entity, 'is_rotated', False) else entity.get_component(SpriteRenderer2D).image
         scaled_image = scale_surface_by(image, self.scale)
         scaled_rect = scaled_image.get_rect(center=entity.rect.center)
         surface.blit(scaled_image, self.apply_position(scaled_rect))

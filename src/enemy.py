@@ -3,8 +3,9 @@ from typing import TYPE_CHECKING
 
 from config_loader import load_enemy_stats
 from core.image import rotate_surface
-from core.game_object import GameObject
+from core.rotateable_object import RotateableObject
 from pygame_core.asset_path import ImagePath
+from unity.components.sprite_renderer2d import SpriteRenderer2D
 
 if TYPE_CHECKING:
     from core.protocols import IGameContext
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
 _BASE_STATS: dict[int, tuple[int, float, int, int]] = load_enemy_stats()
 
 
-class Enemy(GameObject):
+class Enemy(RotateableObject):
     class Direction(enum.Enum):
         Right = "R"
         Up    = "U"
@@ -89,27 +90,28 @@ class Enemy(GameObject):
                     continue
 
                 new_dir = cell[1]
+                renderer = self.get_component(SpriteRenderer2D)
                 if new_dir == "R":
                     if self.direction == self.Direction.Up:
-                        self.image = rotate_surface(self.image, -90)
+                        renderer.image = rotate_surface(renderer.image, -90)
                     elif self.direction == self.Direction.Down:
-                        self.image = rotate_surface(self.image, +90)
+                        renderer.image = rotate_surface(renderer.image, +90)
                     self.direction = self.Direction.Right
                 elif new_dir == "U":
                     if self.direction == self.Direction.Right:
-                        self.image = rotate_surface(self.image, +90)
+                        renderer.image = rotate_surface(renderer.image, +90)
                     elif self.direction == self.Direction.Left:
-                        self.image = rotate_surface(self.image, -90)
+                        renderer.image = rotate_surface(renderer.image, -90)
                     self.direction = self.Direction.Up
                 elif new_dir == "L":
                     if self.direction == self.Direction.Up:
-                        self.image = rotate_surface(self.image, +90)
+                        renderer.image = rotate_surface(renderer.image, +90)
                     elif self.direction == self.Direction.Down:
-                        self.image = rotate_surface(self.image, -90)
+                        renderer.image = rotate_surface(renderer.image, -90)
                     self.direction = self.Direction.Left
                 elif new_dir == "D":
                     if self.direction == self.Direction.Right:
-                        self.image = rotate_surface(self.image, -90)
+                        renderer.image = rotate_surface(renderer.image, -90)
                     elif self.direction == self.Direction.Left:
-                        self.image = rotate_surface(self.image, +90)
+                        renderer.image = rotate_surface(renderer.image, +90)
                     self.direction = self.Direction.Down

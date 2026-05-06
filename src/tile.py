@@ -1,6 +1,6 @@
 import pygame
 
-from core.game_object import GameObject
+from core.rotateable_object import RotateableObject
 
 TILEMAP = [
     ["0",    "0",    "0",    "0",    "0",    "0+B1", "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0+B8", "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0"   ],
@@ -48,7 +48,7 @@ class Tilemap:
         for tile in self.tiles:
             tile.draw(surface, camera)
 
-class Tile(GameObject):
+class Tile(RotateableObject):
     _TILE_KEYS = {
         "0": "tile_grass",
         "1": "tile_clay",
@@ -68,7 +68,7 @@ class Tile(GameObject):
         if len(tile_type) > 2 and tile_type[1:3] == "+B":
             dec_id = tile_type[tile_type.index("+B") + 2]
             dec_path = assets.image_path(f"tile_decoration_{dec_id}")
-            self.decoration = GameObject(dec_path, self.position)
+            self.decoration = RotateableObject(dec_path, self.position)
 
     def draw(self, surface, camera) -> None:
         camera.draw(surface, self)

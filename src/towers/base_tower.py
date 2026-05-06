@@ -1,13 +1,12 @@
 import pygame
 from pygame.math import Vector2
-from pygame_core.color import White
 
-from core.game_object import GameObject
+from core.rotateable_object import RotateableObject
 from core.guiobject import GuiObject
 from game_state import GameState, TowerConfig
 
 
-class BaseTower(GameObject):
+class BaseTower(RotateableObject):
     """Abstract base for all towers.
 
     Owns the shared upgrade/sell mechanics and exposes properties for stats so
@@ -116,12 +115,12 @@ class BaseTower(GameObject):
         max_btn = GuiObject("", draw_pos + Vector2(-60, -85), (50, 25),
                             self._assets.image_path("btn_max"))
 
-        sell_text = self._price_font.render(str(self.sell_price) + " $", 2, White)
+        sell_text = self._price_font.render(str(self.sell_price) + " $", 2, "white")
 
         if self.is_max_level():
             max_btn.draw(surface)
         else:
-            upgrade_text = self._price_font.render(str(self.upgrade_price) + " $", 2, White)
+            upgrade_text = self._price_font.render(str(self.upgrade_price) + " $", 2, "white")
             surface.blit(upgrade_text, draw_pos + Vector2(-50, -60))
             upgrade_btn.draw(surface)
 

@@ -1,7 +1,7 @@
 import pygame
 from pygame.math import Vector2
 
-from core.game_object import GameObject
+from core.rotateable_object import RotateableObject
 from core.image import load_image
 from core.math import angle_between_delta
 from game_state import GameState, TowerConfig
@@ -23,7 +23,7 @@ class GroundTower(BaseTower):
 
     def __init__(self, tower_type: int, row: int, col: int, config: TowerConfig, assets) -> None:
         super().__init__(tower_type, row, col, config, assets)
-        self.platform = GameObject(
+        self.platform = RotateableObject(
             str(ImagePath("tower" + str(tower_type) + "platform1", folder="towers")),
             self.position,
         )
