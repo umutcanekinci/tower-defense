@@ -9,7 +9,8 @@
       "Bash(type \"conftest.py\")",
       "Bash(type \"sitecustomize.py\")",
       "Bash(dir /b \"C:\\\\Users\\\\user\\\\PycharmProjects\\\\tower-defense\\\\.venv\\\\Lib\\\\site-packages\")",
-      "Bash(findstr /v \"^pip\\\\|^_distutils\\\\|^pkg_resources\\\\|^setuptools\\\\|^_virtualenv\\\\|^__pycache__\")"
+      "Bash(findstr /v \"^pip\\\\|^_distutils\\\\|^pkg_resources\\\\|^setuptools\\\\|^_virtualenv\\\\|^__pycache__\")",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

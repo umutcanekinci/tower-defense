@@ -8,7 +8,7 @@ from pygame_core.mouse import Mouse
 from pygame_core.panel_manager import PanelManager
 from pygame_core.panel_loader_ext import PanelLoaderExt
 
-import panel_factory
+from ui import panel_factory
 from config_loader import load_tower_config
 from core.camera import Camera
 from core.constants import TILE_SIZE
@@ -17,7 +17,7 @@ from core.menu_background import MenuBackground
 from core.splash_screen import SplashScreen
 from pygame_core.unity.game_audio import GameAudio
 from enemy import Enemy
-from game_hud import GameHUD
+from ui.game_hud import GameHUD
 from game_state import GameState
 from pygame_core.unity.components.transform import Transform
 from tiled_map import TiledMap
@@ -38,37 +38,34 @@ class Game(Application):
     def __init__(self):
         super().__init__((1920, 1080), "TOWER DEFENSE", 165, Mouse(TILE_SIZE))
 
-        self.game_state   = GameState(start_money=10_000, start_lives=10)
-        self.tower_config = load_tower_config()
+        window_transform = Transform((0, 0), self.size)
+        self.towers:       list[BaseTower] = []
+        self.enemies:      list[Enemy]     = []
+        self.wave_manager: WaveManager | None = None
 
-        self.assets = AssetManager()
+        self.game_state       = GameState(start_money=10_000, start_lives=10)
+        self.assets           = AssetManager()
+        self.tower_config     = load_tower_config()
+        self.tilemap          = TiledMap("assets/tiled_project/tiled_tilemap.tmx")
+        self.camera           = Camera(window_transform, self.tilemap.map_width, self.tilemap.map_height)  # (1536, self.size[1])),
+        self.panel_manager    = PanelManager(starting_tab="main_menu")
+
+        self.load_panels(window_transform)
+
+        self.audio            = GameAudio(str(self.assets.sound_path("bg_music")))
+        self.hud              = GameHUD(self.assets, window_transform, self.game_state, self.tower_config, self.panel_manager)
+        self.tower_controller = TowerPlacementController(self.towers, self.tower_config, self.assets, self.game_state, self.camera, self.panel_manager)
+
+    def load_panels(self, window_transform) -> None:
         self.assets.load_manifest("config/assets.yaml")
         missing = self.assets.validate()
         if missing:
             raise RuntimeError("Missing assets:\n" + "\n".join(missing))
 
-        self.tilemap = TiledMap("assets/tiled_project/tiled_tilemap.tmx")
-        #self.tilemap = TiledMap("assets/tiled_project_64x64/tiled_tilemap_64x64.tmx")
-        self.camera  = Camera(Rect((0, 0), self.size), #(1536, self.size[1])),
-        self.tilemap.map_width, self.tilemap.map_height)
-
-        self.panel_manager = PanelManager(starting_tab="main_menu")
-        window_transform = Transform((0, 0), self.size)
         loader = PanelLoaderExt(self.panel_manager, window_transform, self.assets)
         loader.register("object", panel_factory.make_factory(self.assets), default=True)
-        loader.register("text",   panel_factory.make_text_factory(self.assets))
+        loader.register("text", panel_factory.make_text_factory(self.assets))
         loader.load("config/panels.yaml")
-
-        self.towers:       list[BaseTower] = []
-        self.enemies:      list[Enemy]     = []
-        self.wave_manager: WaveManager | None = None
-        self.audio = GameAudio(str(self.assets.sound_path("bg_music")))
-
-        self.hud = GameHUD(self.assets, window_transform, self.game_state, self.tower_config, self.panel_manager)
-
-        self.tower_controller = TowerPlacementController(
-            self.towers, self.tower_config, self.assets, self.game_state,
-            self.camera, self.panel_manager)
 
     # ── IGameContext interface ────────────────────────────────────────────────
 
@@ -224,48 +221,54 @@ class Game(Application):
             self.menu_bg.draw(self.window)
             self.window.blit(self.menu_overlay, (0, 0))
         self.panel_manager.draw(self.window)
+        if self.panel_manager.current_panel == "game":
+            self.hud.draw(self.window)
+            self.tower_controller.draw(self.window, self.tilemap.buildable_grid, self.mouse.position)
 
     def _draw_game(self) -> None:
-        self.tilemap.draw(self.window, self.camera)
-        self._draw_towers()
-        self._draw_enemies()
-        self._draw_game_borders()
-        self.hud.draw(self.window)
-        self.tower_controller.draw(self.window, self.tilemap.buildable_grid, self.mouse.position)
+        def _draw_tilemap(self) -> None:
+            self.tilemap.draw(self.window, self.camera)
 
-    def _draw_game_borders(self) -> None:
-        lines = [
-            ((1,    0),    (1,    1080), 4),
-            ((1535, 0),    (1535, 1080), 4),
-            ((1916, 0),    (1916, 1080), 4),
-            ((0,    1),    (1920, 1),    4),
-            ((1534, 78),   (1920, 78),   4),
-            ((1534, 240),  (1920, 240),  4),
-            ((1534, 306),  (1917, 306),  4),
-            ((1534, 768),  (1920, 768),  4),
-            ((1534, 864),  (1920, 864),  4),
-            ((1534, 972),  (1920, 972),  4),
-            ((0,    1076), (1920, 1076), 4),
-        ]
-        for start, end, width in lines:
-            pygame.draw.line(self.window, "white", start, end, width)
+        def _draw_towers(self) -> None:
+            for tower in self.towers:
+                tower.draw(self.game_state, self.camera, self.window)
+                for bullet in tower.bullets:
+                    self.camera.draw(self.window, bullet)
 
-    def _draw_towers(self) -> None:
-        for tower in self.towers:
-            tower.draw(self.game_state, self.camera, self.window)
-            for bullet in tower.bullets:
-                self.camera.draw(self.window, bullet)
+        def _draw_enemies(self) -> None:
+            for enemy in self.enemies:
+                self.camera.draw(self.window, enemy)
 
-    def _draw_enemies(self) -> None:
-        for enemy in self.enemies:
-            self.camera.draw(self.window, enemy)
+        def _draw_game_borders(self) -> None:
+            lines = [
+                ((1, 0), (1, 1080), 4),
+                ((1535, 0), (1535, 1080), 4),
+                ((1916, 0), (1916, 1080), 4),
+                ((0, 1), (1920, 1), 4),
+                ((1534, 78), (1920, 78), 4),
+                ((1534, 240), (1920, 240), 4),
+                ((1534, 306), (1917, 306), 4),
+                ((1534, 768), (1920, 768), 4),
+                ((1534, 864), (1920, 864), 4),
+                ((1534, 972), (1920, 972), 4),
+                ((0, 1076), (1920, 1076), 4),
+            ]
+            for start, end, width in lines:
+                pygame.draw.line(self.window, "white", start, end, width)
+
+
+        _draw_tilemap(self)
+        _draw_towers(self)
+        _draw_enemies(self)
+        _draw_game_borders(self)
+
 
     # ── debug ─────────────────────────────────────────────────────────────────
 
     @override
     def draw_debug(self):
-        if not self._is_in_debug_mode:
-            return
+        if not self._is_in_debug_mode: return
+
         debug_info = [
             self.mouse.get_info(),
             self.camera.get_info(),

@@ -2,11 +2,11 @@ import pygame
 from pygame_core.asset_manager import AssetManager
 from pygame_core.panel_manager import PanelManager
 
-from core.stateobject import StateObject
+from pygame_core.unity.state_object import StateObject
 from pygame_core.image import scale as scale_image
 from game_state import GameState, TowerConfig
 from pygame_core.unity.components.transform import Transform
-from text import Text
+from ui.text import Text
 
 
 class GameHUD:
@@ -15,7 +15,7 @@ class GameHUD:
 	             panel_manager: PanelManager) -> None:
 		self._game_state = game_state
 		self._tower_config = tower_config
-		width = window_transform[0]
+		width = window_transform.width
 
 		font        = pygame.font.SysFont("ComicSansMs", 50)
 		dollar_font = pygame.font.SysFont("ComicSansMs", 37)

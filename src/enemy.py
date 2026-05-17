@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from pygame.math import Vector2
 
 from config_loader import load_enemy_stats
-from core.rotateable_object import RotateableObject
+from core.game_object.rotateable_object import RotateableObject
 
 if TYPE_CHECKING:
     from core.protocols import IGameContext
@@ -79,6 +79,4 @@ class Enemy(RotateableObject):
 
     def _face_toward(self, target: Vector2) -> None:
         delta = target - self.position
-        if delta.length_squared() == 0:
-            return
-        self.rotate_to_angle(math.degrees(math.atan2(delta.y, delta.x)))
+        self.rotate_to_delta(delta)

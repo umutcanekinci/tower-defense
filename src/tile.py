@@ -1,5 +1,5 @@
 from core.constants import TILE_SIZE, HALF_TILE
-from core.rotateable_object import RotateableObject
+from core.game_object.rotateable_object import RotateableObject
 
 
 class Tile(RotateableObject):

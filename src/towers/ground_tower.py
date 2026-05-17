@@ -1,7 +1,7 @@
 import pygame
 from pygame.math import Vector2
 
-from core.rotateable_object import RotateableObject
+from core.game_object.rotateable_object import RotateableObject
 from core.math import angle_between_delta
 from game_state import GameState, TowerConfig
 from projectile import MuzzleFlash, Projectile
@@ -51,7 +51,7 @@ class GroundTower(BaseTower):
         if nearest_dist > self.range:
             return
 
-        self.rotate_to_angle(angle_between_delta(distances[nearest_idx]))
+        self.rotate_to_delta(distances[nearest_idx])
 
         if self._is_attack_ready():
             self._shoot(enemies[nearest_idx])

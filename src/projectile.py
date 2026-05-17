@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import pygame
 from pygame.math import Vector2
 
-from core.rotateable_object import RotateableObject
+from core.game_object.rotateable_object import RotateableObject
 from core.math import angle_between_points
 
 if TYPE_CHECKING:

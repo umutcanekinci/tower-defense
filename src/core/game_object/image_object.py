@@ -1,13 +1,8 @@
-from typing import Union
-import os
-import pygame
-from pygame_core.asset_path import ImagePath
+from pygame_core.asset_path import PathLike
 from pygame_core.image import load_image
 from pygame_core.unity.gameobject import GameObject
 from pygame_core.unity.components.sprite_renderer2d import SpriteRenderer2D
 from pygame_core.utils import MouseInteractive
-
-PathLike = Union[str, ImagePath, os.PathLike]
 
 class ImageObject(GameObject, MouseInteractive):
 	def __init__(self, path: PathLike, pos: tuple[int, int],

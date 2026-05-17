@@ -77,6 +77,10 @@ panels:
 
   game:
     objects:
+      right_panel_bg:
+        position: [1500, 0]
+        size: [500, 1080]
+        color: [50, 50, 50]
       money_box:
         position: [1525, 86]
         size: [375, 156]
