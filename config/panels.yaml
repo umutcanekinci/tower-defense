@@ -79,12 +79,37 @@ panels:
     objects:
       right_panel_bg:
         position: [1500, 0]
-        size: [500, 1080]
+        size: [420, 1080]
         color: [50, 50, 50]
+      level_text:
+        parent: right_panel_bg
+        type: text
+        position: [CENTER, 2]
+        text: "Level 1"
+        font: ComicSansMs
+        font_size: 50
+        color: white
       money_box:
-        position: [1525, 86]
+        parent: right_panel_bg
+        position: [CENTER, 86]
         size: [375, 156]
         asset: money_box
+      money_text:
+        parent: right_panel_bg
+        type: text
+        position: [80, 125]
+        text: "0"
+        font: ComicSansMs
+        font_size: 50
+        color: green
+      dollar_text:
+        parent: right_panel_bg
+        type: text
+        position: [310, 132]
+        text: "$"
+        font: ComicSansMs
+        font_size: 37
+        color: green
       live_image:
         position: [1660, 252]
         size: [50, 50]
@@ -108,21 +133,77 @@ panels:
         states:
           lvl2:
             asset: buy_tower_4_lvl2
+      fee_text_bg_1:
+        parent: right_panel_bg
+        position: [64, 479]
+        size: [133, 60]
+        asset: money_box
+      fee_text_bg_2:
+        parent: right_panel_bg
+        position: [255, 479]
+        size: [133, 60]
+        asset: money_box
+      fee_text_bg_3:
+        parent: right_panel_bg
+        position: [64, 707]
+        size: [133, 60]
+        asset: money_box
+      fee_text_bg_4:
+        parent: right_panel_bg
+        position: [255, 707]
+        size: [133, 60]
+        asset: money_box
+      fee_text_1:
+        parent: right_panel_bg
+        type: text
+        position: [77, 494]
+        text: "0 $"
+        font: ComicSansMs
+        font_size: 25
+        color: green
+      fee_text_2:
+        parent: right_panel_bg
+        type: text
+        position: [268, 494]
+        text: "0 $"
+        font: ComicSansMs
+        font_size: 25
+        color: green
+      fee_text_3:
+        parent: right_panel_bg
+        type: text
+        position: [77, 722]
+        text: "0 $"
+        font: ComicSansMs
+        font_size: 25
+        color: green
+      fee_text_4:
+        parent: right_panel_bg
+        type: text
+        position: [268, 722]
+        text: "0 $"
+        font: ComicSansMs
+        font_size: 25
+        color: green
       upgrade_plane_button:
+        parent: right_panel_bg
         extends: btn-sm
-        position: [1547, 876]
+        position: [CENTER, 876]
         size: [338, 88]
       upgrade_plane_button_text:
+        parent: upgrade_plane_button
         extends: menu_text
-        position: [1547, 876]
+        position: [CENTER, CENTER]
         text: "UPGRADE PLANES"
       menu_button:
+        parent: right_panel_bg
         extends: btn-sm
-        position: [1547, 984]
+        position: [CENTER, 984]
         size: [338, 88]
       menu_button_text:
+        parent: menu_button
         extends: menu_text
-        position: [1547, 984]
+        position: [CENTER, CENTER]
         text: "MENU"
       start_pause_button:
         position: [1640, 780]

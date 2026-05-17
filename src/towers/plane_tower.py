@@ -1,7 +1,7 @@
 import pygame
 
-from core.constants import TILE_SIZE
-from game_state import GameState, TowerConfig
+from util.constants import TILE_SIZE
+from domain.game_state import GameState, TowerConfig
 from towers.base_tower import BaseTower
 
 MAP_COLS = 22

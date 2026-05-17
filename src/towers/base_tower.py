@@ -1,10 +1,10 @@
 import pygame
 from pygame.math import Vector2
 
-from core.constants import TILE_SIZE, HALF_TILE
-from core.game_object.rotateable_object import RotateableObject
+from util.constants import TILE_SIZE, HALF_TILE
+from rendering.rotateable_object import RotateableObject
 from pygame_core.unity.state_object import StateObject
-from game_state import GameState, TowerConfig
+from domain.game_state import GameState, TowerConfig
 
 UPGRADE_BTN_OFFSET = Vector2(-72, -74)
 SELL_BTN_OFFSET    = Vector2( 40, -54)

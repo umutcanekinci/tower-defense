@@ -1,6 +1,6 @@
 import pygame
 
-from core.text_object import TextObject
+from ui.text_object import TextObject
 from pygame_core.font import load_font
 from pygame_core.unity.components.transform import Transform
 from pygame_core.unity.state_object import StateObject, HoverableStateObject
@@ -10,7 +10,7 @@ def make_factory(assets):
     def make_gui_object(cfg: dict, parent: Transform) -> StateObject:
         pos          = cfg["position"]
         size         = tuple(cfg["size"]) if cfg["size"] != "WINDOW" else parent
-        asset        = cfg.get("asset", None)
+        asset        = cfg.get("asset")
         hover        = cfg.get("hover")
         extra_states = cfg.get("states", {})
         nine_slice   = cfg.get("nine_slice", 0)

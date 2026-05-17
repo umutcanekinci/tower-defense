@@ -12,8 +12,6 @@ images:
   # ── Menu buttons (normal + hover pairs) ───────────────────────────────
   btn:               {folder: gui/Green/Default, name: button_rectangle_depth_flat}
   btn_hover:         {folder: gui/Red/Default, name: button_rectangle_depth_flat}
-  btn_back:          {folder: button, name: goBack}
-  btn_back_hover:    {folder: button, name: goBack2}
 
   # ── In-game control buttons ───────────────────────────────────────────
   btn_start:         {folder: gui/Green/Double, name: arrow_basic_e}
@@ -66,8 +64,8 @@ images:
   enemy_4:           {folder: enemy, name: E4}
 
   # ── Tile overlays (placement preview) ─────────────────────────────────
-  tile_block:        {folder: tiles, name: block}
-  tile_enable:       {folder: tiles, name: enable}
+  tile_block:        {folder: others, name: block}
+  tile_enable:       {folder: others, name: enable}
 
   # ── Life counter digits (0-9) ─────────────────────────────────────────
   digit_0:           {folder: numbers, name: 0}
@@ -80,22 +78,6 @@ images:
   digit_7:           {folder: numbers, name: 7}
   digit_8:           {folder: numbers, name: 8}
   digit_9:           {folder: numbers, name: 9}
-
-  # Base tiles
-  tile_grass:        {folder: tiles, name: grass}
-  tile_clay:         {folder: tiles, name: clay}
-  tile_stone:        {folder: tiles, name: stone}
-  tile_sand:         {folder: tiles, name: sand}
-
-  # Decorations
-  tile_decoration_1: {folder: tiles, name: B1}
-  tile_decoration_2: {folder: tiles, name: B2}
-  tile_decoration_3: {folder: tiles, name: B3}
-  tile_decoration_4: {folder: tiles, name: B4}
-  tile_decoration_5: {folder: tiles, name: B5}
-  tile_decoration_6: {folder: tiles, name: B6}
-  tile_decoration_7: {folder: tiles, name: B7}
-  tile_decoration_8: {folder: tiles, name: B8}
 
   btn_sell: { folder: button, name: sell }
   btn_upgrade: { folder: button, name: upgrade }

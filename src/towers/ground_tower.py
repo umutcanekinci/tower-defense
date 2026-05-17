@@ -1,10 +1,9 @@
 import pygame
 from pygame.math import Vector2
 
-from core.game_object.rotateable_object import RotateableObject
-from core.math import angle_between_delta
-from game_state import GameState, TowerConfig
-from projectile import MuzzleFlash, Projectile
+from rendering.rotateable_object import RotateableObject
+from domain.game_state import GameState, TowerConfig
+from gameplay.combat.projectile import MuzzleFlash, Projectile
 from towers.base_tower import BaseTower
 
 BARREL_FORWARD = 26  # px from tower center to barrel tip along aim direction
