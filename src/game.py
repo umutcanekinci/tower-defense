@@ -11,15 +11,16 @@ from pygame_core.panel_loader_ext import PanelLoaderExt
 import panel_factory
 from config_loader import load_tower_config
 from core.camera import Camera
+from core.constants import TILE_SIZE
 from core.debug import Debug
 from core.menu_background import MenuBackground
-from core.music_manager import SoundManager
 from core.splash_screen import SplashScreen
+from pygame_core.unity.game_audio import GameAudio
 from enemy import Enemy
 from game_hud import GameHUD
 from game_state import GameState
 from pygame_core.unity.components.transform import Transform
-from tile import TILEMAP, Tilemap
+from tiled_map import TiledMap
 from tower_placement import TowerPlacementController
 from towers import BaseTower
 from wave_manager import WaveManager
@@ -35,17 +36,21 @@ class Game(Application):
     # ── construction ──────────────────────────────────────────────────────────
 
     def __init__(self):
-        super().__init__((1920, 1080), "TOWER DEFENSE", 165, Mouse(64))
+        super().__init__((1920, 1080), "TOWER DEFENSE", 165, Mouse(TILE_SIZE))
 
         self.game_state   = GameState(start_money=10_000, start_lives=10)
         self.tower_config = load_tower_config()
-        self.camera       = Camera(Rect((0, 0), (1536, self.size[1])), 22 * 64, 16 * 64)
 
         self.assets = AssetManager()
         self.assets.load_manifest("config/assets.yaml")
         missing = self.assets.validate()
         if missing:
             raise RuntimeError("Missing assets:\n" + "\n".join(missing))
+
+        self.tilemap = TiledMap("assets/tiled_project/tiled_tilemap.tmx")
+        #self.tilemap = TiledMap("assets/tiled_project_64x64/tiled_tilemap_64x64.tmx")
+        self.camera  = Camera(Rect((0, 0), self.size), #(1536, self.size[1])),
+        self.tilemap.map_width, self.tilemap.map_height)
 
         self.panel_manager = PanelManager(starting_tab="main_menu")
         window_transform = Transform((0, 0), self.size)
@@ -56,10 +61,8 @@ class Game(Application):
 
         self.towers:       list[BaseTower] = []
         self.enemies:      list[Enemy]     = []
-        self.level         = TILEMAP
-        self.tilemap       = Tilemap(TILEMAP, self.assets)
         self.wave_manager: WaveManager | None = None
-        self.sound_manager = SoundManager(str(self.assets.sound_path("bg_music")))
+        self.audio = GameAudio(str(self.assets.sound_path("bg_music")))
 
         self.hud = GameHUD(self.assets, window_transform, self.game_state, self.tower_config, self.panel_manager)
 
@@ -75,11 +78,11 @@ class Game(Application):
 
     @property
     def map_width(self) -> int:
-        return len(self.level[0]) * 64
+        return self.tilemap.map_width
 
     @property
     def map_height(self) -> int:
-        return len(self.level) * 64
+        return self.tilemap.map_height
 
     def increase_money(self, amount: int) -> None:
         self.game_state.increase_money(amount)
@@ -91,18 +94,16 @@ class Game(Application):
             ["assets/images/others/pygame_logo.png", "assets/images/others/kenney_logo.png"],
             fade_ms=1500, hold_ms=1000,
         ).run(self.window, self.clock, self._fps)
-        self.tilemap.create_tiles()
         self._init_wave_manager()
-        self.menu_bg = MenuBackground(
-            self.tilemap, len(self.level[0]), len(self.level), self.size)
+        self.menu_bg = MenuBackground(self.tilemap.pre_render(), self.size)
         self.menu_overlay = pygame.Surface(self.size, pygame.SRCALPHA)
         self.menu_overlay.fill((0, 0, 0, 120))
         super().run()
 
     def _init_wave_manager(self) -> None:
-        spawn_col, spawn_row = self.tilemap.get_spawn_tile()
-        assert spawn_col is not None and spawn_row is not None, "No spawn tile found in level data"
-        self.wave_manager = WaveManager(spawn_x=spawn_col * 64 - 32, spawn_y=spawn_row * 64)
+        if not self.tilemap.waypoints:
+            raise RuntimeError("TMX has no Paths/polyline; enemies have nowhere to go")
+        self.wave_manager = WaveManager(self.tilemap.waypoints, self.assets)
 
     # ── update ────────────────────────────────────────────────────────────────
 
@@ -133,13 +134,13 @@ class Game(Application):
         if self.wave_manager:
             self.wave_manager.update(self.enemies, self.game_state)
         for enemy in self.enemies:
-            if enemy.position.x >= self.map_width - 32:
+            if enemy.reached_end():
                 self.enemies.remove(enemy)
                 self.game_state.lives = max(0, self.game_state.lives - enemy.damage)
                 if self.game_state.lives == 0:
                     self.exit()
             elif self.game_state.is_started:
-                enemy.move(self.level, self.game_state.speed)
+                enemy.move(self.game_state.speed)
 
     # ── event handling ────────────────────────────────────────────────────────
 
@@ -152,7 +153,6 @@ class Game(Application):
         elif self.panel_manager.current_panel == "game":
             self._handle_game_event(event)
         self.panel_manager.handle_event(event, self.mouse.position)
-        self.sound_manager.handle_event(event)
 
     def _handle_main_menu_event(self, event) -> None:
         objects = self.panel_manager["main_menu"]
@@ -173,18 +173,19 @@ class Game(Application):
             self._toggle_music()
 
     def _handle_game_event(self, event) -> None:
-        if self.panel_manager["game"]["menu"].is_clicked(event, self.mouse.position):
+        if self.panel_manager["game"]["menu_button"].is_clicked(event, self.mouse.position):
             self.panel_manager.current_panel = "main_menu"
             self.game_state.is_started = False
             return
+        self.camera.handle_event(event, self.mouse.position)
         self.tower_controller.handle_event(event, self.mouse.position)
-        self._handle_upgrade_planes(event)
+        self._handle_upgrade_plane_button(event)
         self._handle_start_pause(event)
         self._handle_x2(event)
 
-    def _handle_upgrade_planes(self, event) -> None:
+    def _handle_upgrade_plane_button(self, event) -> None:
         panel = self.panel_manager["game"]
-        if not panel["upgrade_planes"].is_clicked(event, self.mouse.position): return
+        if not panel["upgrade_plane_button"].is_clicked(event, self.mouse.position): return
         if self.game_state.money >= 5000 and self.game_state.plane_level == 1:
             self.game_state.decrease_money(5000)
             panel["buy_tower_4"].set_state("lvl2")
@@ -207,8 +208,8 @@ class Game(Application):
             x2.set_state(None)
 
     def _toggle_music(self) -> None:
-        self.sound_manager.toggle_paused()
-        state = "paused" if self.sound_manager.is_paused else None
+        self.audio.toggle_music()
+        state = "paused" if self.audio.is_music_paused else None
         for tab in ("main_menu", "contact"):
             self.panel_manager[tab]["music_toggle"].set_state(state)
 
@@ -230,7 +231,7 @@ class Game(Application):
         self._draw_enemies()
         self._draw_game_borders()
         self.hud.draw(self.window)
-        self.tower_controller.draw(self.window, self.level, self.mouse.position)
+        self.tower_controller.draw(self.window, self.tilemap.buildable_grid, self.mouse.position)
 
     def _draw_game_borders(self) -> None:
         lines = [

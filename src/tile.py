@@ -1,52 +1,6 @@
-import pygame
-
+from core.constants import TILE_SIZE, HALF_TILE
 from core.rotateable_object import RotateableObject
 
-TILEMAP = [
-    ["0",    "0",    "0",    "0",    "0",    "0+B1", "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0+B8", "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0"   ],
-    ["0",    "0",    "0",    "0",    "0",    "0",    "0+B2", "0",    "0",    "0+B7", "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0"   ],
-    ["0",    "0",    "1R",   "1R",   "1R",   "1D",   "0",    "0",    "1R",   "1R",   "1R",   "1R",   "1R",   "1R",   "1R",   "1R",   "1R",   "1E",   "0",    "0",    "0",    "0"   ],
-    ["0",    "0",    "1U",   "0",    "0",    "1D",   "0",    "0",    "1U",   "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0"   ],
-    ["0",    "0",    "1U",   "0",    "0",    "2D",   "3",    "3",    "2U",   "2L",   "2L",   "2L",   "2L",   "2L",   "2L",   "2L",   "0",    "0",    "0",    "0",    "0",    "0"   ],
-    ["0",    "0",    "1U",   "0",    "0",    "2D",   "3",    "3",    "3",    "3",    "3",    "3",    "3",    "3",    "3",    "2U",   "0",    "0",    "0",    "0",    "0",    "0"   ],
-    ["0+B2", "0",    "1U",   "0",    "0",    "2D",   "3",    "3",    "3",    "3",    "3",    "3",    "3",    "3",    "3",    "2U",   "0",    "0",    "0",    "0",    "0",    "0"   ],
-    ["0",    "0",    "1U",   "0",    "0",    "2D",   "3",    "3",    "3",    "3",    "3",    "3",    "3",    "3",    "3",    "2U",   "0",    "0",    "0",    "0",    "0",    "0"   ],
-    ["0",    "0",    "1U",   "0",    "0",    "2D",   "3",    "3",    "3",    "3",    "3",    "3",    "3",    "3",    "3",    "2U",   "0",    "0",    "0",    "0",    "0",    "0"   ],
-    ["0+B4", "0",    "1U",   "0",    "0",    "2D",   "3",    "3",    "3",    "3",    "3",    "3",    "3",    "3",    "3",    "2U",   "0",    "0",    "0",    "0",    "0",    "0"   ],
-    ["0",    "0",    "1U",   "0",    "0",    "2D",   "3",    "3",    "3",    "3",    "3",    "3",    "3",    "3",    "3",    "2U",   "0",    "0",    "0",    "0",    "0",    "0"   ],
-    ["1B",   "1R",   "1U",   "0",    "0",    "2R",   "2R",   "2R",   "2R",   "2R",   "2R",   "2R",   "2R",   "2R",   "2R",   "2U",   "0",    "0",    "0",    "0",    "0",    "0"   ],
-    ["0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0+B5", "0",    "0",    "0",    "0+B7", "0",    "0",    "0+B1", "0",    "0",    "0",    "0",    "0",    "0"   ],
-    ["0",    "0+B6", "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0"   ],
-    ["0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0"   ],
-    ["0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0",    "0"   ],
-]
-
-class Tilemap:
-    def __init__(self, level_data, assets) -> None:
-        self.tiles = level_data
-        self.assets = assets
-
-    def init(self, ) -> None:
-        self.create_tiles()
-
-    def create_tiles(self, ) -> None:
-        level_data = self.tiles
-        self.tiles: list[Tile] = []
-        for row_idx, row in enumerate(level_data):
-            for col_idx, tile_type in enumerate(row):
-                self.tiles.append(Tile(tile_type, col_idx, row_idx, self.assets))
-
-    def get_spawn_tile(self) -> list:
-        assert self.tiles is not None, "Tiles have not been initialized. Call init() before get_spawn_tile()."
-
-        for tile in self.tiles:
-            if tile.is_enemy_spawn_tile():
-                return [tile.col, tile.row]
-        return [None, None]
-
-    def draw(self, surface: pygame.Surface, camera) -> None:
-        for tile in self.tiles:
-            tile.draw(surface, camera)
 
 class Tile(RotateableObject):
     _TILE_KEYS = {
@@ -58,7 +12,7 @@ class Tile(RotateableObject):
 
     def __init__(self, tile_type: str, col: int, row: int, assets) -> None:
         base_image = assets.image_path(self._TILE_KEYS[tile_type[0]])
-        super().__init__(base_image, (col * 64 + 32, row * 64 + 32))
+        super().__init__(base_image, (col * TILE_SIZE + HALF_TILE, row * TILE_SIZE + HALF_TILE))
 
         self.type = tile_type
         self.row = row

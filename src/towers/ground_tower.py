@@ -2,11 +2,9 @@ import pygame
 from pygame.math import Vector2
 
 from core.rotateable_object import RotateableObject
-from core.image import load_image
 from core.math import angle_between_delta
 from game_state import GameState, TowerConfig
 from projectile import MuzzleFlash, Projectile
-from pygame_core.asset_path import ImagePath
 from towers.base_tower import BaseTower
 
 BARREL_FORWARD = 26  # px from tower center to barrel tip along aim direction
@@ -24,26 +22,19 @@ class GroundTower(BaseTower):
     def __init__(self, tower_type: int, row: int, col: int, config: TowerConfig, assets) -> None:
         super().__init__(tower_type, row, col, config, assets)
         self.platform = RotateableObject(
-            str(ImagePath("tower" + str(tower_type) + "platform1", folder="towers")),
+            assets.image_path(f"tower_{tower_type}_platform"),
             self.position,
         )
 
     def update(self, game_state: GameState, enemies: list) -> None:
         self.now = pygame.time.get_ticks()
-
-        if self.tower_type == 2:
-            self.image = load_image("towers/tower" + str(self.tower_type) + "L" + str(self.level) + "_")
-            if self.now - self.last_reload_time > self.speed - 1000:
-                self.image = load_image("towers/tower" + str(self.tower_type) + "L" + str(self.level))
-
         self.work(enemies, game_state.is_started)
 
     def draw(self, game_state: GameState, camera, surface: pygame.Surface) -> None:
-        cam_offset = camera.rect.topleft
         camera.draw(surface, self.platform)
 
         if game_state.selected_tower is self:
-            self.draw_range(surface, cam_offset)
+            self.draw_range(surface, camera)
             self.draw_selected_ui(surface, game_state, camera)
 
         camera.draw(surface, self)

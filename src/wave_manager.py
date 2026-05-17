@@ -1,4 +1,5 @@
 import pygame
+from pygame.math import Vector2
 
 from config_loader import load_wave_compositions
 from enemy import Enemy
@@ -13,9 +14,11 @@ class WaveManager:
     SPAWN_INTERVAL_MS  = 1000
     LEVEL_END_DELAY_MS = 5000
 
-    def __init__(self, spawn_x: int, spawn_y: int) -> None:
-        self._spawn_x = spawn_x
-        self._spawn_y = spawn_y
+    def __init__(self, waypoints: list[Vector2], assets) -> None:
+        if not waypoints:
+            raise ValueError("WaveManager needs a non-empty waypoints list")
+        self._waypoints = waypoints
+        self._assets    = assets
         self._count_all_time:    int       = 0
         self._last_spawn_time:   int       = 0
         self._level_finish_time: int | None = None
@@ -56,8 +59,8 @@ class WaveManager:
                     self._count_all_time,
                     enemy_type,
                     game_state.level,
-                    self._spawn_x,
-                    self._spawn_y,
+                    self._waypoints,
+                    self._assets,
                 ))
                 self._last_spawn_time = now
                 if self._queue_index == len(self._spawn_queue):

@@ -1,20 +1,14 @@
 import pygame
 
-from core.image import load_image
+from core.constants import TILE_SIZE
 from game_state import GameState, TowerConfig
 from towers.base_tower import BaseTower
 
+MAP_COLS = 22
+
 
 class PlaneTower(BaseTower):
-    """Plane that flies across the map — does not shoot or occupy a tile.
-
-    Because planes have a completely different lifecycle from ground towers, they
-    are a separate class rather than a conditional branch inside Tower.  This
-    removes all the `if self.is_plane()` guards that broke Liskov substitution
-    in the original design.
-    """
-
-    REMOVE_X = 22 * 64  # right edge of the tile map
+    REMOVE_X = MAP_COLS * TILE_SIZE
 
     def __init__(self, tower_type: int, row: int, col: int, config: TowerConfig, assets) -> None:
         super().__init__(tower_type, row, col, config, assets)
@@ -23,18 +17,19 @@ class PlaneTower(BaseTower):
         new_level = game_state.plane_level
         if new_level != self.level:
             self.level = new_level
-            self.load_image(self._assets.image_path(f"tower_{self.tower_type}_lvl{self.level}"))
+            self.load(self.assets.image_path(f"tower_{self.tower_type}_lvl{self.level}"))
         if game_state.is_started and self.position.x <= self.REMOVE_X:
             self.position.x += self.speed
             self.rect.center = self.position
 
     def draw(self, game_state: GameState, camera, surface: pygame.Surface) -> None:
-        ox, oy = camera.rect.topleft
-        shadow = load_image("towers/tower" + str(self.tower_type) + "shadow" + str(self.level))
-        surface.blit(shadow, (self.position.x - 20 + ox, self.position.y + 20 + oy))
+        shadow = self.assets.get_image(f"tower_{self.tower_type}_shadow_lvl{self.level}")
+        scaled_shadow = camera.scale_image(shadow)
+        shadow_screen = camera.world_to_screen((self.position.x - 20, self.position.y + 20))
+        surface.blit(scaled_shadow, shadow_screen)
 
         if game_state.selected_tower is self:
-            self.draw_range(surface, camera.rect.topleft)
+            self.draw_range(surface, camera)
 
         camera.draw(surface, self)
 

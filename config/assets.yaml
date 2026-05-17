@@ -10,17 +10,13 @@ images:
   heart:             {folder: others, name: heart}
 
   # ── Menu buttons (normal + hover pairs) ───────────────────────────────
-  btn:          {folder: ui, name: button_grey}
-  btn_hover:    {folder: ui, name: button_red}
+  btn:               {folder: gui/Green/Default, name: button_rectangle_depth_flat}
+  btn_hover:         {folder: gui/Red/Default, name: button_rectangle_depth_flat}
   btn_back:          {folder: button, name: goBack}
   btn_back_hover:    {folder: button, name: goBack2}
 
   # ── In-game control buttons ───────────────────────────────────────────
-  btn_menu:          {folder: button, name: menu}
-  btn_menu_hover:    {folder: button, name: menu2}
-  btn_upgrade:       {folder: button, name: upgrade_planes}
-  btn_upgrade_hover: {folder: button, name: upgrade_planes2}
-  btn_start:         {folder: button, name: start}
+  btn_start:         {folder: gui/Green/Double, name: arrow_basic_e}
   btn_pause:         {folder: button, name: pause}
   btn_2x:            {folder: button, name: 2x}
   btn_2x_active:     {folder: button, name: 2x2}
@@ -45,6 +41,29 @@ images:
   tower_3_lvl1:      {folder: towers, name: tower3L1}
   tower_4_lvl1:      {folder: towers, name: tower4L1}
   tower_4_lvl2:      {folder: towers, name: tower4L2}
+
+  # ── Tower platforms (base under the rotating turret) ──────────────────
+  tower_1_platform:  {folder: towers, name: tower1platform1}
+  tower_2_platform:  {folder: towers, name: tower2platform1}
+  tower_3_platform:  {folder: towers, name: tower3platform1}
+
+  # ── Plane shadows ─────────────────────────────────────────────────────
+  tower_4_shadow_lvl1: {folder: towers, name: tower4shadow1}
+  tower_4_shadow_lvl2: {folder: towers, name: tower4shadow2}
+
+  # ── Bullets / muzzle flashes ──────────────────────────────────────────
+  bullet_1_lvl1:     {folder: bullets, name: 1L1}
+  bullet_2_lvl1:     {folder: bullets, name: 2L1}
+  bullet_2_lvl2:     {folder: bullets, name: 2L2}
+  bullet_2_lvl3:     {folder: bullets, name: 2L3}
+  bullet_3_lvl1:     {folder: bullets, name: 3L1}
+  bullet_3_lvl2:     {folder: bullets, name: 3L2}
+
+  # ── Enemy sprites ─────────────────────────────────────────────────────
+  enemy_1:           {folder: enemy, name: E1}
+  enemy_2:           {folder: enemy, name: E2}
+  enemy_3:           {folder: enemy, name: E3}
+  enemy_4:           {folder: enemy, name: E4}
 
   # ── Tile overlays (placement preview) ─────────────────────────────────
   tile_block:        {folder: tiles, name: block}

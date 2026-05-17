@@ -2,10 +2,9 @@ import pygame
 from pygame_core.asset_manager import AssetManager
 from pygame_core.panel_manager import PanelManager
 
-from core.guiobject import GuiObject
-from core.image import scale_surface
+from core.stateobject import StateObject
+from pygame_core.image import scale as scale_image
 from game_state import GameState, TowerConfig
-from pygame_core.unity.components.sprite_renderer2d import SpriteRenderer2D
 from pygame_core.unity.components.transform import Transform
 from text import Text
 
@@ -23,10 +22,10 @@ class GameHUD:
 		fee_font    = pygame.font.SysFont("ComicSansMs", 25)
 
 		self.live_texts = [
-			GuiObject(window_transform, (1700, 234), (80, 80), assets.image_path(f"digit_{i}"))
+			StateObject(window_transform, (1700, 234), (80, 80), assets.image_path(f"digit_{i}"))
 			for i in range(game_state.lives)
 		]
-		self.live_text0 = GuiObject(window_transform, (1740, 234), (80, 80), assets.image_path("digit_0"))
+		self.live_text0 = StateObject(window_transform, (1740, 234), (80, 80), assets.image_path("digit_0"))
 
 		self.money_text  = Text(str(game_state.money), font,        "green", (width - 340, 125))
 		self.level_text  = Text("Level 1",             font,        "white", (width - 287, 2))
@@ -37,8 +36,8 @@ class GameHUD:
 			Text(str(tower_config.prices[i][0]) + " $", fee_font, "green", pos)
 			for i, pos in enumerate(_fee_positions)
 		]
-		self.fee_text_background = scale_surface(
-			panel_manager["game"]["money_box"].images[None].get_component(SpriteRenderer2D).image, (133, 60)
+		self.fee_text_background = scale_image(
+			panel_manager["game"]["money_box"].images[None], (133, 60)
 		)
 
 		game_state.add_money_listener(self._on_money_changed)

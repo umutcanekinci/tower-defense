@@ -1,11 +1,10 @@
-import enum
+import math
 from typing import TYPE_CHECKING
 
+from pygame.math import Vector2
+
 from config_loader import load_enemy_stats
-from core.image import rotate_surface
 from core.rotateable_object import RotateableObject
-from pygame_core.asset_path import ImagePath
-from unity.components.sprite_renderer2d import SpriteRenderer2D
 
 if TYPE_CHECKING:
     from core.protocols import IGameContext
@@ -14,21 +13,27 @@ _BASE_STATS: dict[int, tuple[int, float, int, int]] = load_enemy_stats()
 
 
 class Enemy(RotateableObject):
-    class Direction(enum.Enum):
-        Right = "R"
-        Up    = "U"
-        Left  = "L"
-        Down  = "D"
-        Back  = "B"
-        Enter = "E"
+    """Walks a polyline of world-space waypoints.
 
-    def __init__(self, id: int, enemy_type: int, level: int, x: int, y: int) -> None:
-        super().__init__(ImagePath(f"E{enemy_type}", folder="enemy"), (x + 32, y + 32))
+    Spawn position is `waypoints[0]`; the enemy advances to each subsequent
+    waypoint at `mov_speed * game_speed` pixels per frame, then halts past
+    the last vertex (caller checks `reached_end()` to deduct a life).
+    """
+
+    def __init__(self, id: int, enemy_type: int, level: int,
+                 waypoints: list[Vector2], assets) -> None:
+        if not waypoints:
+            raise ValueError("Enemy requires at least one waypoint")
+        spawn = waypoints[0]
+        super().__init__(assets.image_path(f"enemy_{enemy_type}"), (spawn.x, spawn.y))
         self.id          = id
         self.enemy_type  = enemy_type
         self.is_walking  = True
-        self.direction   = self.Direction.Right
+        self.waypoints   = waypoints
+        self.waypoint_index = 1  # index of the *next* waypoint to walk to
         self._calculate_stats(enemy_type, level)
+        if len(waypoints) > 1:
+            self._face_toward(waypoints[1])
 
     def _calculate_stats(self, enemy_type: int, level: int) -> None:
         base_hp, speed, kill_money, damage = _BASE_STATS[enemy_type]
@@ -51,67 +56,29 @@ class Enemy(RotateableObject):
             self.destroy(ctx)
             ctx.increase_money(self.killMoney)
 
-    def get_column(self) -> int:
-        return (self.position.x // 64) + 1
+    def reached_end(self) -> bool:
+        return self.waypoint_index >= len(self.waypoints)
 
-    def get_row(self) -> int:
-        return (self.position.y // 64) + 1
+    def move(self, game_speed: int) -> None:
+        if self.reached_end():
+            return
 
-    def move(self, tilemap: list, game_speed: int) -> None:
-        self.row_number = 0
-        self._rotate(tilemap)
+        target = self.waypoints[self.waypoint_index]
+        step   = self.mov_speed * game_speed
+        delta  = target - self.position
 
-        if self.direction == self.Direction.Right:
-            self.position.x += self.mov_speed * game_speed
-        elif self.direction == self.Direction.Up:
-            self.position.y -= self.mov_speed * game_speed
-        elif self.direction == self.Direction.Left:
-            self.position.x -= self.mov_speed * game_speed
-        elif self.direction == self.Direction.Down:
-            self.position.y += self.mov_speed * game_speed
-        elif self.direction in (self.Direction.Back, self.Direction.Enter):
-            self.position.x -= self.mov_speed * game_speed
+        if delta.length() <= step:
+            self.position = Vector2(target)
+            self.waypoint_index += 1
+            if not self.reached_end():
+                self._face_toward(self.waypoints[self.waypoint_index])
+        else:
+            self.position += delta.normalize() * step
 
         self.rect.center = self.position
 
-    def _rotate(self, tilemap: list) -> None:
-        for row in tilemap:
-            self.row_number   += 1
-            self.column_number = 0
-            for cell in row:
-                self.column_number += 1
-                if not (
-                    len(cell) >= 2
-                    and self.column_number == self.get_column()
-                    and self.row_number    == self.get_row()
-                    and (self.position.x - 32) % 64 == 0
-                    and (self.position.y - 32) % 64 == 0
-                ):
-                    continue
-
-                new_dir = cell[1]
-                renderer = self.get_component(SpriteRenderer2D)
-                if new_dir == "R":
-                    if self.direction == self.Direction.Up:
-                        renderer.image = rotate_surface(renderer.image, -90)
-                    elif self.direction == self.Direction.Down:
-                        renderer.image = rotate_surface(renderer.image, +90)
-                    self.direction = self.Direction.Right
-                elif new_dir == "U":
-                    if self.direction == self.Direction.Right:
-                        renderer.image = rotate_surface(renderer.image, +90)
-                    elif self.direction == self.Direction.Left:
-                        renderer.image = rotate_surface(renderer.image, -90)
-                    self.direction = self.Direction.Up
-                elif new_dir == "L":
-                    if self.direction == self.Direction.Up:
-                        renderer.image = rotate_surface(renderer.image, +90)
-                    elif self.direction == self.Direction.Down:
-                        renderer.image = rotate_surface(renderer.image, -90)
-                    self.direction = self.Direction.Left
-                elif new_dir == "D":
-                    if self.direction == self.Direction.Right:
-                        renderer.image = rotate_surface(renderer.image, -90)
-                    elif self.direction == self.Direction.Left:
-                        renderer.image = rotate_surface(renderer.image, +90)
-                    self.direction = self.Direction.Down
+    def _face_toward(self, target: Vector2) -> None:
+        delta = target - self.position
+        if delta.length_squared() == 0:
+            return
+        self.rotate_to_angle(math.degrees(math.atan2(delta.y, delta.x)))

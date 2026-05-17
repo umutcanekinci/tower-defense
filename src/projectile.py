@@ -5,7 +5,6 @@ from pygame.math import Vector2
 
 from core.rotateable_object import RotateableObject
 from core.math import angle_between_points
-from pygame_core.asset_path import ImagePath
 
 if TYPE_CHECKING:
     from core.protocols import IGameContext
@@ -17,7 +16,7 @@ class Projectile(RotateableObject):
 
     def __init__(self, target, tower) -> None:
         super().__init__(
-            ImagePath(str(tower.tower_type) + "L" + str(tower.level), folder="bullets"),
+            tower.assets.image_path(f"bullet_{tower.tower_type}_lvl{tower.level}"),
             tower.position,
         )
         self.tower_type = tower.tower_type
@@ -81,7 +80,7 @@ class MuzzleFlash(RotateableObject):
 
     def __init__(self, target, tower, pos: Vector2, deals_damage: bool = True) -> None:
         super().__init__(
-            ImagePath(str(tower.tower_type) + "L" + str(tower.level), folder="bullets"),
+            tower.assets.image_path(f"bullet_{tower.tower_type}_lvl{tower.level}"),
             pos,
         )
         self.tower         = tower

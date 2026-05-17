@@ -1,16 +1,43 @@
 {
-    "activeFile": "tiled_tilemap.tmx",
+    "activeFile": "tiled_tileset.tsx",
     "expandedProjectPaths": [
         "."
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
+        "../tiled_project_64x64/tiled_tilemap.tmx": {
+            "scale": 0.28203125,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1022.9362880886428,
+                "y": 613.4072022160666
+            }
+        },
+        "../tiled_project_64x64/tiled_tilemap_64x64.tmx": {
+            "expandedObjectLayers": [
+                12,
+                13
+            ],
+            "scale": 0.25,
+            "selectedLayer": 11,
+            "viewCenter": {
+                "x": 1206,
+                "y": 728
+            }
+        },
+        "../tiled_project_64x64/tiled_tileset_64x64.tsx": {
+            "scaleInDock": 1
+        },
         "tiled_tilemap.tmx": {
-            "scale": 0.125,
+            "expandedObjectLayers": [
+                14,
+                15
+            ],
+            "scale": 0.33,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 6172,
-                "y": 4096
+                "x": 1333.3333333333333,
+                "y": 730.3030303030303
             }
         },
         "tiled_tilemap_64x64.tmx": {
@@ -23,7 +50,7 @@
         },
         "tiled_tileset.tsx": {
             "scaleInDock": 0.5,
-            "scaleInEditor": 0.5
+            "scaleInEditor": 0.75
         },
         "tiled_tileset_64x64.tsx": {
             "scaleInDock": 1
@@ -36,13 +63,15 @@
     "map.tileHeight": 128,
     "map.tileWidth": 128,
     "openFiles": [
-        "tiled_tilemap.tmx",
-        "tiled_tileset.tsx"
+        "tiled_tileset.tsx",
+        "tiled_tilemap.tmx"
     ],
     "project": "tiled_project.tiled-project",
     "recentFiles": [
-        "tiled_tileset.tsx",
         "tiled_tilemap.tmx",
+        "tiled_tileset.tsx",
+        "../tiled_project_64x64/tiled_tilemap.tmx",
+        "../tiled_project_64x64/tiled_tilemap_64x64.tmx",
         "tiled_tilemap_64x64.tmx"
     ],
     "tileset.lastUsedFormat": "tsx",

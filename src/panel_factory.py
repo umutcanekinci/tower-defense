@@ -1,12 +1,12 @@
 import pygame
 
-from core.guiobject import GuiObject, HoverableGuiObject
+from core.stateobject import StateObject, HoverableGuiObject
 from core.text_object import TextObject
 from pygame_core.unity.components.transform import Transform
 
 
 def make_factory(assets):
-    def make_gui_object(cfg: dict, parent: Transform) -> GuiObject:
+    def make_gui_object(cfg: dict, parent: Transform) -> StateObject:
         pos          = cfg["position"]
         size         = tuple(cfg["size"]) if cfg["size"] != "WINDOW" else parent
         asset        = cfg["asset"]
@@ -21,7 +21,7 @@ def make_factory(assets):
                 state_hover = assets.image_path(state_cfg["hover"]) if isinstance(state_cfg.get("hover"), str) else state_cfg.get("hover")
                 obj.add_state(state_key, state_asset, state_hover)
             return obj
-        return GuiObject(parent=parent, pos=pos, size=size, image_path=asset, nine_slice=nine_slice)
+        return StateObject(parent=parent, pos=pos, size=size, image_path=asset, nine_slice=nine_slice)
     return make_gui_object
 
 

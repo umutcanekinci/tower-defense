@@ -1,21 +1,23 @@
 from typing import override
 import pygame
 from pygame.math import Vector2
-from core.image import load_image
-from core.guiobject import ImageObject
+
+from core.game_object.image_object import ImageObject, PathLike
+from pygame_core.asset_path import ImagePath
 from pygame_core.unity.components.sprite_renderer2d import SpriteRenderer2D
 
 
 class RotateableObject(ImageObject):
-	def __init__(self, image_path: str, pos: Vector2):
-		ImageObject.__init__(self, image_path, pos)
-		self.is_rotated = False
-		self.position = Vector2(pos)
+	def __init__(self, image_path: ImagePath, pos: Vector2):
+		self.position = Vector2(pos)  # must precede super() — ImageObject.__init__ triggers self.load(), which reads self.position
+		super().__init__(image_path, pos)
 		self.rect.center = pos
+		self.rotated_image = None
+		self.is_rotated = False
 
-	def load_image(self, image_path: str) -> None:
-		self.image = load_image(image_path)
-		self.rect.size =  self.image.get_size()
+	@override
+	def load(self, path: PathLike, size: tuple[int, int] = (0, 0), nine_slice: int = 0) -> None:
+		super().load(path, size, nine_slice)
 		self.rect.center = self.position
 		self.is_rotated = False
 

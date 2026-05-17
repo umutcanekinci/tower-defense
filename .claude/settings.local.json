@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(dir /s /b *.py)",
+      "Bash(cat sys.path.txt)",
+      "Bash(type \"C:\\\\Users\\\\user\\\\PycharmProjects\\\\tower-defense\\\\.python-version\")",
+      "Bash(type \".venv\\\\pyvenv.cfg\")",
+      "Bash(type \"conftest.py\")",
+      "Bash(type \"sitecustomize.py\")",
+      "Bash(dir /b \"C:\\\\Users\\\\user\\\\PycharmProjects\\\\tower-defense\\\\.venv\\\\Lib\\\\site-packages\")",
+      "Bash(findstr /v \"^pip\\\\|^_distutils\\\\|^pkg_resources\\\\|^setuptools\\\\|^_virtualenv\\\\|^__pycache__\")"
+    ]
+  }
+}

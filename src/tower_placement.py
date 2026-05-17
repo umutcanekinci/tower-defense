@@ -3,6 +3,7 @@ from pygame_core.asset_manager import AssetManager
 from pygame_core.panel_manager import PanelManager
 
 from core.camera import Camera
+from core.constants import TILE_SIZE, HALF_TILE
 from game_state import GameState, TowerConfig
 from towers import BaseTower, TowerFactory
 
@@ -38,9 +39,9 @@ class TowerPlacementController:
 
 	def update_cursor(self, mouse_pos: tuple) -> None:
 		if mouse_pos[0] < GAME_AREA_WIDTH:
-			ox, oy = self._camera.rect.topleft
-			self.cursor_col = (mouse_pos[0] - ox) // 64
-			self.cursor_row = (mouse_pos[1] - oy) // 64
+			world = self._camera.screen_to_world(mouse_pos)
+			self.cursor_col = int(world.x // TILE_SIZE)
+			self.cursor_row = int(world.y // TILE_SIZE)
 
 	def is_construct_mode(self) -> bool:
 		return self.buying_tower_type != 0
@@ -96,41 +97,57 @@ class TowerPlacementController:
 			if btn.is_clicked(event, mouse_pos):
 				self.buying_tower_type = 0 if self.buying_tower_type == i + 1 else i + 1
 
-	def draw(self, surface: pygame.Surface, level: list, mouse_pos: tuple) -> None:
+	def draw(self, surface: pygame.Surface, buildable_grid: list[list[bool]], mouse_pos: tuple) -> None:
 		if not self.buying_tower_type:
 			return
-		self.block_tiles = []
-		ox, oy = self._camera.rect.topleft
+		self._draw_grid_overlay(surface, buildable_grid)
+		self._draw_cursor_preview(surface, mouse_pos)
 
-		for row_idx, row in enumerate(level):
-			for col_idx, tile in enumerate(row):
-				sx = 64 * col_idx + ox
-				sy = 64 * row_idx + oy
+	def _draw_grid_overlay(self, surface: pygame.Surface, buildable_grid: list[list[bool]]) -> None:
+		self.block_tiles = []
+		scaled_enable = self._camera.scale_image(self._enable)
+		scaled_block  = self._camera.scale_image(self._block)
+		for row_idx, row in enumerate(buildable_grid):
+			for col_idx, cell_buildable in enumerate(row):
+				screen = self._camera.world_to_screen((col_idx * TILE_SIZE, row_idx * TILE_SIZE))
 				buildable = (
-					(tile[0] in ("0", "3")) and (row_idx, col_idx) not in self.tower_positions
+					cell_buildable and (row_idx, col_idx) not in self.tower_positions
 				) or self.buying_tower_type == 4
 				if buildable:
-					surface.blit(self._enable, (sx, sy))
+					surface.blit(scaled_enable, screen)
 				else:
-					surface.blit(self._block, (sx, sy))
+					surface.blit(scaled_block, screen)
 					self.block_tiles.append((row_idx, col_idx))
 
+	def _draw_cursor_preview(self, surface: pygame.Surface, mouse_pos: tuple) -> None:
 		index = (
 			4 if self.buying_tower_type == 4 and self._game_state.plane_level == 2
 			else self.buying_tower_type - 1
 		)
 		mx, my = mouse_pos
 		if mx >= GAME_AREA_WIDTH:
-			surface.blit(self._tower_images[index], (mx - 32, my - 32))
-		else:
-			surface.blit(self._tower_images[index], (self.cursor_col * 64 + ox, self.cursor_row * 64 + oy))
-			draw_range = self._tower_config.ranges[self.buying_tower_type - 1][0]
-			surf = pygame.Surface((draw_range * 2, draw_range * 2), pygame.SRCALPHA, 32)
-			pygame.draw.circle(surf, (128, 128, 128, 120), (draw_range, draw_range), draw_range, 0)
-			blocked = (self.cursor_row, self.cursor_col) in self.block_tiles
-			outline_color = (255, 0, 0, 120) if blocked else (0, 200, 0, 120)
-			pygame.draw.circle(surf, outline_color, (draw_range, draw_range), draw_range, 5)
-			surface.blit(surf, (
-				self.cursor_col * 64 + 32 - draw_range + ox,
-				self.cursor_row * 64 + 32 - draw_range + oy,
-			))
+			surface.blit(self._tower_images[index], (mx - HALF_TILE, my - HALF_TILE))
+			return
+
+		scaled_tower = self._camera.scale_image(self._tower_images[index])
+		cell_top_left = self._camera.world_to_screen(
+			(self.cursor_col * TILE_SIZE, self.cursor_row * TILE_SIZE))
+		surface.blit(scaled_tower, cell_top_left)
+
+		world_range  = self._tower_config.ranges[self.buying_tower_type - 1][0]
+		scaled_range = int(world_range * self._camera.scale)
+		center = self._camera.world_to_screen(
+			(self.cursor_col * TILE_SIZE + HALF_TILE,
+			 self.cursor_row * TILE_SIZE + HALF_TILE))
+		blocked = (self.cursor_row, self.cursor_col) in self.block_tiles
+		self._blit_range_ring(surface, center, scaled_range, blocked)
+
+	@staticmethod
+	def _blit_range_ring(surface: pygame.Surface, center, radius: int, blocked: bool) -> None:
+		if radius <= 0:
+			return
+		surf = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
+		pygame.draw.circle(surf, (128, 128, 128, 120), (radius, radius), radius, 0)
+		outline = (255, 0, 0, 120) if blocked else (0, 200, 0, 120)
+		pygame.draw.circle(surf, outline, (radius, radius), radius, 5)
+		surface.blit(surf, (center.x - radius, center.y - radius))

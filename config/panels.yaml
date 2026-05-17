@@ -7,7 +7,7 @@ groups:
 
 object_templates:
   btn-sm:
-    size: [ 375, 100 ]
+    size: [375, 100]
     asset: btn
     hover: btn_hover
     nine_slice: 10
@@ -20,7 +20,6 @@ object_templates:
     type: text
     font: Impact
     font_size: 48
-
   music_toggle:
     position: [ 25, 25 ]
     size: [ 80, 80 ]
@@ -105,26 +104,32 @@ panels:
         states:
           lvl2:
             asset: buy_tower_4_lvl2
-      upgrade_planes:
+      upgrade_plane_button:
+        extends: btn-sm
         position: [1547, 876]
         size: [338, 88]
-        asset: btn_upgrade_hover
-        hover: btn_upgrade
-      menu:
+      upgrade_plane_button_text:
+        extends: menu_text
+        position: [1547, 876]
+        text: "UPGRADE PLANES"
+      menu_button:
+        extends: btn-sm
         position: [1547, 984]
         size: [338, 88]
-        asset: btn_menu_hover
-        hover: btn_menu
+      menu_button_text:
+        extends: menu_text
+        position: [1547, 984]
+        text: "MENU"
       start_pause_button:
         position: [1640, 780]
-        size: [80, 80]
+        size: [64, 64]
         asset: btn_start
         states:
           pause:
             asset: btn_pause
       x2:
         position: [1747, 780]
-        size: [80, 80]
+        size: [64, 64]
         asset: btn_2x
         states:
           active:

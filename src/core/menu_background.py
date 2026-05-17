@@ -1,30 +1,20 @@
 import pygame
-from pygame import Rect
-
-from core.camera import Camera
 
 SCROLL_SPEED = 0.7   # px per frame
 
 
 class MenuBackground:
-    """Pre-renders the tilemap at 2× and slowly pans through it as a menu backdrop."""
+    """Slowly pans a pre-rendered map surface behind menu panels."""
 
     _SCALE = 2
 
-    def __init__(self, tilemap, map_cols: int, map_rows: int, viewport: tuple[int, int]) -> None:
-        mw = map_cols * 64
-        mh = map_rows * 64
+    def __init__(self, map_surface: pygame.Surface, viewport: tuple[int, int]) -> None:
+        mw, mh = map_surface.get_size()
         vw, vh = viewport
-
-        # Render all tiles into an off-screen surface at 1×
-        src = pygame.Surface((mw, mh))
-        null_cam = Camera(Rect(0, 0, mw, mh))
-        for tile in tilemap.tiles:
-            tile.draw(src, null_cam)
 
         bg_w = mw * self._SCALE
         bg_h = mh * self._SCALE
-        self._bg    = pygame.transform.smoothscale(src, (bg_w, bg_h))
+        self._bg    = pygame.transform.smoothscale(map_surface, (bg_w, bg_h))
         self._max_x = float(max(0, bg_w - vw))
         self._max_y = float(max(0, bg_h - vh))
         self._vw = vw

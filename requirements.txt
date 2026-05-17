@@ -2,3 +2,4 @@ pygame-ce
 colorama
 https://github.com/umutcanekinci/pygame-core/zipball/master
 pyyaml
+pytmx
