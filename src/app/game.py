@@ -44,7 +44,7 @@ class Game(Application):
         self.enemies:      list[Enemy]     = []
         self.wave_manager: WaveManager | None = None
 
-        self.game_state       = GameState(start_money=10_000, start_lives=10)
+        self.game_state       = GameState(start_money=200, start_lives=10)
         self.assets           = AssetManager()
         self.tower_config     = load_tower_config()
         self.tilemap          = Tilemap("assets/tiled_project/tiled_tilemap.tmx")
