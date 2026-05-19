@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class Projectile(RotateableObject):
     EXPLODE_DISTANCE = 30
-    BULLET_SPEED     = 1 / 2
+    BULLET_SPEED     = 2
 
     def __init__(self, target, tower) -> None:
         super().__init__(

@@ -1,6 +1,8 @@
 from typing import override
 
 import pygame
+from pygame import Rect
+
 from pygame_core.application import Application
 from pygame_core.asset_manager import AssetManager
 from pygame_core.mouse import Mouse
@@ -46,14 +48,20 @@ class Game(Application):
         self.assets           = AssetManager()
         self.tower_config     = load_tower_config()
         self.tilemap          = Tilemap("assets/tiled_project/tiled_tilemap.tmx")
-        self.camera           = Camera(window_transform, self.tilemap.map_width, self.tilemap.map_height)  # (1536, self.size[1])),
+        self.camera           = Camera(Rect(0,0, 1500, 1080), self.tilemap.map_width, self.tilemap.map_height)  # (1536, self.size[1])),
         self.panel_manager    = PanelManager(starting_tab="main_menu")
 
         self.load_panels(window_transform)
 
         self.audio            = GameAudio(str(self.assets.sound_path("bg_music")))
-        self.hud              = GameHUD(self.assets, window_transform, self.game_state, self.tower_config, self.panel_manager)
-        self.tower_controller = TowerPlacementController(self.towers, self.tower_config, self.assets, self.game_state, self.camera, self.panel_manager, self.tilemap.buildable_grid)
+        self.hud              = GameHUD(self.game_state, self.tower_config, self.panel_manager)
+        self.tower_controller = TowerPlacementController(self.towers, self.tower_config, self.assets, self.game_state, self.camera, self.panel_manager, self.tilemap.buildable_grid, self.tilemap.map_width)
+
+        self.menu_bg = MenuBackground(self.tilemap.pre_render(), self.size)
+        self.menu_overlay = pygame.Surface(self.size, pygame.SRCALPHA)
+        self.menu_overlay.fill((0, 0, 0, 120))
+        self.splash = SplashScreen(["assets/images/others/pygame_logo.png", "assets/images/others/kenney_logo.png"],fade_ms=1500, hold_ms=1000)
+        self._init_wave_manager()
 
     def load_panels(self, window_transform) -> None:
         self.assets.load_manifest("config/assets.yaml")
@@ -64,6 +72,7 @@ class Game(Application):
         loader = PanelLoaderExt(self.panel_manager, window_transform, self.assets)
         loader.register("object", panel_factory.make_factory(self.assets), default=True)
         loader.register("text", panel_factory.make_text_factory(self.assets))
+        loader.register("animated", panel_factory.make_animated_factory())
         loader.load("config/panels.yaml")
 
     # ── IGameContext interface ────────────────────────────────────────────────
@@ -86,14 +95,7 @@ class Game(Application):
     # ── lifecycle ─────────────────────────────────────────────────────────────
 
     def run(self):
-        SplashScreen(
-            ["assets/images/others/pygame_logo.png", "assets/images/others/kenney_logo.png"],
-            fade_ms=1500, hold_ms=1000,
-        ).run(self.window, self.clock, self._fps)
-        self._init_wave_manager()
-        self.menu_bg = MenuBackground(self.tilemap.pre_render(), self.size)
-        self.menu_overlay = pygame.Surface(self.size, pygame.SRCALPHA)
-        self.menu_overlay.fill((0, 0, 0, 120))
+        self.splash.run(self.window, self.clock, self._fps)
         super().run()
 
     def _init_wave_manager(self) -> None:
@@ -105,6 +107,7 @@ class Game(Application):
 
     @override
     def update(self) -> None:
+        self.panel_manager.update()
         if self.panel_manager.current_panel in ("main_menu", "contact"):
             self.menu_bg.update()
         if self.panel_manager.current_panel != "game": return
@@ -132,7 +135,7 @@ class Game(Application):
         for enemy in self.enemies:
             if enemy.reached_end():
                 self.enemies.remove(enemy)
-                self.game_state.lives = max(0, self.game_state.lives - enemy.damage)
+                self.game_state.decrease_lives(enemy.damage)
                 if self.game_state.lives == 0:
                     self.exit()
             elif self.game_state.is_started:
@@ -235,29 +238,9 @@ class Game(Application):
             for enemy in self.enemies:
                 self.camera.draw(self.window, enemy)
 
-        def _draw_game_borders(self) -> None:
-            lines = [
-                ((1, 0), (1, 1080), 4),
-                ((1535, 0), (1535, 1080), 4),
-                ((1916, 0), (1916, 1080), 4),
-                ((0, 1), (1920, 1), 4),
-                ((1534, 78), (1920, 78), 4),
-                ((1534, 240), (1920, 240), 4),
-                ((1534, 306), (1917, 306), 4),
-                ((1534, 768), (1920, 768), 4),
-                ((1534, 864), (1920, 864), 4),
-                ((1534, 972), (1920, 972), 4),
-                ((0, 1076), (1920, 1076), 4),
-            ]
-            for start, end, width in lines:
-                pygame.draw.line(self.window, "white", start, end, width)
-
-
         _draw_tilemap(self)
         _draw_towers(self)
         _draw_enemies(self)
-        _draw_game_borders(self)
-        self.hud.draw(self.window)
         self.tower_controller.draw(self.window, self.mouse.position)
 
 

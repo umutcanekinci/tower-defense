@@ -10,7 +10,12 @@
       "Bash(type \"sitecustomize.py\")",
       "Bash(dir /b \"C:\\\\Users\\\\user\\\\PycharmProjects\\\\tower-defense\\\\.venv\\\\Lib\\\\site-packages\")",
       "Bash(findstr /v \"^pip\\\\|^_distutils\\\\|^pkg_resources\\\\|^setuptools\\\\|^_virtualenv\\\\|^__pycache__\")",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "PowerShell(.venv\\\\Scripts\\\\python.exe -c \"import sys; sys.path.insert\\(0, 'src'\\); import pygame_core.panel_loader_ext as m; print\\(m.__file__\\); import yaml; data = yaml.safe_load\\(open\\('config/panels.yaml', encoding='utf-8'\\)\\); templates = data.pop\\('object_templates', {}\\); m.PanelLoaderExt._resolve_extends\\(data, templates\\); import json; print\\(json.dumps\\(data['panels']['game']['objects']['fee_text_1'], default=str\\)\\)\")",
+      "PowerShell($env:SDL_VIDEODRIVER='dummy'; $env:PYTHONPATH='src;src\\\\pygame_core;src\\\\pygame_core\\\\pygame_core'; .venv\\\\Scripts\\\\python.exe __main__.py 2>&1 | Select-Object -First 30)",
+      "Bash(kill %1)",
+      "Bash(git -C C:/Users/user/PycharmProjects/tower-defense diff HEAD -- src/gameplay/combat/tower_placement.py)",
+      "Bash(git *)"
     ]
   }
 }

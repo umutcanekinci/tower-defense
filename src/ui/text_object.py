@@ -17,7 +17,7 @@ class TextObject(Centerable):
         pos,
         text: str,
         font: pygame.font.Font,
-        color,
+        color
     ) -> None:
         self._parent = parent
         self._pos_spec = pos

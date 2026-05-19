@@ -1,5 +1,5 @@
 {
-    "activeFile": "tiled_tileset.tsx",
+    "activeFile": "tiled_tilemap.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -33,11 +33,11 @@
                 14,
                 15
             ],
-            "scale": 0.33,
-            "selectedLayer": 1,
+            "scale": 0.25,
+            "selectedLayer": 14,
             "viewCenter": {
-                "x": 1333.3333333333333,
-                "y": 730.3030303030303
+                "x": 1448,
+                "y": 1008
             }
         },
         "tiled_tilemap_64x64.tmx": {
@@ -50,7 +50,7 @@
         },
         "tiled_tileset.tsx": {
             "scaleInDock": 0.5,
-            "scaleInEditor": 0.75
+            "scaleInEditor": 0.5
         },
         "tiled_tileset_64x64.tsx": {
             "scaleInDock": 1
@@ -63,7 +63,6 @@
     "map.tileHeight": 128,
     "map.tileWidth": 128,
     "openFiles": [
-        "tiled_tileset.tsx",
         "tiled_tilemap.tmx"
     ],
     "project": "tiled_project.tiled-project",

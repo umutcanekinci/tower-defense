@@ -3,10 +3,8 @@
 images:
   # ── Backgrounds & general ─────────────────────────────────────────────
   bg_main:           {folder: others, name: bg}
-  bg_game:           {folder: others, name: gray_bg, extension: jpg}
   logo:              {folder: others, name: logo}
   social_media:      {folder: others, name: social_media}
-  money_box:         {folder: others, name: button}
   heart:             {folder: others, name: heart}
 
   # ── Menu buttons (normal + hover pairs) ───────────────────────────────
@@ -67,21 +65,13 @@ images:
   tile_block:        {folder: others, name: block}
   tile_enable:       {folder: others, name: enable}
 
-  # ── Life counter digits (0-9) ─────────────────────────────────────────
-  digit_0:           {folder: numbers, name: 0}
-  digit_1:           {folder: numbers, name: 1}
-  digit_2:           {folder: numbers, name: 2}
-  digit_3:           {folder: numbers, name: 3}
-  digit_4:           {folder: numbers, name: 4}
-  digit_5:           {folder: numbers, name: 5}
-  digit_6:           {folder: numbers, name: 6}
-  digit_7:           {folder: numbers, name: 7}
-  digit_8:           {folder: numbers, name: 8}
-  digit_9:           {folder: numbers, name: 9}
-
   btn_sell: { folder: button, name: sell }
   btn_upgrade: { folder: button, name: upgrade }
   btn_max: { folder: button, name: max }
+
+  # ── Coin pickup (animated spritesheet, 4-frame horizontal strip) ──────
+  coin_sheet:        {folder: coins, name: MonedaD}
+  coin_icon:         {folder: coins, name: MonedaD}
 
 sounds:
   bg_music:          {folder: "", name: bg, extension: mp3}

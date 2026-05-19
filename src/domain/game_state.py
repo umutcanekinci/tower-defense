@@ -30,15 +30,21 @@ class GameState:
         self.plane_level:    int  = 1
 
         self._money_cbs: list[Callable[[int], None]] = []
+        self._lives_cbs: list[Callable[[int], None]] = []
         self._level_cbs: list[Callable[[int], None]] = []
+
 
     # ── listeners ────────────────────────────────────────────────────────────
 
     def add_money_listener(self, cb: Callable[[int], None]) -> None:
         self._money_cbs.append(cb)
 
+    def add_lives_listener(self, cb: Callable[[int], None]) -> None:
+        self._lives_cbs.append(cb)
+
     def add_level_listener(self, cb: Callable[[int], None]) -> None:
         self._level_cbs.append(cb)
+
 
     # ── mutations ─────────────────────────────────────────────────────────────
 
@@ -51,6 +57,11 @@ class GameState:
         self.money -= amount
         for cb in self._money_cbs:
             cb(self.money)
+
+    def decrease_lives(self, amount: int) -> None:
+        self.lives = max(0, self.lives - amount)
+        for cb in self._lives_cbs:
+            cb(self.lives)
 
     def advance_level(self) -> None:
         self.level += 1

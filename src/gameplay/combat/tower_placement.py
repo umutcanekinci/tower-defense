@@ -14,7 +14,8 @@ class TowerPlacementController:
 	def __init__(self, towers: list[BaseTower], tower_config: TowerConfig,
 	             assets: AssetManager, game_state: GameState,
 	             camera: Camera, panel_manager: PanelManager,
-	             buildable_grid: list[list[bool]]) -> None:
+	             buildable_grid: list[list[bool]],
+	             map_width: int) -> None:
 		self._towers         = towers
 		self._tower_config   = tower_config
 		self._assets         = assets
@@ -22,6 +23,7 @@ class TowerPlacementController:
 		self._camera         = camera
 		self._panel_manager  = panel_manager
 		self._buildable_grid = buildable_grid
+		self._map_width      = map_width
 
 		self.buying_tower_type: int        = 0
 		self.cursor_col:        int | None = None
@@ -54,7 +56,7 @@ class TowerPlacementController:
 		return None
 
 	def handle_event(self, event, mouse_pos: tuple) -> None:
-		if event.type == pygame.MOUSEBUTTONUP:
+		if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
 			self._handle_tower_actions(event, mouse_pos)
 			self._handle_tower_selection()
 			self._handle_tower_purchase(mouse_pos)
@@ -84,7 +86,7 @@ class TowerPlacementController:
 			return
 		tower = TowerFactory.create(
 			self.buying_tower_type, self.cursor_row, self.cursor_col,
-			self._tower_config, self._assets)
+			self._tower_config, self._assets, self._map_width)
 		if tower.get_blocking_position() is None:
 			self._towers.append(tower)
 		else:

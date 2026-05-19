@@ -2,6 +2,8 @@ import pygame
 
 from ui.text_object import TextObject
 from pygame_core.font import load_font
+from pygame_core.sprite_sheet import SpriteSheet
+from pygame_core.unity.animated_sprite import AnimatedSprite
 from pygame_core.unity.components.transform import Transform
 from pygame_core.unity.state_object import StateObject, HoverableStateObject
 
@@ -35,6 +37,22 @@ def make_factory(assets):
     return make_gui_object
 
 
+def make_animated_factory():
+    def make_animated_object(cfg: dict, parent: Transform) -> AnimatedSprite:
+        pos         = cfg["position"]
+        size        = tuple(cfg["size"]) if cfg.get("size") not in (None, "WINDOW") else (0, 0)
+        sheet_path  = cfg["asset"]  # pre-resolved to ImagePath by PanelLoader
+        frame_count = cfg.get("frame_count", 1)
+        fps         = cfg.get("fps", 12.0)
+        loop        = cfg.get("loop", True)
+        horizontal  = cfg.get("horizontal", True)
+
+        frames = SpriteSheet.from_path(sheet_path).strip(frame_count, horizontal=horizontal)
+        return AnimatedSprite(parent=parent, pos=pos, size=size, frames=frames,
+                              fps=fps, loop=loop)
+    return make_animated_object
+
+
 def make_text_factory(assets):
     def make_text_object(cfg: dict, parent: Transform) -> TextObject:
         return TextObject(
@@ -42,6 +60,6 @@ def make_text_factory(assets):
             cfg["position"],
             cfg["text"],
             load_font(cfg, assets),
-            cfg.get("color", [255, 255, 255]),
+            cfg.get("color", [255, 255, 255])
         )
     return make_text_object

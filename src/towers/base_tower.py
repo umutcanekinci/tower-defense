@@ -6,8 +6,8 @@ from rendering.rotateable_object import RotateableObject
 from pygame_core.unity.state_object import StateObject
 from domain.game_state import GameState, TowerConfig
 
-UPGRADE_BTN_OFFSET = Vector2(-72, -74)
-SELL_BTN_OFFSET    = Vector2( 40, -54)
+UPGRADE_BTN_OFFSET = Vector2(-55, -105)
+SELL_BTN_OFFSET    = Vector2( 20, -110)
 BTN_SIZE           = (50, 50)
 
 
@@ -66,19 +66,17 @@ class BaseTower(RotateableObject):
 
     def _upgrade_hit_rect(self, camera) -> pygame.Rect:
         screen = camera.world_to_screen(self.position)
-        scaled_range = self.range * camera.scale
         return pygame.Rect(
             screen.x + UPGRADE_BTN_OFFSET.x,
-            screen.y - scaled_range + UPGRADE_BTN_OFFSET.y,
+            screen.y + UPGRADE_BTN_OFFSET.y,
             *BTN_SIZE,
         )
 
     def _sell_hit_rect(self, camera) -> pygame.Rect:
         screen = camera.world_to_screen(self.position)
-        scaled_range = self.range * camera.scale
         return pygame.Rect(
             screen.x + SELL_BTN_OFFSET.x,
-            screen.y - scaled_range + SELL_BTN_OFFSET.y,
+            screen.y + SELL_BTN_OFFSET.y,
             *BTN_SIZE,
         )
 
@@ -89,8 +87,10 @@ class BaseTower(RotateableObject):
             return
         if not self._upgrade_hit_rect(camera).collidepoint(mouse_pos):
             return
+        price = self.upgrade_price
         self.level += 1
-        game_state.decrease_money(self.upgrade_price)
+        self.load(self.assets.image_path(f"tower_{self.tower_type}_lvl{self.level}"))
+        game_state.decrease_money(price)
         game_state.selected_tower = self
 
     def sell(self, mouse_pos: tuple, game_state: GameState, towers: list, camera) -> None:
@@ -115,7 +115,7 @@ class BaseTower(RotateableObject):
     def draw_selected_ui(self, surface: pygame.Surface, game_state: GameState, camera) -> None:
         screen = camera.world_to_screen(self.position)
 
-        sell_btn = StateObject(None, screen + Vector2(20, -110), BTN_SIZE,
+        sell_btn = StateObject(None, screen + SELL_BTN_OFFSET, BTN_SIZE,
                                self.assets.image_path("btn_sell"))
         sell_text = self._price_font.render(f"{self.sell_price} $", 2, "white")
 
@@ -123,7 +123,7 @@ class BaseTower(RotateableObject):
             StateObject(None, screen + Vector2(-60, -85), (50, 25),
                         self.assets.image_path("btn_max")).draw(surface)
         else:
-            upgrade_btn = StateObject(None, screen + Vector2(-55, -105), BTN_SIZE,
+            upgrade_btn = StateObject(None, screen + UPGRADE_BTN_OFFSET, BTN_SIZE,
                                       self.assets.image_path("btn_upgrade"))
             upgrade_text = self._price_font.render(f"{self.upgrade_price} $", True, "white")
             surface.blit(upgrade_text, screen + Vector2(-50, -60))

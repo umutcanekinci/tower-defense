@@ -16,10 +16,21 @@ object_templates:
     asset: btn
     hover: btn_hover
     nine_slice: 10
-  menu_text:
+  button_text:
     type: text
     font: Impact
     font_size: 48
+    position: [CENTER, CENTER]
+  fee_text_bg:
+    size: [133, 60]
+    color: [0, 0, 0, 150]
+  fee_text:
+    type: text
+    font: ComicSansMs
+    font_size: 25
+    color: green
+    text: "0 $"
+    position: [CENTER, CENTER]
   music_toggle:
     position: [ 25, 25 ]
     size: [ 80, 80 ]
@@ -43,16 +54,16 @@ panels:
         position: [CENTER, 540]
 
       play_text:
-        extends: menu_text
-        position: [ CENTER, 320 ]
+        extends: button_text
+        parent: play
         text: "PLAY"
       contact_text:
-        extends: menu_text
-        position: [ CENTER, 440 ]
+        extends: button_text
+        parent: contact
         text: "CONTACT US"
       exit_text:
-        extends: menu_text
-        position: [ CENTER, 560 ]
+        extends: button_text
+        parent: exit
         text: "EXIT"
 
       music_toggle:
@@ -62,21 +73,60 @@ panels:
     extends: [menu_chrome]
     objects:
       social_media:
-        position: [CENTER, 240]
+        position: [CENTER, CENTER]
         size: [750, 750]
         asset: social_media
       back:
         extends: btn-sm
         position: [93, 840]
       back_text:
-        extends: menu_text
-        position: [235, 860]
+        extends: button_text
+        parent: back
         text: "BACK"
       music_toggle:
         extends: music_toggle
 
   game:
     objects:
+      live_background:
+        position: [15, 15]
+        size: [100, 50]
+        color: [50, 50, 50, 200]
+      live_image:
+        parent: live_background
+        position: [10, CENTER]
+        size: [32, 32]
+        asset: heart
+      live_text:
+        parent: live_background
+        position: [50, CENTER]
+        type: text
+        text: "13"
+        font: ComicSansMs
+        font_size: 27
+        bold: true
+        color: white
+      coin_background:
+        position: [15, 75]
+        size: [150, 50]
+        color: [50, 50, 50, 200]
+      coin_image:
+        parent: coin_background
+        type: animated
+        position: [10, CENTER]
+        size: [32, 32]
+        asset: coin_sheet
+        frame_count: 5
+        fps: 8
+      coin_text:
+        parent: coin_background
+        position: [50, CENTER]
+        type: text
+        text: "0"
+        font: ComicSansMs
+        font_size: 27
+        bold: true
+        color: white
       right_panel_bg:
         position: [1500, 0]
         size: [420, 1080]
@@ -89,121 +139,70 @@ panels:
         font: ComicSansMs
         font_size: 50
         color: white
-      money_box:
-        parent: right_panel_bg
-        position: [CENTER, 86]
-        size: [375, 156]
-        asset: money_box
-      money_text:
-        parent: right_panel_bg
-        type: text
-        position: [80, 125]
-        text: "0"
-        font: ComicSansMs
-        font_size: 50
-        color: green
-      dollar_text:
-        parent: right_panel_bg
-        type: text
-        position: [310, 132]
-        text: "$"
-        font: ComicSansMs
-        font_size: 37
-        color: green
-      live_image:
-        position: [1660, 252]
-        size: [50, 50]
-        asset: heart
       buy_tower_1:
-        position: [1545, 318]
+        position: [1545, 218]
         size: [160, 160]
         asset: buy_tower_1
       buy_tower_2:
-        position: [1736, 318]
+        position: [1736, 218]
         size: [160, 160]
         asset: buy_tower_2
       buy_tower_3:
-        position: [1545, 546]
+        position: [1545, 446]
         size: [160, 160]
         asset: buy_tower_3
       buy_tower_4:
-        position: [1736, 546]
+        position: [1736, 446]
         size: [160, 160]
         asset: buy_tower_4
         states:
           lvl2:
             asset: buy_tower_4_lvl2
       fee_text_bg_1:
+        extends: fee_text_bg
         parent: right_panel_bg
-        position: [64, 479]
-        size: [133, 60]
-        asset: money_box
+        position: [64, 379]
       fee_text_bg_2:
+        extends: fee_text_bg
         parent: right_panel_bg
-        position: [255, 479]
-        size: [133, 60]
-        asset: money_box
+        position: [255, 379]
       fee_text_bg_3:
+        extends: fee_text_bg
         parent: right_panel_bg
-        position: [64, 707]
-        size: [133, 60]
-        asset: money_box
+        position: [64, 607]
       fee_text_bg_4:
+        extends: fee_text_bg
         parent: right_panel_bg
-        position: [255, 707]
-        size: [133, 60]
-        asset: money_box
+        position: [255, 607]
       fee_text_1:
-        parent: right_panel_bg
-        type: text
-        position: [77, 494]
-        text: "0 $"
-        font: ComicSansMs
-        font_size: 25
-        color: green
+        extends: fee_text
+        parent: fee_text_bg_1
       fee_text_2:
-        parent: right_panel_bg
-        type: text
-        position: [268, 494]
-        text: "0 $"
-        font: ComicSansMs
-        font_size: 25
-        color: green
+        extends: fee_text
+        parent: fee_text_bg_2
       fee_text_3:
-        parent: right_panel_bg
-        type: text
-        position: [77, 722]
-        text: "0 $"
-        font: ComicSansMs
-        font_size: 25
-        color: green
+        extends: fee_text
+        parent: fee_text_bg_3
       fee_text_4:
-        parent: right_panel_bg
-        type: text
-        position: [268, 722]
-        text: "0 $"
-        font: ComicSansMs
-        font_size: 25
-        color: green
+        extends: fee_text
+        parent: fee_text_bg_4
       upgrade_plane_button:
-        parent: right_panel_bg
         extends: btn-sm
-        position: [CENTER, 876]
+        parent: right_panel_bg
+        position: [CENTER, 856]
         size: [338, 88]
       upgrade_plane_button_text:
+        extends: button_text
         parent: upgrade_plane_button
-        extends: menu_text
-        position: [CENTER, CENTER]
         text: "UPGRADE PLANES"
       menu_button:
-        parent: right_panel_bg
         extends: btn-sm
-        position: [CENTER, 984]
+        parent: right_panel_bg
+        position: [CENTER, 964]
         size: [338, 88]
       menu_button_text:
+        extends: button_text
         parent: menu_button
-        extends: menu_text
-        position: [CENTER, CENTER]
         text: "MENU"
       start_pause_button:
         position: [1640, 780]
