@@ -37,7 +37,7 @@ def make_factory(assets):
     return make_gui_object
 
 
-def make_animated_factory():
+def make_animated_factory(assets):
     def make_animated_object(cfg: dict, parent: Transform) -> AnimatedSprite:
         pos         = cfg["position"]
         size        = tuple(cfg["size"]) if cfg.get("size") not in (None, "WINDOW") else (0, 0)

@@ -72,7 +72,7 @@ class Game(Application):
         loader = PanelLoaderExt(self.panel_manager, window_transform, self.assets)
         loader.register("object", panel_factory.make_factory(self.assets), default=True)
         loader.register("text", panel_factory.make_text_factory(self.assets))
-        loader.register("animated", panel_factory.make_animated_factory())
+        loader.register("animated", panel_factory.make_animated_factory(self.assets))
         loader.load("config/panels.yaml")
 
     # ── IGameContext interface ────────────────────────────────────────────────
