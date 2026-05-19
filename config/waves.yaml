@@ -1,5 +1,9 @@
-# Wave compositions — waves beyond the last entry are generated dynamically
-# Each entry is a list of {type, count} spawn groups (spawned in order)
+# Wave compositions — waves beyond the last entry are generated dynamically.
+#
+# Each entry is either:
+#   <wave>: [{type, count}, ...]                              # list form, default spawn interval
+#   <wave>: {spawn_interval: <ms>, groups: [{type, count}]}   # dict form, custom interval
+# Default spawn_interval is WaveManager.SPAWN_INTERVAL_MS (1000).
 
 waves:
   1: [{type: 1, count: 10}]

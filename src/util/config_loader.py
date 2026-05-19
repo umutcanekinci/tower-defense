@@ -2,7 +2,7 @@ from pathlib import Path
 
 import yaml
 
-from domain.game_state import TowerConfig
+from domain.game_state import TowerConfig, WaveDef
 
 _CONFIG_DIR = Path(__file__).resolve().parents[2] / "config"
 
@@ -31,11 +31,24 @@ def load_enemy_stats() -> dict[int, tuple[int, float, int, int]]:
     }
 
 
-def load_wave_compositions() -> dict[int, list[tuple[int, int]]]:
+def load_wave_compositions() -> dict[int, WaveDef]:
+    """Parse waves.yaml.
+
+    Each wave entry may be either:
+      - a list of {type, count} groups (default spawn interval), or
+      - a dict {spawn_interval: <ms>, groups: [{type, count}, ...]}.
+    """
     with open(_CONFIG_DIR / "waves.yaml") as f:
         data = yaml.safe_load(f)
 
-    return {
-        int(wave): [(e["type"], e["count"]) for e in groups]
-        for wave, groups in data["waves"].items()
-    }
+    waves: dict[int, WaveDef] = {}
+    for wave, entry in data["waves"].items():
+        if isinstance(entry, list):
+            groups, interval = entry, None
+        else:
+            groups, interval = entry["groups"], entry.get("spawn_interval")
+        waves[int(wave)] = WaveDef(
+            groups=[(e["type"], e["count"]) for e in groups],
+            spawn_interval_ms=interval,
+        )
+    return waves

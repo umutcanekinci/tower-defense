@@ -3,6 +3,16 @@ from typing import Callable
 
 
 @dataclass
+class WaveDef:
+    """Composition + spawn timing for a single wave.
+
+    `spawn_interval_ms` is `None` when the wave defers to WaveManager's default.
+    """
+    groups:            list[tuple[int, int]]   # [(enemy_type, count), ...]
+    spawn_interval_ms: int | None = None
+
+
+@dataclass
 class TowerConfig:
     """All per-type, per-level tower data.
 

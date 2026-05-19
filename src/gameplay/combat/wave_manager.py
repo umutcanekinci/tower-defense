@@ -3,9 +3,9 @@ from pygame.math import Vector2
 
 from util.config_loader import load_wave_compositions
 from gameplay.combat.enemy import Enemy
-from domain.game_state import GameState
+from domain.game_state import GameState, WaveDef
 
-WAVE_COMPOSITIONS: dict[int, list[tuple[int, int]]] = load_wave_compositions()
+WAVE_COMPOSITIONS: dict[int, WaveDef] = load_wave_compositions()
 
 
 class WaveManager:
@@ -25,20 +25,22 @@ class WaveManager:
         self._current_level:     int       = -1
         self._spawn_queue:       list[int] = []  # flattened list of enemy types
         self._queue_index:       int       = 0
+        self._spawn_interval_ms: int       = self.SPAWN_INTERVAL_MS
 
     def _build_queue(self, level: int) -> None:
-        composition = WAVE_COMPOSITIONS.get(level) or self._composition_for(level)
+        wave = WAVE_COMPOSITIONS.get(level) or self._wave_for(level)
         self._spawn_queue = [
             enemy_type
-            for enemy_type, count in composition
+            for enemy_type, count in wave.groups
             for _ in range(count)
         ]
-        self._queue_index    = 0
+        self._spawn_interval_ms = wave.spawn_interval_ms or self.SPAWN_INTERVAL_MS
+        self._queue_index       = 0
         self._level_finish_time = None
 
-    def _composition_for(self, level: int) -> list[tuple[int, int]]:
+    def _wave_for(self, level: int) -> WaveDef:
         extra = level - 10
-        return [(3, max(0, 4 - extra)), (4, 10 + extra * 3)]
+        return WaveDef(groups=[(3, max(0, 4 - extra)), (4, 10 + extra * 3)])
 
     def update(self, enemies: list, game_state: GameState) -> None:
         if not game_state.is_started:
@@ -51,7 +53,7 @@ class WaveManager:
         now = pygame.time.get_ticks()
 
         if self._queue_index < len(self._spawn_queue):
-            if now - self._last_spawn_time >= self.SPAWN_INTERVAL_MS:
+            if now - self._last_spawn_time >= self._spawn_interval_ms:
                 enemy_type = self._spawn_queue[self._queue_index]
                 self._queue_index += 1
                 self._count_all_time += 1
