@@ -71,7 +71,6 @@ images:
 
   # ── Coin pickup (animated spritesheet, 4-frame horizontal strip) ──────
   coin_sheet:        {folder: coins, name: MonedaD}
-  coin_icon:         {folder: coins, name: MonedaD}
 
 sounds:
   bg_music:          {folder: "", name: bg, extension: mp3}

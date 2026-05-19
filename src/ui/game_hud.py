@@ -36,3 +36,4 @@ class GameHUD:
 	def _check_purchasing_power(self, money: int) -> None:
 		for i, fee_text in enumerate(self.fee_texts):
 			fee_text.set_color("green" if money >= self._tower_config.prices[i][0] else "red")
+		self.coin_text.set_color("red" if money == 0 else "white")
