@@ -1,0 +1,20 @@
+window:
+  size: [1920, 1080]
+  fps: 165
+  title: "TOWER DEFENSE"
+
+gameplay:
+  starting_money: 200
+  starting_lives: 10
+  game_area_width: 1780
+
+splash:
+  fade_ms: 1500
+  hold_ms: 1000
+
+camera:
+  edge_scroll_zone: 30
+  speed: 10
+  zoom_step: 0.10
+  zoom_min: 0.5
+  zoom_max: 2.0

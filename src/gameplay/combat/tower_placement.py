@@ -7,8 +7,6 @@ from util.constants import TILE_SIZE, HALF_TILE
 from domain.game_state import GameState, TowerConfig
 from towers import BaseTower, TowerFactory
 
-GAME_AREA_WIDTH = 1536
-
 _TOWER_HOTKEYS = {
 	pygame.K_1: 1, pygame.K_KP1: 1,
 	pygame.K_2: 2, pygame.K_KP2: 2,
@@ -28,16 +26,18 @@ class TowerPlacementController:
 	             assets: AssetManager, audio, game_state: GameState,
 	             camera: Camera, panel_manager: PanelManager,
 	             buildable_grid: list[list[bool]],
-	             map_width: int) -> None:
-		self._towers         = towers
-		self._tower_config   = tower_config
-		self._assets         = assets
-		self._audio          = audio
-		self._game_state     = game_state
-		self._camera         = camera
-		self._panel_manager  = panel_manager
-		self._buildable_grid = buildable_grid
-		self._map_width      = map_width
+	             map_width: int,
+	             game_area_width: int) -> None:
+		self._towers           = towers
+		self._tower_config     = tower_config
+		self._assets           = assets
+		self._audio            = audio
+		self._game_state       = game_state
+		self._camera           = camera
+		self._panel_manager    = panel_manager
+		self._buildable_grid   = buildable_grid
+		self._map_width        = map_width
+		self._game_area_width  = game_area_width
 
 		self.buying_tower_type: int        = 0
 		self.cursor_col:        int | None = None
@@ -56,7 +56,7 @@ class TowerPlacementController:
 		self._shortcut_font = pygame.font.SysFont("Impact", 22, bold=True)
 
 	def update_cursor(self, mouse_pos: tuple) -> None:
-		if mouse_pos[0] < GAME_AREA_WIDTH:
+		if mouse_pos[0] < self._game_area_width:
 			world = self._camera.screen_to_world(mouse_pos)
 			self.cursor_col = int(world.x // TILE_SIZE)
 			self.cursor_row = int(world.y // TILE_SIZE)
@@ -103,7 +103,7 @@ class TowerPlacementController:
 		self._game_state.selected_tower = None if is_selected else clicked
 
 	def _handle_tower_purchase(self, mouse_pos: tuple) -> None:
-		if mouse_pos[0] > GAME_AREA_WIDTH or not self.buying_tower_type:
+		if mouse_pos[0] > self._game_area_width or not self.buying_tower_type:
 			return
 		if not self._is_placeable(self.cursor_row, self.cursor_col):
 			return
@@ -168,7 +168,7 @@ class TowerPlacementController:
 			else self.buying_tower_type - 1
 		)
 		mx, my = mouse_pos
-		if mx >= GAME_AREA_WIDTH:
+		if mx >= self._game_area_width:
 			surface.blit(self._tower_images[index], (mx - HALF_TILE, my - HALF_TILE))
 			return
 

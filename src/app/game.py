@@ -1,6 +1,8 @@
+from pathlib import Path
 from typing import override
 
 import pygame
+import yaml
 from pygame import Rect
 
 from pygame_core.application import Application
@@ -37,30 +39,46 @@ class Game(Application):
     # ── construction ──────────────────────────────────────────────────────────
 
     def __init__(self):
-        super().__init__((1920, 1080), "TOWER DEFENSE", 165, Mouse(TILE_SIZE))
+        self.settings = yaml.safe_load(Path("config/settings.yaml").read_text())
+        window   = self.settings["window"]
+        gameplay = self.settings["gameplay"]
+        splash   = self.settings["splash"]
+        camera   = self.settings["camera"]
+
+        super().__init__(tuple(window["size"]), window["title"], window["fps"], Mouse(TILE_SIZE))
 
         window_transform = Transform((0, 0), self.size)
         self.towers:       list[BaseTower] = []
         self.enemies:      list[Enemy]     = []
         self.wave_manager: WaveManager | None = None
 
-        self.game_state       = GameState(start_money=200, start_lives=10)
+        self.game_area_width  = gameplay["game_area_width"]
+        self.game_state       = GameState(start_money=gameplay["starting_money"], start_lives=gameplay["starting_lives"])
         self.assets           = AssetManager()
         self.tower_config     = load_tower_config()
         self.tilemap          = Tilemap("assets/tiled_project/tiled_tilemap.tmx")
-        self.camera           = Camera(Rect(0,0, 1500, 1080), self.tilemap.map_width, self.tilemap.map_height, scroll_rect=Rect(0, 0, *self.size))
+        self.camera           = Camera(
+            Rect(0, 0, self.game_area_width, self.size[1]),
+            self.tilemap.map_width, self.tilemap.map_height,
+            scroll_rect=Rect(0, 0, *self.size),
+            edge_scroll_zone=camera["edge_scroll_zone"],
+            speed=camera["speed"],
+            zoom_step=camera["zoom_step"],
+            zoom_min=camera["zoom_min"],
+            zoom_max=camera["zoom_max"],
+        )
         self.panel_manager    = PanelManager(starting_tab="main_menu")
 
         self.load_panels(window_transform)
 
         self.audio            = GameAudio(str(self.assets.sound_path("bg_music")))
         self.hud              = GameHUD(self.game_state, self.tower_config, self.panel_manager)
-        self.tower_controller = TowerPlacementController(self.towers, self.tower_config, self.assets, self.audio, self.game_state, self.camera, self.panel_manager, self.tilemap.buildable_grid, self.tilemap.map_width)
+        self.tower_controller = TowerPlacementController(self.towers, self.tower_config, self.assets, self.audio, self.game_state, self.camera, self.panel_manager, self.tilemap.buildable_grid, self.tilemap.map_width, self.game_area_width)
 
         self.menu_bg = MenuBackground(self.tilemap.pre_render(), self.size)
         self.menu_overlay = pygame.Surface(self.size, pygame.SRCALPHA)
         self.menu_overlay.fill((0, 0, 0, 120))
-        self.splash = SplashScreen(["assets/images/others/pygame_logo.png"],fade_ms=1500, hold_ms=1000)
+        self.splash = SplashScreen(["assets/images/others/pygame_logo.png"], fade_ms=splash["fade_ms"], hold_ms=splash["hold_ms"])
         self._init_wave_manager()
 
     def load_panels(self, window_transform) -> None:
