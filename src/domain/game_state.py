@@ -20,11 +20,12 @@ class TowerConfig:
     the buy/upgrade cost to *reach* that level (same index scheme used by the
     original code throughout).
     """
-    prices:     list[list[int]]
-    max_levels: list[int]
-    ranges:     list[list[int]]
-    damages:    list[list[int]]
-    speeds:     list[list[int]]
+    prices:       list[list[int]]
+    max_levels:   list[int]
+    ranges:       list[list[int]]
+    damages:      list[list[int]]
+    speeds:       list[list[int]]
+    shoot_sounds: list[str | None]   # asset key per tower type; None = silent
 
 
 class GameState:

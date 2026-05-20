@@ -18,8 +18,8 @@ class GroundTower(BaseTower):
     without callers noticing.
     """
 
-    def __init__(self, tower_type: int, row: int, col: int, config: TowerConfig, assets) -> None:
-        super().__init__(tower_type, row, col, config, assets)
+    def __init__(self, tower_type: int, row: int, col: int, config: TowerConfig, assets, audio) -> None:
+        super().__init__(tower_type, row, col, config, assets, audio)
         self.platform = RotateableObject(
             assets.image_path(f"tower_{tower_type}_platform"),
             self.position,
@@ -34,7 +34,6 @@ class GroundTower(BaseTower):
 
         if game_state.selected_tower is self:
             self.draw_range(surface, camera)
-            self.draw_selected_ui(surface, game_state, camera)
 
         camera.draw(surface, self)
 
@@ -67,6 +66,8 @@ class GroundTower(BaseTower):
                 self.bullets.append(MuzzleFlash(target, self, pos, deals_damage))
         else:
             self.bullets.append(Projectile(target, self))
+        if self.shoot_sound is not None:
+            self.audio.play_sfx(str(self.assets.sound_path(self.shoot_sound)))
         self.last_reload_time = self.now
 
     def _muzzle_positions(self, target) -> list[tuple[Vector2, bool]]:

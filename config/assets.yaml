@@ -4,6 +4,7 @@ images:
   # ── Backgrounds & general ─────────────────────────────────────────────
   bg_main:           {folder: others, name: bg}
   logo:              {folder: others, name: logo}
+  kenney_logo:       {folder: others, name: kenney_logo}
   social_media:      {folder: others, name: social_media}
   heart:             {folder: others, name: heart}
 
@@ -26,9 +27,9 @@ images:
   buy_tower_2:       {folder: towers, name: buy_tower2}
   buy_tower_3:       {folder: towers, name: buy_tower3}
   buy_tower_4:       {folder: towers, name: buy_tower4}
-  tower_2_lvl2: { folder: towers, name: tower2L2 }
-  tower_2_lvl3: { folder: towers, name: tower2L3 }
-  tower_3_lvl2: { folder: towers, name: tower3L2 }
+  tower_2_lvl2:      {folder: towers, name: tower2L2 }
+  tower_2_lvl3:      {folder: towers, name: tower2L3 }
+  tower_3_lvl2:      {folder: towers, name: tower3L2 }
   buy_tower_4_lvl2:  {folder: towers, name: tower4L2}
 
   # ── In-world tower sprites ────────────────────────────────────────────
@@ -65,12 +66,17 @@ images:
   tile_block:        {folder: others, name: block}
   tile_enable:       {folder: others, name: enable}
 
-  btn_sell: { folder: button, name: sell }
+  btn_sell:    { folder: button, name: sell }
   btn_upgrade: { folder: button, name: upgrade }
-  btn_max: { folder: button, name: max }
+  btn_max:     { folder: button, name: max }
 
   # ── Coin pickup (animated spritesheet, 4-frame horizontal strip) ──────
   coin_sheet:        {folder: coins, name: MonedaD}
 
 sounds:
   bg_music:          {folder: "", name: bg, extension: mp3}
+
+  # ── Tower attack SFX (referenced by config/towers.yaml shoot_sound:) ──
+  tower_1_shoot:     {folder: "", name: impactGeneric_light_000}
+  tower_2_shoot:     {folder: "", name: impactMining_000}
+  tower_3_shoot:     {folder: "", name: impactMetal_heavy_000}

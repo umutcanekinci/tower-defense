@@ -13,12 +13,13 @@ BTN_SIZE           = (50, 50)
 
 class BaseTower(RotateableObject):
     def __init__(self, tower_type: int, row: int, col: int,
-                 config: TowerConfig, assets) -> None:
+                 config: TowerConfig, assets, audio) -> None:
         super().__init__(
             assets.image_path(f"tower_{tower_type}_lvl1"),
             (col * TILE_SIZE + HALF_TILE, row * TILE_SIZE + HALF_TILE),
         )
         self.assets     = assets
+        self.audio      = audio
         self._price_font = pygame.font.SysFont("ComicSansMs", 15)
         self.tower_type  = tower_type
         self.row         = row
@@ -58,6 +59,10 @@ class BaseTower(RotateableObject):
     @property
     def buy_price(self) -> int:
         return self._config.prices[self.tower_type - 1][0]
+
+    @property
+    def shoot_sound(self) -> str | None:
+        return self._config.shoot_sounds[self.tower_type - 1]
 
     def is_max_level(self) -> bool:
         return self.level >= self.max_level
@@ -125,7 +130,8 @@ class BaseTower(RotateableObject):
         else:
             upgrade_btn = StateObject(None, screen + UPGRADE_BTN_OFFSET, BTN_SIZE,
                                       self.assets.image_path("btn_upgrade"))
-            upgrade_text = self._price_font.render(f"{self.upgrade_price} $", True, "white")
+            upgrade_color = "green" if game_state.money >= self.upgrade_price else "red"
+            upgrade_text = self._price_font.render(f"{self.upgrade_price} $", True, upgrade_color)
             surface.blit(upgrade_text, screen + Vector2(-50, -60))
             upgrade_btn.draw(surface)
 

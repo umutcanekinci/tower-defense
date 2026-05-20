@@ -9,16 +9,30 @@ from towers import BaseTower, TowerFactory
 
 GAME_AREA_WIDTH = 1536
 
+_TOWER_HOTKEYS = {
+	pygame.K_1: 1, pygame.K_KP1: 1,
+	pygame.K_2: 2, pygame.K_KP2: 2,
+	pygame.K_3: 3, pygame.K_KP3: 3,
+	pygame.K_4: 4, pygame.K_KP4: 4,
+}
+
+SHORTCUT_RADIUS = 18
+SHORTCUT_OFFSET = (-8, -8)
+SHORTCUT_BG_COLOR = (30, 30, 30)
+SHORTCUT_BORDER_COLOR = (255, 255, 255)
+SHORTCUT_TEXT_COLOR = (255, 255, 255)
+
 
 class TowerPlacementController:
 	def __init__(self, towers: list[BaseTower], tower_config: TowerConfig,
-	             assets: AssetManager, game_state: GameState,
+	             assets: AssetManager, audio, game_state: GameState,
 	             camera: Camera, panel_manager: PanelManager,
 	             buildable_grid: list[list[bool]],
 	             map_width: int) -> None:
 		self._towers         = towers
 		self._tower_config   = tower_config
 		self._assets         = assets
+		self._audio          = audio
 		self._game_state     = game_state
 		self._camera         = camera
 		self._panel_manager  = panel_manager
@@ -39,6 +53,7 @@ class TowerPlacementController:
 			assets.get_image("tower_4_lvl1"),
 			assets.get_image("tower_4_lvl2"),
 		]
+		self._shortcut_font = pygame.font.SysFont("Impact", 22, bold=True)
 
 	def update_cursor(self, mouse_pos: tuple) -> None:
 		if mouse_pos[0] < GAME_AREA_WIDTH:
@@ -60,7 +75,15 @@ class TowerPlacementController:
 			self._handle_tower_actions(event, mouse_pos)
 			self._handle_tower_selection()
 			self._handle_tower_purchase(mouse_pos)
+		if event.type == pygame.KEYDOWN:
+			self._handle_tower_hotkey(event)
 		self._handle_buy_tower_buttons(event, mouse_pos)
+
+	def _handle_tower_hotkey(self, event) -> None:
+		tower_type = _TOWER_HOTKEYS.get(event.key)
+		if tower_type is None:
+			return
+		self.buying_tower_type = 0 if self.buying_tower_type == tower_type else tower_type
 
 	def _handle_tower_actions(self, event, mouse_pos: tuple) -> None:
 		for tower in self._towers:
@@ -84,9 +107,11 @@ class TowerPlacementController:
 			return
 		if not self._is_placeable(self.cursor_row, self.cursor_col):
 			return
+		if self._game_state.money < self._tower_config.prices[self.buying_tower_type - 1][0]:
+			return
 		tower = TowerFactory.create(
 			self.buying_tower_type, self.cursor_row, self.cursor_col,
-			self._tower_config, self._assets, self._map_width)
+			self._tower_config, self._assets, self._audio, self._map_width)
 		if tower.get_blocking_position() is None:
 			self._towers.append(tower)
 		else:
@@ -105,6 +130,17 @@ class TowerPlacementController:
 			return
 		self._draw_grid_overlay(surface)
 		self._draw_cursor_preview(surface, mouse_pos)
+
+	def draw_shortcuts(self, surface: pygame.Surface) -> None:
+		for i in range(4):
+			btn = self._panel_manager["game"][f"buy_tower_{i + 1}"]
+			left, top = btn.rect.topleft
+			cx = int(left + SHORTCUT_OFFSET[0] + SHORTCUT_RADIUS)
+			cy = int(top  + SHORTCUT_OFFSET[1] + SHORTCUT_RADIUS)
+			pygame.draw.circle(surface, SHORTCUT_BG_COLOR,     (cx, cy), SHORTCUT_RADIUS)
+			pygame.draw.circle(surface, SHORTCUT_BORDER_COLOR, (cx, cy), SHORTCUT_RADIUS, 2)
+			label = self._shortcut_font.render(str(i + 1), True, SHORTCUT_TEXT_COLOR)
+			surface.blit(label, label.get_rect(center=(cx, cy)))
 
 	def _is_placeable(self, row: int | None, col: int | None) -> bool:
 		if self.buying_tower_type == 4:
@@ -146,7 +182,9 @@ class TowerPlacementController:
 		center = self._camera.world_to_screen(
 			(self.cursor_col * TILE_SIZE + HALF_TILE,
 			 self.cursor_row * TILE_SIZE + HALF_TILE))
-		blocked = not self._is_placeable(self.cursor_row, self.cursor_col)
+		buy_price = self._tower_config.prices[self.buying_tower_type - 1][0]
+		cannot_afford = self._game_state.money < buy_price
+		blocked = not self._is_placeable(self.cursor_row, self.cursor_col) or cannot_afford
 		self._blit_range_ring(surface, center, scaled_range, blocked)
 
 	@staticmethod

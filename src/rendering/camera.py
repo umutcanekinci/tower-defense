@@ -12,8 +12,9 @@ ZOOM_MAX         = 2.0
 
 
 class Camera:
-    def __init__(self, rect, map_width=None, map_height=None):
+    def __init__(self, rect, map_width=None, map_height=None, scroll_rect=None):
         self.rect        = rect
+        self.scroll_rect = scroll_rect or rect
         self._offset     = Vector2(0.0, 0.0)
         self.scale       = 1.0
         self._map_width  = map_width  or rect.width
@@ -53,10 +54,10 @@ class Camera:
     def update_with_mouse(self, mouse_pos):
         mx, my = mouse_pos
         dx = dy = 0
-        if mx > self.rect.width  - EDGE_SCROLL_ZONE: dx = -CAMERA_SPEED
-        if mx < EDGE_SCROLL_ZONE:                    dx = +CAMERA_SPEED
-        if my > self.rect.height - EDGE_SCROLL_ZONE: dy = -CAMERA_SPEED
-        if my < EDGE_SCROLL_ZONE:                    dy = +CAMERA_SPEED
+        if mx > self.scroll_rect.width  - EDGE_SCROLL_ZONE: dx = -CAMERA_SPEED
+        if mx < EDGE_SCROLL_ZONE:                           dx = +CAMERA_SPEED
+        if my > self.scroll_rect.height - EDGE_SCROLL_ZONE: dy = -CAMERA_SPEED
+        if my < EDGE_SCROLL_ZONE:                           dy = +CAMERA_SPEED
         if dx or dy:
             self._offset.x += dx
             self._offset.y += dy

@@ -5,8 +5,8 @@ from towers.base_tower import BaseTower
 
 
 class PlaneTower(BaseTower):
-    def __init__(self, tower_type: int, row: int, col: int, config: TowerConfig, assets, map_width: int) -> None:
-        super().__init__(tower_type, row, col, config, assets)
+    def __init__(self, tower_type: int, row: int, col: int, config: TowerConfig, assets, audio, map_width: int) -> None:
+        super().__init__(tower_type, row, col, config, assets, audio)
         self._map_width = map_width
 
     def update(self, game_state: GameState, enemies: list) -> None:

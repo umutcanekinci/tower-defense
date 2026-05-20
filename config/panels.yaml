@@ -69,6 +69,11 @@ panels:
       music_toggle:
         extends: music_toggle
 
+      kenney_logo:
+        position: [1751, 999]
+        size: [144, 56]
+        asset: kenney_logo
+
   contact:
     extends: [menu_chrome]
     objects:

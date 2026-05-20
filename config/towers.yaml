@@ -1,5 +1,6 @@
 # Tower stats — all lists are per-level (index 0 = level 1, etc.)
 # speeds = milliseconds between shots (LOWER = faster fire). Type 4 uses speeds as movement.
+# shoot_sound = key into config/assets.yaml sounds; omit for silent towers (e.g. plane).
 #
 # Range reference (tile = 64 px):
 #   128 = 2.0 tiles   160 = 2.5 tiles   192 = 3.0 tiles
@@ -7,25 +8,28 @@
 
 towers:
   - type: 1  # Rapid gun — cheap starter, low damage, short-medium range
-    prices:    [80]
-    max_level: 1
-    ranges:    [160]
-    damages:   [12]
-    speeds:    [600]      # DPS = 20.0
+    prices:      [80]
+    max_level:   1
+    ranges:      [160]
+    damages:     [12]
+    speeds:      [600]      # DPS = 20.0
+    shoot_sound: tower_1_shoot
 
   - type: 2  # Homing missile — medium range, upgrades scale DPS up
-    prices:    [220, 480, 850]
-    max_level: 3
-    ranges:    [192, 224, 256]
-    damages:   [40, 70, 120]
-    speeds:    [1200, 1000, 900]   # DPS = 33.3 / 70.0 / 133.3
+    prices:      [220, 480, 850]
+    max_level:   3
+    ranges:      [192, 224, 256]
+    damages:     [40, 70, 120]
+    speeds:      [1200, 1000, 900]   # DPS = 33.3 / 70.0 / 133.3
+    shoot_sound: tower_2_shoot
 
   - type: 3  # Heavy cannon — long range artillery, slow heavy hits
-    prices:    [380, 780]
-    max_level: 2
-    ranges:    [256, 288]
-    damages:   [90, 170]
-    speeds:    [2200, 1800]        # DPS = 40.9 / 94.4
+    prices:      [380, 780]
+    max_level:   2
+    ranges:      [256, 288]
+    damages:     [90, 170]
+    speeds:      [2200, 1800]        # DPS = 40.9 / 94.4
+    shoot_sound: tower_3_shoot
 
   - type: 4  # Plane — cosmetic flyover (no attack); speeds = movement
     prices:    [600, 1200]

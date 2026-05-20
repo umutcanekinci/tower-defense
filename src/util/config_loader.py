@@ -13,11 +13,12 @@ def load_tower_config() -> TowerConfig:
 
     towers = sorted(data["towers"], key=lambda t: t["type"])
     return TowerConfig(
-        prices     = [t["prices"]    for t in towers],
-        max_levels = [t["max_level"] for t in towers],
-        ranges     = [t["ranges"]    for t in towers],
-        damages    = [t["damages"]   for t in towers],
-        speeds     = [t["speeds"]    for t in towers],
+        prices       = [t["prices"]    for t in towers],
+        max_levels   = [t["max_level"] for t in towers],
+        ranges       = [t["ranges"]    for t in towers],
+        damages      = [t["damages"]   for t in towers],
+        speeds       = [t["speeds"]    for t in towers],
+        shoot_sounds = [t.get("shoot_sound") for t in towers],
     )
 
 

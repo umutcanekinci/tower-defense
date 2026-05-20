@@ -23,7 +23,7 @@ from domain.game_state import GameState
 from pygame_core.unity.components.transform import Transform
 from gameplay.tilemap import Tilemap
 from gameplay.combat.tower_placement import TowerPlacementController
-from towers import BaseTower
+from towers import BaseTower, GroundTower
 from gameplay.combat.wave_manager import WaveManager
 
 
@@ -48,19 +48,19 @@ class Game(Application):
         self.assets           = AssetManager()
         self.tower_config     = load_tower_config()
         self.tilemap          = Tilemap("assets/tiled_project/tiled_tilemap.tmx")
-        self.camera           = Camera(Rect(0,0, 1500, 1080), self.tilemap.map_width, self.tilemap.map_height)  # (1536, self.size[1])),
+        self.camera           = Camera(Rect(0,0, 1500, 1080), self.tilemap.map_width, self.tilemap.map_height, scroll_rect=Rect(0, 0, *self.size))
         self.panel_manager    = PanelManager(starting_tab="main_menu")
 
         self.load_panels(window_transform)
 
         self.audio            = GameAudio(str(self.assets.sound_path("bg_music")))
         self.hud              = GameHUD(self.game_state, self.tower_config, self.panel_manager)
-        self.tower_controller = TowerPlacementController(self.towers, self.tower_config, self.assets, self.game_state, self.camera, self.panel_manager, self.tilemap.buildable_grid, self.tilemap.map_width)
+        self.tower_controller = TowerPlacementController(self.towers, self.tower_config, self.assets, self.audio, self.game_state, self.camera, self.panel_manager, self.tilemap.buildable_grid, self.tilemap.map_width)
 
         self.menu_bg = MenuBackground(self.tilemap.pre_render(), self.size)
         self.menu_overlay = pygame.Surface(self.size, pygame.SRCALPHA)
         self.menu_overlay.fill((0, 0, 0, 120))
-        self.splash = SplashScreen(["assets/images/others/pygame_logo.png", "assets/images/others/kenney_logo.png"],fade_ms=1500, hold_ms=1000)
+        self.splash = SplashScreen(["assets/images/others/pygame_logo.png"],fade_ms=1500, hold_ms=1000)
         self._init_wave_manager()
 
     def load_panels(self, window_transform) -> None:
@@ -223,6 +223,8 @@ class Game(Application):
             self.menu_bg.draw(self.window)
             self.window.blit(self.menu_overlay, (0, 0))
         self.panel_manager.draw(self.window)
+        if self.panel_manager.current_panel == "game":
+            self.tower_controller.draw_shortcuts(self.window)
 
     def _draw_game(self) -> None:
         def _draw_tilemap(self) -> None:
@@ -242,6 +244,14 @@ class Game(Application):
         _draw_towers(self)
         _draw_enemies(self)
         self.tower_controller.draw(self.window, self.mouse.position)
+        self._draw_selected_tower_ui()
+
+    def _draw_selected_tower_ui(self) -> None:
+        selected = self.game_state.selected_tower
+        if selected is None or selected not in self.towers:
+            return
+        if isinstance(selected, GroundTower):
+            selected.draw_selected_ui(self.window, self.game_state, self.camera)
 
 
     # ── debug ─────────────────────────────────────────────────────────────────
