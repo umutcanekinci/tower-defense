@@ -22,12 +22,12 @@ object_templates:
     font_size: 48
     position: [CENTER, CENTER]
   fee_text_bg:
-    size: [133, 60]
+    size: [80, 32]
     color: [0, 0, 0, 150]
   fee_text:
     type: text
     font: ComicSansMs
-    font_size: 25
+    font_size: 18
     color: green
     text: "0 $"
     position: [CENTER, CENTER]
@@ -93,8 +93,21 @@ panels:
 
   game:
     objects:
-      live_background:
+      level_background:
         position: [15, 15]
+        size: [130, 50]
+        color: [50, 50, 50, 200]
+      level_text:
+        parent: level_background
+        position: [10, CENTER]
+        type: text
+        text: "Level 1"
+        font: ComicSansMs
+        font_size: 27
+        bold: true
+        color: white
+      live_background:
+        position: [15, 75]
         size: [100, 50]
         color: [50, 50, 50, 200]
       live_image:
@@ -112,7 +125,7 @@ panels:
         bold: true
         color: white
       coin_background:
-        position: [15, 75]
+        position: [15, 135]
         size: [150, 50]
         color: [50, 50, 50, 200]
       coin_image:
@@ -132,33 +145,30 @@ panels:
         font_size: 27
         bold: true
         color: white
+
       right_panel_bg:
-        position: [1500, 0]
-        size: [420, 1080]
+        position: [1780, 0]
+        size: [140, 1080]
         color: [50, 50, 50]
-      level_text:
-        parent: right_panel_bg
-        type: text
-        position: [CENTER, 2]
-        text: "Level 1"
-        font: ComicSansMs
-        font_size: 50
-        color: white
       buy_tower_1:
-        position: [1545, 218]
-        size: [160, 160]
+        parent: right_panel_bg
+        position: [CENTER, 30]
+        size: [96, 96]
         asset: buy_tower_1
       buy_tower_2:
-        position: [1736, 218]
-        size: [160, 160]
+        parent: right_panel_bg
+        position: [CENTER, 200]
+        size: [96, 96]
         asset: buy_tower_2
       buy_tower_3:
-        position: [1545, 446]
-        size: [160, 160]
+        parent: right_panel_bg
+        position: [CENTER, 370]
+        size: [96, 96]
         asset: buy_tower_3
       buy_tower_4:
-        position: [1736, 446]
-        size: [160, 160]
+        parent: right_panel_bg
+        position: [CENTER, 540]
+        size: [96, 96]
         asset: buy_tower_4
         states:
           lvl2:
@@ -166,19 +176,19 @@ panels:
       fee_text_bg_1:
         extends: fee_text_bg
         parent: right_panel_bg
-        position: [64, 379]
+        position: [CENTER, 132]
       fee_text_bg_2:
         extends: fee_text_bg
         parent: right_panel_bg
-        position: [255, 379]
+        position: [CENTER, 302]
       fee_text_bg_3:
         extends: fee_text_bg
         parent: right_panel_bg
-        position: [64, 607]
+        position: [CENTER, 472]
       fee_text_bg_4:
         extends: fee_text_bg
         parent: right_panel_bg
-        position: [255, 607]
+        position: [CENTER, 642]
       fee_text_1:
         extends: fee_text
         parent: fee_text_bg_1
@@ -191,35 +201,39 @@ panels:
       fee_text_4:
         extends: fee_text
         parent: fee_text_bg_4
-      upgrade_plane_button:
-        extends: btn-sm
-        parent: right_panel_bg
-        position: [CENTER, 856]
-        size: [338, 88]
-      upgrade_plane_button_text:
-        extends: button_text
-        parent: upgrade_plane_button
-        text: "UPGRADE PLANES"
-      menu_button:
-        extends: btn-sm
-        parent: right_panel_bg
-        position: [CENTER, 964]
-        size: [338, 88]
-      menu_button_text:
-        extends: button_text
-        parent: menu_button
-        text: "MENU"
       start_pause_button:
-        position: [1640, 780]
+        parent: right_panel_bg
+        position: [CENTER, 730]
         size: [64, 64]
         asset: btn_start
         states:
           pause:
             asset: btn_pause
       x2:
-        position: [1747, 780]
+        parent: right_panel_bg
+        position: [CENTER, 830]
         size: [64, 64]
         asset: btn_2x
         states:
           active:
             asset: btn_2x_active
+      upgrade_plane_button:
+        extends: btn-sm
+        parent: right_panel_bg
+        position: [CENTER, 930]
+        size: [100, 60]
+      upgrade_plane_button_text:
+        extends: button_text
+        parent: upgrade_plane_button
+        font_size: 21
+        text: "UPG PLANES"
+      menu_button:
+        extends: btn-sm
+        parent: right_panel_bg
+        position: [CENTER, 1010]
+        size: [100, 60]
+      menu_button_text:
+        extends: button_text
+        parent: menu_button
+        font_size: 28
+        text: "MENU"
