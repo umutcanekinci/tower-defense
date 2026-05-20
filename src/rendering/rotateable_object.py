@@ -2,7 +2,7 @@ from typing import override
 import pygame
 from pygame.math import Vector2
 
-from util.math import angle_between_delta
+from pygame_core.math_utils import angle_between_delta
 from pygame_core.asset_path import ImagePath, PathLike
 from pygame_core.unity.components.sprite_renderer2d import SpriteRenderer2D
 from unity.state_object import StateObject

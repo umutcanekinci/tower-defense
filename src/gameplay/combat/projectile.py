@@ -4,7 +4,7 @@ import pygame
 from pygame.math import Vector2
 
 from rendering.rotateable_object import RotateableObject
-from util.math import angle_between_points
+from pygame_core.math_utils import angle_between_points
 
 if TYPE_CHECKING:
     from domain.protocols import IGameContext

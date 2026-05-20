@@ -9,11 +9,11 @@ from pygame_core.mouse import Mouse
 from pygame_core.panel_manager import PanelManager
 from pygame_core.panel_loader_ext import PanelLoaderExt
 
-from ui import panel_factory
+from pygame_core import panel_factory
 from util.config_loader import load_tower_config
-from rendering.camera import Camera
+from pygame_core.camera import Camera
 from util.constants import TILE_SIZE
-from util.debug import Debug
+from pygame_core.debug import Debug
 from ui.menu_background import MenuBackground
 from app.splash_screen import SplashScreen
 from pygame_core.unity.game_audio import GameAudio
