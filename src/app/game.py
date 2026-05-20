@@ -15,7 +15,7 @@ from pygame_core.camera import Camera
 from util.constants import TILE_SIZE
 from pygame_core.debug import Debug
 from ui.menu_background import MenuBackground
-from app.splash_screen import SplashScreen
+from pygame_core.splash_screen import SplashScreen
 from pygame_core.unity.game_audio import GameAudio
 from gameplay.combat.enemy import Enemy
 from ui.game_hud import GameHUD
@@ -261,9 +261,9 @@ class Game(Application):
         if not self._is_in_debug_mode: return
 
         debug_info = [
-            self.mouse.info,
-            self.camera.info,
-            self.panel_manager["main_menu"]["play"].info,
+            self.mouse.get_info(),
+            self.camera.info(),
+            self.panel_manager["main_menu"]["play"].get_info,
         ]
         Debug.draw(self.window, pygame.font.SysFont("Consolas", 20), debug_info)
 
