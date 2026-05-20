@@ -4,6 +4,7 @@ images:
   # ── Backgrounds & general ─────────────────────────────────────────────
   bg_main:           {folder: others, name: bg}
   logo:              {folder: others, name: logo}
+  pygame_logo:       {folder: others, name: pygame_logo}
   kenney_logo:       {folder: others, name: kenney_logo}
   social_media:      {folder: others, name: social_media}
   heart:             {folder: others, name: heart}

@@ -78,7 +78,7 @@ class Game(Application):
         self.menu_bg = MenuBackground(self.tilemap.pre_render(), self.size)
         self.menu_overlay = pygame.Surface(self.size, pygame.SRCALPHA)
         self.menu_overlay.fill((0, 0, 0, 120))
-        self.splash = SplashScreen(["assets/images/others/pygame_logo.png"], fade_ms=splash["fade_ms"], hold_ms=splash["hold_ms"])
+        self.splash = SplashScreen([self.assets.image_path("pygame_logo")], fade_ms=splash["fade_ms"], hold_ms=splash["hold_ms"])
         self._init_wave_manager()
 
     def load_panels(self, window_transform) -> None:
@@ -128,7 +128,10 @@ class Game(Application):
         self.panel_manager.update()
         if self.panel_manager.current_panel in ("main_menu", "contact"):
             self.menu_bg.update()
-        if self.panel_manager.current_panel != "game": return
+        if self.panel_manager.current_panel == "game":
+            self._updaate_game()
+
+    def _updaate_game(self) -> None:
         self.camera.update_with_mouse(self.mouse.position)
         self.mouse.update()
         self.tower_controller.update_cursor(self.mouse.position)
