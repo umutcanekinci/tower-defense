@@ -1,5 +1,5 @@
 from util.constants import TILE_SIZE, HALF_TILE
-from rendering.rotateable_object import RotateableObject
+from gameplay.rotateable_object import RotateableObject
 
 
 class Tile(RotateableObject):

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from pygame.math import Vector2
 
 from util.config_loader import load_enemy_stats
-from rendering.rotateable_object import RotateableObject
+from gameplay.rotateable_object import RotateableObject
 
 if TYPE_CHECKING:
     from domain.protocols import IGameContext

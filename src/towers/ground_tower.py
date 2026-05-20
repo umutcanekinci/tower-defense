@@ -1,7 +1,7 @@
 import pygame
 from pygame.math import Vector2
 
-from rendering.rotateable_object import RotateableObject
+from gameplay.rotateable_object import RotateableObject
 from domain.game_state import GameState, TowerConfig
 from gameplay.combat.projectile import MuzzleFlash, Projectile
 from towers.base_tower import BaseTower
