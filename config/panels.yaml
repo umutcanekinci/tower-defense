@@ -43,15 +43,12 @@ panels:
   main_menu:
     extends: [menu_chrome]
     objects:
-      play:
-        extends: btn-lg
-        position: [CENTER, 300]
-      contact:
-        extends: btn-lg
-        position: [CENTER, 420]
-      exit:
-        extends: btn-lg
-        position: [CENTER, 540]
+      main_menu_buttons:
+        layout: { direction: vertical, start: [CENTER, 300], spacing: 120 }
+        objects:
+          play:    { extends: btn-lg }
+          contact: { extends: btn-lg }
+          exit:    { extends: btn-lg }
 
       play_text:
         extends: button_text
@@ -151,45 +148,27 @@ panels:
         position: [1780, 0]
         size: [140, 1080]
         color: [50, 50, 50]
-      buy_tower_1:
+      tower_buttons:
         parent: right_panel_bg
-        position: [CENTER, 30]
-        size: [96, 96]
-        asset: buy_tower_1
-      buy_tower_2:
+        layout: { direction: vertical, start: [CENTER, 30], spacing: 170 }
+        objects:
+          buy_tower_1: { size: [96, 96], asset: buy_tower_1 }
+          buy_tower_2: { size: [96, 96], asset: buy_tower_2 }
+          buy_tower_3: { size: [96, 96], asset: buy_tower_3 }
+          buy_tower_4:
+            size: [96, 96]
+            asset: buy_tower_4
+            states:
+              lvl2:
+                asset: buy_tower_4_lvl2
+      fee_bgs:
         parent: right_panel_bg
-        position: [CENTER, 200]
-        size: [96, 96]
-        asset: buy_tower_2
-      buy_tower_3:
-        parent: right_panel_bg
-        position: [CENTER, 370]
-        size: [96, 96]
-        asset: buy_tower_3
-      buy_tower_4:
-        parent: right_panel_bg
-        position: [CENTER, 540]
-        size: [96, 96]
-        asset: buy_tower_4
-        states:
-          lvl2:
-            asset: buy_tower_4_lvl2
-      fee_text_bg_1:
-        extends: fee_text_bg
-        parent: right_panel_bg
-        position: [CENTER, 132]
-      fee_text_bg_2:
-        extends: fee_text_bg
-        parent: right_panel_bg
-        position: [CENTER, 302]
-      fee_text_bg_3:
-        extends: fee_text_bg
-        parent: right_panel_bg
-        position: [CENTER, 472]
-      fee_text_bg_4:
-        extends: fee_text_bg
-        parent: right_panel_bg
-        position: [CENTER, 642]
+        layout: { direction: vertical, start: [CENTER, 132], spacing: 170 }
+        objects:
+          fee_text_bg_1: { extends: fee_text_bg }
+          fee_text_bg_2: { extends: fee_text_bg }
+          fee_text_bg_3: { extends: fee_text_bg }
+          fee_text_bg_4: { extends: fee_text_bg }
       fee_text_1:
         extends: fee_text
         parent: fee_text_bg_1
