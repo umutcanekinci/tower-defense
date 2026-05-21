@@ -27,7 +27,7 @@ class TowerPlacementController:
 	             camera: Camera, panel_manager: PanelManager,
 	             buildable_grid: list[list[bool]],
 	             map_width: int,
-	             game_area_width: int) -> None:
+	             game_area: pygame.Rect) -> None:
 		self._towers           = towers
 		self._tower_config     = tower_config
 		self._assets           = assets
@@ -37,7 +37,7 @@ class TowerPlacementController:
 		self._panel_manager    = panel_manager
 		self._buildable_grid   = buildable_grid
 		self._map_width        = map_width
-		self._game_area_width  = game_area_width
+		self._game_area        = game_area
 
 		self.buying_tower_type: int        = 0
 		self.cursor_col:        int | None = None
@@ -56,7 +56,7 @@ class TowerPlacementController:
 		self._shortcut_font = pygame.font.SysFont("Impact", 22, bold=True)
 
 	def update_cursor(self, mouse_pos: tuple) -> None:
-		if mouse_pos[0] < self._game_area_width:
+		if self._game_area.collidepoint(mouse_pos):
 			world = self._camera.screen_to_world(mouse_pos)
 			self.cursor_col = int(world.x // TILE_SIZE)
 			self.cursor_row = int(world.y // TILE_SIZE)
@@ -71,13 +71,24 @@ class TowerPlacementController:
 		return None
 
 	def handle_event(self, event, mouse_pos: tuple) -> None:
+		self._handle_buy_tower_buttons(event, mouse_pos)
 		if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+			if self._is_over_ui(mouse_pos):
+				return
 			self._handle_tower_actions(event, mouse_pos)
 			self._handle_tower_selection()
 			self._handle_tower_purchase(mouse_pos)
 		if event.type == pygame.KEYDOWN:
 			self._handle_tower_hotkey(event)
-		self._handle_buy_tower_buttons(event, mouse_pos)
+
+	def _is_over_ui(self, mouse_pos: tuple) -> bool:
+		for obj in self._panel_manager["game"].values():
+			if hasattr(obj, "active") and not obj.active:
+				continue
+			rect = getattr(obj, "rect", None)
+			if rect is not None and rect.collidepoint(mouse_pos):
+				return True
+		return False
 
 	def _handle_tower_hotkey(self, event) -> None:
 		tower_type = _TOWER_HOTKEYS.get(event.key)
@@ -103,7 +114,7 @@ class TowerPlacementController:
 		self._game_state.selected_tower = None if is_selected else clicked
 
 	def _handle_tower_purchase(self, mouse_pos: tuple) -> None:
-		if mouse_pos[0] > self._game_area_width or not self.buying_tower_type:
+		if not self._game_area.collidepoint(mouse_pos) or not self.buying_tower_type:
 			return
 		if not self._is_placeable(self.cursor_row, self.cursor_col):
 			return
@@ -168,8 +179,11 @@ class TowerPlacementController:
 			else self.buying_tower_type - 1
 		)
 		mx, my = mouse_pos
-		if mx >= self._game_area_width:
+		if not self._game_area.collidepoint(mouse_pos):
+			old_clip = surface.get_clip()
+			surface.set_clip(None)
 			surface.blit(self._tower_images[index], (mx - HALF_TILE, my - HALF_TILE))
+			surface.set_clip(old_clip)
 			return
 
 		scaled_tower = self._camera.scale_image(self._tower_images[index])

@@ -6,7 +6,7 @@ window:
 gameplay:
   starting_money: 2000
   starting_lives: 10
-  game_area_width: 1780
+  game_area: [0, 0, 1920, 1080]   # [x, y, width, height]
 
 splash:
   fade_ms: 1500

@@ -1,7 +1,7 @@
 import pygame
 from pygame.math import Vector2
 
-from gameplay.rotateable_object import RotateableObject
+from gameplay.rotatable_object import RotatableObject
 from domain.game_state import GameState, TowerConfig
 from gameplay.combat.projectile import MuzzleFlash, Projectile
 from towers.base_tower import BaseTower
@@ -20,7 +20,7 @@ class GroundTower(BaseTower):
 
     def __init__(self, tower_type: int, row: int, col: int, config: TowerConfig, assets, audio) -> None:
         super().__init__(tower_type, row, col, config, assets, audio)
-        self.platform = RotateableObject(
+        self.platform = RotatableObject(
             assets.image_path(f"tower_{tower_type}_platform"),
             self.position,
         )

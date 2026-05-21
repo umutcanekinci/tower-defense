@@ -18,11 +18,11 @@ from util.constants import TILE_SIZE
 from pygame_core.debug import Debug
 from ui.menu_background import MenuBackground
 from pygame_core.splash_screen import SplashScreen
-from pygame_core.unity.game_audio import GameAudio
+from pygame_core.ecs.game_audio import GameAudio
 from gameplay.combat.enemy import Enemy
 from ui.game_hud import GameHUD
 from domain.game_state import GameState
-from pygame_core.unity.components.transform import Transform
+from pygame_core.ecs.components.transform import Transform
 from gameplay.tilemap import Tilemap
 from gameplay.combat.tower_placement import TowerPlacementController
 from towers import BaseTower, GroundTower
@@ -52,13 +52,13 @@ class Game(Application):
         self.enemies:      list[Enemy]     = []
         self.wave_manager: WaveManager | None = None
 
-        self.game_area_width  = gameplay["game_area_width"]
+        self.game_area        = Rect(*gameplay["game_area"])
         self.game_state       = GameState(start_money=gameplay["starting_money"], start_lives=gameplay["starting_lives"])
         self.assets           = AssetManager()
         self.tower_config     = load_tower_config()
         self.tilemap          = Tilemap("assets/tiled_project/tiled_tilemap.tmx")
         self.camera           = Camera(
-            Rect(0, 0, self.game_area_width, self.size[1]),
+            self.game_area,
             self.tilemap.map_width, self.tilemap.map_height,
             scroll_rect=Rect(0, 0, *self.size),
             edge_scroll_zone=camera["edge_scroll_zone"],
@@ -73,7 +73,7 @@ class Game(Application):
 
         self.audio            = GameAudio(str(self.assets.sound_path("bg_music")))
         self.hud              = GameHUD(self.game_state, self.tower_config, self.panel_manager)
-        self.tower_controller = TowerPlacementController(self.towers, self.tower_config, self.assets, self.audio, self.game_state, self.camera, self.panel_manager, self.tilemap.buildable_grid, self.tilemap.map_width, self.game_area_width)
+        self.tower_controller = TowerPlacementController(self.towers, self.tower_config, self.assets, self.audio, self.game_state, self.camera, self.panel_manager, self.tilemap.buildable_grid, self.tilemap.map_width, self.game_area)
 
         self.menu_bg = MenuBackground(self.tilemap.pre_render(), self.size)
         self.menu_overlay = pygame.Surface(self.size, pygame.SRCALPHA)
@@ -129,9 +129,9 @@ class Game(Application):
         if self.panel_manager.current_panel in ("main_menu", "contact"):
             self.menu_bg.update()
         if self.panel_manager.current_panel == "game":
-            self._updaate_game()
+            self._update_game()
 
-    def _updaate_game(self) -> None:
+    def _update_game(self) -> None:
         self.camera.update_with_mouse(self.mouse.position)
         self.mouse.update()
         self.tower_controller.update_cursor(self.mouse.position)
@@ -181,7 +181,7 @@ class Game(Application):
         elif objects["contact"].is_clicked(event, self.mouse.position):
             self.panel_manager.current_panel = "contact"
         elif objects["exit"].is_clicked(event, self.mouse.position):
-            self.on_exit()
+            self.on_exit_request()
         if objects["music_toggle"].is_clicked(event, self.mouse.position):
             self._toggle_music()
 
@@ -201,7 +201,7 @@ class Game(Application):
         self.tower_controller.handle_event(event, self.mouse.position)
         self._handle_upgrade_plane_button(event)
         self._handle_start_pause(event)
-        self._handle_x2(event)
+        self._handle_speed_toggle(event)
 
     def _handle_upgrade_plane_button(self, event) -> None:
         panel = self.panel_manager["game"]
@@ -209,23 +209,25 @@ class Game(Application):
         if self.game_state.money >= 5000 and self.game_state.plane_level == 1:
             self.game_state.decrease_money(5000)
             panel["buy_tower_4"].set_state("lvl2")
+            panel["upgrade_plane_button"].set_state("purchased")
             self.game_state.plane_level = 2
 
     def _handle_start_pause(self, event) -> None:
-        btn = self.panel_manager["game"]["start_pause_button"]
-        if not btn.is_clicked(event, self.mouse.position): return
+        panel = self.panel_manager["game"]
+        if not panel["start_pause_button"].is_clicked(event, self.mouse.position): return
         self.game_state.is_started = not self.game_state.is_started
-        btn.set_state("pause" if self.game_state.is_started else None)
+        panel["start_pause_button_icon"].set_state("pause" if self.game_state.is_started else None)
 
-    def _handle_x2(self, event) -> None:
-        x2 = self.panel_manager["game"]["x2"]
-        if not x2.is_clicked(event, self.mouse.position): return
+    def _handle_speed_toggle(self, event) -> None:
+        panel = self.panel_manager["game"]
+        button = panel["speed_toggle_button"]
+        if not button.is_clicked(event, self.mouse.position): return
         if self.game_state.speed == 1:
             self.game_state.speed = 2
-            x2.set_state("active")
+            button.set_state("active")
         else:
             self.game_state.speed = 1
-            x2.set_state(None)
+            button.set_state(None)
 
     def _toggle_music(self) -> None:
         self.audio.toggle_music()
@@ -261,11 +263,14 @@ class Game(Application):
             for enemy in self.enemies:
                 self.camera.draw(self.window, enemy)
 
+        old_clip = self.window.get_clip()
+        self.window.set_clip(self.game_area)
         _draw_tilemap(self)
         _draw_towers(self)
         _draw_enemies(self)
         self.tower_controller.draw(self.window, self.mouse.position)
         self._draw_selected_tower_ui()
+        self.window.set_clip(old_clip)
 
     def _draw_selected_tower_ui(self) -> None:
         selected = self.game_state.selected_tower
@@ -291,7 +296,7 @@ class Game(Application):
     # ── exit ──────────────────────────────────────────────────────────────────
 
     @override
-    def on_exit(self):
+    def on_exit_request(self):
         if self.panel_manager.current_panel == "main_menu":
             self.exit()
         elif self.panel_manager.current_panel in ("contact", "game"):

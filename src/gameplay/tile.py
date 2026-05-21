@@ -1,8 +1,8 @@
 from util.constants import TILE_SIZE, HALF_TILE
-from gameplay.rotateable_object import RotateableObject
+from gameplay.rotatable_object import RotatableObject
 
 
-class Tile(RotateableObject):
+class Tile(RotatableObject):
     _TILE_KEYS = {
         "0": "tile_grass",
         "1": "tile_clay",
@@ -22,7 +22,7 @@ class Tile(RotateableObject):
         if len(tile_type) > 2 and tile_type[1:3] == "+B":
             dec_id = tile_type[tile_type.index("+B") + 2]
             dec_path = assets.image_path(f"tile_decoration_{dec_id}")
-            self.decoration = RotateableObject(dec_path, self.position)
+            self.decoration = RotatableObject(dec_path, self.position)
 
     def draw(self, surface, camera) -> None:
         camera.draw(surface, self)

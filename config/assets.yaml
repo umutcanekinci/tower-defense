@@ -12,12 +12,12 @@ images:
   # ── Menu buttons (normal + hover pairs) ───────────────────────────────
   btn:               {folder: gui/Green/Default, name: button_rectangle_depth_flat}
   btn_hover:         {folder: gui/Red/Default, name: button_rectangle_depth_flat}
+  btn_active:        {folder: gui/Yellow/Default, name: button_rectangle_depth_flat}
 
   # ── In-game control buttons ───────────────────────────────────────────
-  btn_start:         {folder: icons/Large, name: icon_play}
-  btn_pause:         {folder: icons/Large, name: icon_pause}
-  btn_2x:            {folder: icons/Large, name: icon_fire}
-  btn_2x_active:     {folder: icons/Large, name: icon_fire}
+  icon_play:         {folder: icons/Large, name: icon_play}
+  icon_pause:         {folder: icons/Large, name: icon_pause}
+  icon_speed_x2:     {folder: icons/Large, name: icon_fire}
 
   # ── Tower buy panel icons ─────────────────────────────────────────────
   buy_tower_1:       {folder: towers, name: buy_tower1}
@@ -70,7 +70,6 @@ images:
 
   icon_music: { folder: icons/Large, name: icon_music }
   icon_music_disabled: { folder: icons/Large, name: icon_music_disabled }
-
 
   # ── Coin pickup (animated spritesheet, 4-frame horizontal strip) ──────
   coin_sheet:        {folder: coins, name: MonedaD}

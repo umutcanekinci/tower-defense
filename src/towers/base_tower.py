@@ -2,8 +2,8 @@ import pygame
 from pygame.math import Vector2
 
 from util.constants import TILE_SIZE, HALF_TILE
-from gameplay.rotateable_object import RotateableObject
-from pygame_core.unity.state_object import StateObject
+from gameplay.rotatable_object import RotatableObject
+from pygame_core.ecs.state_object import StateObject
 from domain.game_state import GameState, TowerConfig
 
 UPGRADE_BTN_OFFSET = Vector2(-55, -105)
@@ -11,7 +11,7 @@ SELL_BTN_OFFSET    = Vector2( 20, -110)
 BTN_SIZE           = (50, 50)
 
 
-class BaseTower(RotateableObject):
+class BaseTower(RotatableObject):
     def __init__(self, tower_type: int, row: int, col: int,
                  config: TowerConfig, assets, audio) -> None:
         super().__init__(

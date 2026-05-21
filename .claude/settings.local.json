@@ -21,7 +21,12 @@
       "PowerShell(Get-ChildItem *)",
       "Bash(echo \"EXIT=$?\")",
       "Bash(PYTHONPATH=\"src;src/pygame_core\" timeout 5 python __main__.py)",
-      "Bash(PYTHONPATH=\"src;src/pygame_core;src/pygame_core/pygame_core;src/pygame_core/build/lib\" timeout 8 python __main__.py)"
+      "Bash(PYTHONPATH=\"src;src/pygame_core;src/pygame_core/pygame_core;src/pygame_core/build/lib\" timeout 8 python __main__.py)",
+      "Bash(PYTHONPATH=\"src;src/pygame_core;src/pygame_core/pygame_core\" timeout 5 python __main__.py)",
+      "Bash(PYTHONPATH=\"src;src/pygame_core;src/pygame_core/pygame_core\" timeout 6 python __main__.py)",
+      "PowerShell(\\(Get-ChildItem \"C:\\\\Users\\\\user\\\\PycharmProjects\\\\tower-defense\\\\assets\\\\images\\\\icons\\\\Default\\\\\" -Force\\).Name | Select-Object -First 50)",
+      "Bash(PYTHONPATH='src;src/pygame_core;src/pygame_core/pygame_core' python -c ' *)",
+      "PowerShell(Rename-Item *)"
     ]
   }
 }

@@ -105,8 +105,8 @@ class Tilemap:
                 else pygame.transform.scale_by(self._native_surface, camera.scale)
             )
         old_clip = surface.get_clip()
-        surface.set_clip(pygame.Rect(0, 0, camera.rect.width, camera.rect.height))
-        surface.blit(self._scaled_surface, camera.rect.topleft)
+        surface.set_clip(camera.rect)
+        surface.blit(self._scaled_surface, camera.world_to_screen((0, 0)))
         surface.set_clip(old_clip)
 
     def pre_render(self) -> pygame.Surface:

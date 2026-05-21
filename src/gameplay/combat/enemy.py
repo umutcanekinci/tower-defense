@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from pygame.math import Vector2
 
 from util.config_loader import load_enemy_stats
-from gameplay.rotateable_object import RotateableObject
+from gameplay.rotatable_object import RotatableObject
 
 if TYPE_CHECKING:
     from domain.protocols import IGameContext
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 _BASE_STATS: dict[int, tuple[int, float, int, int]] = load_enemy_stats()
 
 
-class Enemy(RotateableObject):
+class Enemy(RotatableObject):
     """Walks a polyline of world-space waypoints.
 
     Spawn position is `waypoints[0]`; the enemy advances to each subsequent

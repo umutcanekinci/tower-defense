@@ -4,8 +4,8 @@ from pygame.math import Vector2
 
 from pygame_core.math_utils import angle_between_delta
 from pygame_core.asset_path import ImagePath, PathLike
-from pygame_core.unity.components.sprite_renderer2d import SpriteRenderer2D
-from unity.state_object import StateObject
+from pygame_core.ecs.components.sprite_renderer2d import SpriteRenderer2D
+from pygame_core.ecs.state_object import StateObject
 
 # Angle (atan2 / screen-coord convention) the sprite's "forward" points in its source PNG.
 FACE_RIGHT = 0
@@ -14,7 +14,7 @@ FACE_LEFT  = 180
 FACE_UP    = -90
 
 
-class RotateableObject(StateObject):
+class RotatableObject(StateObject):
 	def __init__(self, image_path: ImagePath, pos: Vector2, sprite_orientation: float = FACE_RIGHT):
 		self.position = Vector2(pos)  # must precede super() — ImageObject.__init__ triggers self.load(), which reads self.position
 		super().__init__(pos=pos, image_path=image_path)

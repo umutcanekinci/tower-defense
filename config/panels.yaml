@@ -23,7 +23,7 @@ object_templates:
     position: [CENTER, CENTER]
   fee_text_bg:
     size: [80, 32]
-    color: [0, 0, 0, 150]
+    color: [0, 0, 0, 100]
   fee_text:
     type: text
     font: ComicSansMs
@@ -144,13 +144,65 @@ panels:
         bold: true
         color: white
 
-      right_panel_bg:
-        position: [1780, 0]
-        size: [140, 1080]
-        color: [50, 50, 50]
+
+
+      control_panel_bg:
+        anchor: top-right
+        position: [-15, 15]
+        size: [120, 200]
+      button_panel:
+        parent: control_panel_bg
+        layout: { direction: vertical, start: [CENTER, 0], spacing: 100 }
+        objects:
+          menu_button:          { extends: btn-sm, size: [60, 60] }
+          start_pause_button:   { extends: btn-sm, size: [60, 60] }
+          speed_toggle_button:
+            extends: btn-sm
+            size: [60, 60]
+            states:
+                active:
+                    asset: btn_active
+          upgrade_plane_button:
+            extends: btn-sm
+            size: [60, 60]
+            states:
+                purchased:
+                    asset: btn_active
+
+      menu_button_icon:
+        parent: menu_button
+        position: [CENTER, CENTER]
+        size: [32, 32]
+        asset: btn_menu
+      start_pause_button_icon:
+        parent: start_pause_button
+        position: [CENTER, CENTER]
+        size: [32, 32]
+        asset: icon_play
+        states:
+          pause:
+            asset: icon_pause
+      speed_toggle_button_icon:
+        parent: speed_toggle_button
+        position: [CENTER, CENTER]
+        size: [32, 32]
+        asset: icon_speed_x2
+
+      upgrade_plane_button_text:
+        extends: button_text
+        parent: upgrade_plane_button
+        font_size: 21
+        text: "UPG PLANES"
+
+
+      tower_panel_bg:
+        anchor: bottom
+        position: [0, -10]
+        size: [650, 160]
+        color: [50, 50, 50, 200]
       tower_buttons:
-        parent: right_panel_bg
-        layout: { direction: vertical, start: [CENTER, 30], spacing: 170 }
+        parent: tower_panel_bg
+        layout: { direction: horizontal, start: [30, 15], spacing: 170 }
         objects:
           buy_tower_1: { size: [96, 96], asset: buy_tower_1 }
           buy_tower_2: { size: [96, 96], asset: buy_tower_2 }
@@ -162,8 +214,8 @@ panels:
               lvl2:
                 asset: buy_tower_4_lvl2
       fee_bgs:
-        parent: right_panel_bg
-        layout: { direction: vertical, start: [CENTER, 132], spacing: 170 }
+        parent: tower_panel_bg
+        layout: { direction: horizontal, start: [40, 120], spacing: 170 }
         objects:
           fee_text_bg_1: { extends: fee_text_bg }
           fee_text_bg_2: { extends: fee_text_bg }
@@ -181,39 +233,3 @@ panels:
       fee_text_4:
         extends: fee_text
         parent: fee_text_bg_4
-      start_pause_button:
-        parent: right_panel_bg
-        position: [CENTER, 730]
-        size: [64, 64]
-        asset: btn_start
-        states:
-          pause:
-            asset: btn_pause
-      x2:
-        parent: right_panel_bg
-        position: [CENTER, 830]
-        size: [64, 64]
-        asset: btn_2x
-        states:
-          active:
-            asset: btn_2x_active
-      upgrade_plane_button:
-        extends: btn-sm
-        parent: right_panel_bg
-        position: [CENTER, 930]
-        size: [60, 60]
-      upgrade_plane_button_text:
-        extends: button_text
-        parent: upgrade_plane_button
-        font_size: 21
-        text: "UPG PLANES"
-      menu_button:
-        extends: btn-sm
-        parent: right_panel_bg
-        position: [CENTER, 1010]
-        size: [60, 60]
-      menu_button_image:
-        parent: menu_button
-        position: [CENTER, CENTER]
-        size: [32, 32]
-        asset: btn_menu
