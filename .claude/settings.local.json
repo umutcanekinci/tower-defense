@@ -17,7 +17,11 @@
       "Bash(git -C C:/Users/user/PycharmProjects/tower-defense diff HEAD -- src/gameplay/combat/tower_placement.py)",
       "Bash(git *)",
       "PowerShell(.venv\\\\Scripts\\\\python.exe -c \"import ast; ast.parse\\(open\\(r'src/app/game.py'\\).read\\(\\)\\); print\\('ok'\\)\")",
-      "PowerShell(.venv\\\\Scripts\\\\python.exe -c \"import yaml; yaml.safe_load\\(open\\(r'config/panels.yaml', encoding='utf-8'\\)\\); print\\('yaml ok'\\)\")"
+      "PowerShell(.venv\\\\Scripts\\\\python.exe -c \"import yaml; yaml.safe_load\\(open\\(r'config/panels.yaml', encoding='utf-8'\\)\\); print\\('yaml ok'\\)\")",
+      "PowerShell(Get-ChildItem *)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(PYTHONPATH=\"src;src/pygame_core\" timeout 5 python __main__.py)",
+      "Bash(PYTHONPATH=\"src;src/pygame_core;src/pygame_core/pygame_core;src/pygame_core/build/lib\" timeout 8 python __main__.py)"
     ]
   }
 }

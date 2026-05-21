@@ -32,12 +32,12 @@ object_templates:
     text: "0 $"
     position: [CENTER, CENTER]
   music_toggle:
-    position: [ 25, 25 ]
-    size: [ 80, 80 ]
-    asset: btn_music_pause
+    position: [25, 25]
+    size: [64, 64]
+    asset: icon_music
     states:
       paused:
-        asset: btn_music_resume
+        asset: icon_music_disabled
 
 panels:
   main_menu:
@@ -201,7 +201,7 @@ panels:
         extends: btn-sm
         parent: right_panel_bg
         position: [CENTER, 930]
-        size: [100, 60]
+        size: [60, 60]
       upgrade_plane_button_text:
         extends: button_text
         parent: upgrade_plane_button
@@ -211,9 +211,9 @@ panels:
         extends: btn-sm
         parent: right_panel_bg
         position: [CENTER, 1010]
-        size: [100, 60]
-      menu_button_text:
-        extends: button_text
+        size: [60, 60]
+      menu_button_image:
         parent: menu_button
-        font_size: 28
-        text: "MENU"
+        position: [CENTER, CENTER]
+        size: [32, 32]
+        asset: btn_menu
