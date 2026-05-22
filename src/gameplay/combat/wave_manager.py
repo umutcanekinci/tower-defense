@@ -3,7 +3,10 @@ from pygame.math import Vector2
 
 from util.config_loader import load_wave_compositions
 from gameplay.combat.enemy import Enemy
+from gameplay.combat.tank import Tank
 from domain.game_state import GameState, WaveDef
+
+TANK_TYPES = (5, 6)
 
 WAVE_COMPOSITIONS: dict[int, WaveDef] = load_wave_compositions()
 
@@ -57,7 +60,8 @@ class WaveManager:
                 enemy_type = self._spawn_queue[self._queue_index]
                 self._queue_index += 1
                 self._count_all_time += 1
-                enemies.append(Enemy(
+                cls = Tank if enemy_type in TANK_TYPES else Enemy
+                enemies.append(cls(
                     self._count_all_time,
                     enemy_type,
                     game_state.level,

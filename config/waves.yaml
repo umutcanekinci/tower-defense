@@ -34,4 +34,9 @@ waves:
   22: [{type: 1, count: 7},  {type: 2, count: 8}, {type: 3, count: 6}, {type: 4, count: 4}]
   23: [{type: 1, count: 8},  {type: 2, count: 9}, {type: 3, count: 6}, {type: 4, count: 4}]
   24: [{type: 1, count: 6},  {type: 2, count: 9}, {type: 3, count: 7}, {type: 4, count: 4}]
-  25: {spawn_interval: 650, groups: [{type: 1, count: 10}, {type: 2, count: 10}, {type: 3, count: 7}, {type: 4, count: 5}]}
+  25: {spawn_interval: 650, groups: [{type: 1, count: 10}, {type: 2, count: 10}, {type: 3, count: 7}, {type: 4, count: 5}, {type: 5, count: 1}]}  # first tank
+  26: [{type: 2, count: 8}, {type: 3, count: 6}, {type: 4, count: 4}, {type: 5, count: 1}]
+  27: [{type: 2, count: 8}, {type: 3, count: 7}, {type: 4, count: 4}, {type: 5, count: 2}]
+  28: [{type: 2, count: 9}, {type: 3, count: 7}, {type: 4, count: 5}, {type: 5, count: 2}, {type: 6, count: 1}]  # first heavy tank
+  29: [{type: 2, count: 9}, {type: 3, count: 8}, {type: 4, count: 5}, {type: 5, count: 2}, {type: 6, count: 1}]
+  30: {spawn_interval: 600, groups: [{type: 2, count: 10}, {type: 3, count: 8}, {type: 4, count: 6}, {type: 5, count: 3}, {type: 6, count: 2}]}

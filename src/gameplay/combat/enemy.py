@@ -8,7 +8,7 @@ from gameplay.rotatable_object import RotatableObject
 if TYPE_CHECKING:
     from domain.protocols import IGameContext
 
-_BASE_STATS: dict[int, tuple[int, float, int, int]] = load_enemy_stats()
+_BASE_STATS = load_enemy_stats()
 
 
 class Enemy(RotatableObject):
@@ -35,13 +35,13 @@ class Enemy(RotatableObject):
             self._face_toward(waypoints[1])
 
     def _calculate_stats(self, enemy_type: int, level: int) -> None:
-        base_hp, speed, kill_money, damage = _BASE_STATS[enemy_type]
+        stats = _BASE_STATS[enemy_type]
         scale = 1.0 + (level - 1) * 0.25
-        self.maxHP     = int(base_hp * scale)
+        self.maxHP     = int(stats.hp * scale)
         self.hp        = self.maxHP
-        self.killMoney = max(1, int(kill_money * scale))
-        self.damage    = damage
-        self.mov_speed = speed
+        self.killMoney = max(1, int(stats.kill_money * scale))
+        self.damage    = stats.damage
+        self.mov_speed = stats.speed
 
     def destroy(self, ctx: "IGameContext") -> None:
         if self in ctx.enemies:

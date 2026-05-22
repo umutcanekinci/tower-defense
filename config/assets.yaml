@@ -58,6 +58,11 @@ images:
   enemy_2:           {folder: enemy, name: E2}
   enemy_3:           {folder: enemy, name: E3}
   enemy_4:           {folder: enemy, name: E4}
+  enemy_5:           {folder: enemy, name: E5}
+  enemy_6:           {folder: enemy, name: E6}
+  enemy_5_muzzle:    {folder: enemy, name: E5_Muzzle}
+  enemy_6_muzzle:    {folder: enemy, name: E6_Muzzle}
+  tank_bullet:       {folder: bullets, name: 3L1}
 
   # ── Tile overlays (placement preview) ─────────────────────────────────
   tile_block:        {folder: others, name: block}

@@ -177,8 +177,14 @@ class Game(GameEventsMixin, Application):
                 self.game_state.decrease_lives(enemy.damage)
                 if self.game_state.lives == 0:
                     self.exit()
-            elif self.game_state.is_started:
-                enemy.move(self.game_state.speed)
+                continue
+            if not self.game_state.is_started:
+                continue
+            enemy.move(self.game_state.speed)
+            if hasattr(enemy, "update_combat"):
+                enemy.update_combat(self)
+                for bullet in list(enemy.bullets):
+                    bullet.update(self)
 
     # ── event handling ────────────────────────────────────────────────────────
 
@@ -220,6 +226,10 @@ class Game(GameEventsMixin, Application):
         def _draw_enemies(self) -> None:
             for enemy in self.enemies:
                 self.camera.draw(self.window, enemy)
+                if hasattr(enemy, "draw_muzzle"):
+                    enemy.draw_muzzle(self.window, self.camera)
+                    for bullet in enemy.bullets:
+                        self.camera.draw(self.window, bullet)
 
         old_clip = self.window.get_clip()
         self.window.set_clip(self.game_area)

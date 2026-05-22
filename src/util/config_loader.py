@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from pathlib import Path
 
 import yaml
@@ -5,6 +6,16 @@ import yaml
 from domain.game_state import TowerConfig, WaveDef
 
 _CONFIG_DIR = Path(__file__).resolve().parents[2] / "config"
+
+
+@dataclass
+class EnemyStats:
+    hp: int
+    speed: float
+    kill_money: int
+    damage: int
+    range: int | None = None             # tanks only
+    fire_interval_ms: int | None = None  # tanks only
 
 
 def load_tower_config() -> TowerConfig:
@@ -22,12 +33,19 @@ def load_tower_config() -> TowerConfig:
     )
 
 
-def load_enemy_stats() -> dict[int, tuple[int, float, int, int]]:
+def load_enemy_stats() -> dict[int, EnemyStats]:
     with open(_CONFIG_DIR / "enemies.yaml") as f:
         data = yaml.safe_load(f)
 
     return {
-        int(k): (v["hp"], float(v["speed"]), v["kill_money"], v["damage"])
+        int(k): EnemyStats(
+            hp=v["hp"],
+            speed=float(v["speed"]),
+            kill_money=v["kill_money"],
+            damage=v["damage"],
+            range=v.get("range"),
+            fire_interval_ms=v.get("fire_interval_ms"),
+        )
         for k, v in data["enemies"].items()
     }
 
