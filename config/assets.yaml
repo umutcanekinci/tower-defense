@@ -80,6 +80,7 @@ sounds:
   # ── Menu navigation SFX ───────────────────────────────────────────────
   switch_up:         {folder: "", name: switch-b}
   switch_down:       {folder: "", name: switch-a}
+  click:             {folder: "", name: click-a}
 
   # ── Tower attack SFX (referenced by config/towers.yaml shoot_sound:) ──
   tower_1_shoot:     {folder: "", name: impactGeneric_light_000}

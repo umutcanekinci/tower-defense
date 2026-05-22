@@ -1,14 +1,6 @@
 import pygame
 
 
-def _activate_on_click_or_space(button, event, mouse_position) -> bool:
-    if button.is_clicked(event, mouse_position):
-        return True
-    if event.type == pygame.KEYUP and event.key in (pygame.K_SPACE, pygame.K_RETURN) and getattr(button, "focused", False):
-        return True
-    return False
-
-
 class GameEventsMixin:
     """Per-panel input dispatch for Game.
 
@@ -18,23 +10,38 @@ class GameEventsMixin:
     and mutates game state via the surrounding Game.
     """
 
+    def _activate(self, button, event) -> bool:
+        """True when the button was activated (click or focused-Space/Enter).
+        Plays the button's `on_click_sound` (or the default click) on success."""
+        activated = (
+            button.is_clicked(event, self.mouse.position)
+            or (event.type == pygame.KEYUP
+                and event.key in (pygame.K_SPACE, pygame.K_RETURN)
+                and getattr(button, "focused", False))
+        )
+        if activated:
+            sound = getattr(button, "on_click_sound", None) or self.click_sound_path
+            if sound is not None:
+                self.audio.play_sfx(str(sound))
+        return activated
+
     def _handle_main_menu_event(self, event) -> None:
         panel = self.panel_manager["main_menu"]
-        if _activate_on_click_or_space(panel["play"], event, self.mouse.position):
+        if self._activate(panel["play"], event):
             self.panel_manager.current_panel = "game"
-        elif _activate_on_click_or_space(panel["contact"], event, self.mouse.position):
+        elif self._activate(panel["contact"], event):
             self.panel_manager.current_panel = "contact"
-        elif _activate_on_click_or_space(panel["exit"], event, self.mouse.position):
+        elif self._activate(panel["exit"], event):
             self.on_exit_request()
 
     def _handle_contact_event(self, event) -> None:
         panel = self.panel_manager["contact"]
-        if panel["back"].is_clicked(event, self.mouse.position):
+        if self._activate(panel["back"], event):
             self.panel_manager.current_panel = "main_menu"
 
     def _handle_game_event(self, event) -> None:
         panel = self.panel_manager["game"]
-        if panel["menu_button"].is_clicked(event, self.mouse.position):
+        if self._activate(panel["menu_button"], event):
             self.panel_manager.current_panel = "main_menu"
             self.game_state.is_started = False
             return
@@ -46,7 +53,7 @@ class GameEventsMixin:
 
     def _handle_upgrade_plane_button(self, event) -> None:
         panel = self.panel_manager["game"]
-        if not panel["upgrade_plane_button"].is_clicked(event, self.mouse.position):
+        if not self._activate(panel["upgrade_plane_button"], event):
             return
         if self.game_state.money >= 5000 and self.game_state.plane_level == 1:
             self.game_state.decrease_money(5000)
@@ -56,7 +63,7 @@ class GameEventsMixin:
 
     def _handle_start_pause(self, event) -> None:
         panel = self.panel_manager["game"]
-        if not panel["start_pause_button"].is_clicked(event, self.mouse.position):
+        if not self._activate(panel["start_pause_button"], event):
             return
         self.game_state.is_started = not self.game_state.is_started
         panel["start_pause_button_icon"].set_state("pause" if self.game_state.is_started else None)
@@ -64,7 +71,7 @@ class GameEventsMixin:
     def _handle_speed_toggle(self, event) -> None:
         panel = self.panel_manager["game"]
         button = panel["speed_toggle_button"]
-        if not button.is_clicked(event, self.mouse.position):
+        if not self._activate(button, event):
             return
         next_speed, next_state = {1: (2, "x2_active"), 2: (4, "x4_active")}.get(
             self.game_state.speed, (1, None)

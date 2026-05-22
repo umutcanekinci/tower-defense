@@ -83,6 +83,7 @@ class Game(GameEventsMixin, Application):
         self.splash = SplashScreen([self.assets.image_path("pygame_logo")], fade_ms=splash["fade_ms"], hold_ms=splash["hold_ms"])
         self._init_wave_manager()
 
+        self.click_sound_path = self.assets.sound_path("click")
         self.handlers = {
             "main_menu": self._handle_main_menu_event,
             "contact":   self._handle_contact_event,
@@ -189,7 +190,7 @@ class Game(GameEventsMixin, Application):
         if handler := self.handlers.get(self.panel_manager.current_panel):
             handler(event)
         panel = self.panel_manager[self.panel_manager.current_panel]
-        if panel["music_toggle_button"].is_clicked(event, self.mouse.position):
+        if self._activate(panel["music_toggle_button"], event):
             self._toggle_music()
 
     # ── render pipeline ───────────────────────────────────────────────────────
