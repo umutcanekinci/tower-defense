@@ -46,9 +46,9 @@ images:
   tower_4_shadow_lvl2: {folder: towers, name: tower4shadow2}
 
   # ── Bullets / muzzle flashes ──────────────────────────────────────────
-  bullet_1_lvl1:     {folder: muzzle_flashes, name: 1L1}
-  bullet_3_lvl1:     {folder: muzzle_flashes, name: 3L1 }
-  bullet_3_lvl2:     {folder: muzzle_flashes, name: 3L2 }
+  muzzle_flash_1_lvl1: {folder: muzzle_flashes, name: 1L1}
+  muzzle_flash_3_lvl1: {folder: muzzle_flashes, name: 3L1}
+  muzzle_flash_3_lvl2: {folder: muzzle_flashes, name: 3L2}
 
   bullet_2_lvl1:     {folder: projectiles, name: 2L1}
   bullet_2_lvl2:     {folder: projectiles, name: 2L2}

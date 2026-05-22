@@ -80,7 +80,7 @@ class MuzzleFlash(RotatableObject):
 
     def __init__(self, target, tower, pos: Vector2, deals_damage: bool = True) -> None:
         super().__init__(
-            tower.assets.image_path(f"bullet_{tower.tower_type}_lvl{tower.level}"),
+            tower.assets.image_path(f"muzzle_flash_{tower.tower_type}_lvl{tower.level}"),
             pos,
         )
         self.tower         = tower
