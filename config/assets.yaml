@@ -46,12 +46,14 @@ images:
   tower_4_shadow_lvl2: {folder: towers, name: tower4shadow2}
 
   # ── Bullets / muzzle flashes ──────────────────────────────────────────
-  bullet_1_lvl1:     {folder: bullets, name: 1L1}
-  bullet_2_lvl1:     {folder: bullets, name: 2L1}
-  bullet_2_lvl2:     {folder: bullets, name: 2L2}
-  bullet_2_lvl3:     {folder: bullets, name: 2L3}
-  bullet_3_lvl1:     {folder: bullets, name: 3L1}
-  bullet_3_lvl2:     {folder: bullets, name: 3L2}
+  bullet_1_lvl1:     {folder: muzzle_flashes, name: 1L1}
+  bullet_3_lvl1:     {folder: muzzle_flashes, name: 3L1 }
+  bullet_3_lvl2:     {folder: muzzle_flashes, name: 3L2 }
+
+  bullet_2_lvl1:     {folder: projectiles, name: 2L1}
+  bullet_2_lvl2:     {folder: projectiles, name: 2L2}
+  bullet_2_lvl3:     {folder: projectiles, name: 2L3}
+
 
   # ── Enemy sprites ─────────────────────────────────────────────────────
   enemy_1:           {folder: enemy, name: E1}
@@ -62,7 +64,8 @@ images:
   enemy_6:           {folder: enemy, name: E6}
   enemy_5_muzzle:    {folder: enemy, name: E5_Muzzle}
   enemy_6_muzzle:    {folder: enemy, name: E6_Muzzle}
-  tank_bullet:       {folder: enemy, name: Tank_Muzzle_Effect}
+  tank_bullet:       {folder: projectiles, name: Tank_Bullet}
+  tank_muzzle_flash: {folder: muzzle_flashes, name: Tank_Muzzle_Effect}
 
   # ── Tile overlays (placement preview) ─────────────────────────────────
   tile_block:        {folder: others, name: block}

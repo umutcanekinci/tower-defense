@@ -20,6 +20,8 @@ if TYPE_CHECKING:
 
 
 class Tank(Enemy):
+    MUZZLE_TIP_FORWARD = 22  # px from tank center to muzzle tip along aim direction
+
     def __init__(self, id: int, enemy_type: int, level: int,
                  waypoints: list[Vector2], assets) -> None:
         super().__init__(id, enemy_type, level, waypoints, assets)
@@ -54,7 +56,15 @@ class Tank(Enemy):
         if now - self._last_fire_time < self.fire_interval_ms:
             return
         self._last_fire_time = now
-        self.bullets.append(TankBullet(self, nearest))
+        self._fire(nearest)
+
+    def _fire(self, target_tower) -> None:
+        fwd = target_tower.position - self.position
+        if fwd.length_squared() == 0:
+            return
+        tip = self.position + fwd.normalize() * self.MUZZLE_TIP_FORWARD
+        self.bullets.append(TankBullet(self, target_tower, tip))
+        self.bullets.append(TankMuzzleFlash(self, tip, self._muzzle_angle))
 
     def _nearest_tower(self, ctx: "IGameContext") -> tuple:
         # Skip towers that aren't targetable (planes — no HP system).
@@ -86,12 +96,13 @@ class Tank(Enemy):
 
 
 class TankBullet(RotatableObject):
-    """Travels toward a tower and destroys it on contact."""
+    """Travels toward a tower and chips at its HP on contact."""
     SPEED = 4
     EXPLODE_DISTANCE = 30
 
-    def __init__(self, tank: Tank, target_tower) -> None:
-        super().__init__(tank.assets.image_path("tank_bullet"), tank.position)
+    def __init__(self, tank: Tank, target_tower, spawn_pos: Vector2 | None = None) -> None:
+        spawn = spawn_pos if spawn_pos is not None else tank.position
+        super().__init__(tank.assets.image_path("tank_bullet"), spawn)
         self.tank = tank
         self.target_tower = target_tower
         self.damage = tank.bullet_damage
@@ -122,3 +133,19 @@ class TankBullet(RotatableObject):
     def _remove(self) -> None:
         if self in self.tank.bullets:
             self.tank.bullets.remove(self)
+
+
+class TankMuzzleFlash(RotatableObject):
+    """Brief visual flash at the tank's muzzle tip when firing — no damage."""
+    FLASH_DURATION_MS = 120
+
+    def __init__(self, tank: Tank, pos: Vector2, angle: float) -> None:
+        super().__init__(tank.assets.image_path("tank_muzzle_flash"), pos)
+        self.tank = tank
+        self.rotate_to_angle(angle)
+        self._created_at = pygame.time.get_ticks()
+
+    def update(self, ctx: "IGameContext") -> None:
+        if pygame.time.get_ticks() - self._created_at > self.FLASH_DURATION_MS:
+            if self in self.tank.bullets:
+                self.tank.bullets.remove(self)
