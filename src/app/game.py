@@ -90,7 +90,12 @@ class Game(GameEventsMixin, Application):
         }
         main_menu_buttons = [self.panel_manager["main_menu"][n] for n in ("play", "contact", "exit")]
         self.menu_controllers = {
-            "main_menu": MenuController(main_menu_buttons, self.audio),
+            "main_menu": MenuController(
+                main_menu_buttons,
+                self.audio,
+                self.assets.sound_path("switch_up"),
+                self.assets.sound_path("switch_down"),
+            ),
         }
 
     def load_panels(self, window_transform) -> None:

@@ -18,7 +18,6 @@ images:
   # ── In-game control buttons ───────────────────────────────────────────
   icon_play:         {folder: icons/Large, name: icon_play}
   icon_pause:         {folder: icons/Large, name: icon_pause}
-  icon_speed_x2:     {folder: icons/Large, name: icon_fire}
 
   # ── Tower buy panel icons ─────────────────────────────────────────────
   buy_tower_1:       {folder: towers, name: buy_tower1}
@@ -77,6 +76,10 @@ images:
 
 sounds:
   bg_music:          {folder: "", name: bg, extension: mp3}
+
+  # ── Menu navigation SFX ───────────────────────────────────────────────
+  switch_up:         {folder: "", name: switch-b}
+  switch_down:       {folder: "", name: switch-a}
 
   # ── Tower attack SFX (referenced by config/towers.yaml shoot_sound:) ──
   tower_1_shoot:     {folder: "", name: impactGeneric_light_000}
