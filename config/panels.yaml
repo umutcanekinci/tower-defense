@@ -148,8 +148,10 @@ panels:
             extends: btn-sm
             size: [60, 60]
             states:
-                active:
+                x2_active:
                     asset: btn_active
+                x4_active:
+                    asset: btn_active_2
           upgrade_plane_button:
             extends: btn-sm
             size: [60, 60]
@@ -172,11 +174,14 @@ panels:
             asset: icon_pause
       music_toggle_icon:
         extends: music_toggle_icon
-      speed_toggle_button_icon:
+      speed_toggle_button_text:
+        extends: button_text
         parent: speed_toggle_button
-        position: [CENTER, CENTER]
-        size: [32, 32]
-        asset: icon_speed_x2
+        font_size: 28
+        text: "x1"
+        states:
+          x2_active: "x2"
+          x4_active: "x4"
       upgrade_plane_button_text:
         extends: button_text
         parent: upgrade_plane_button

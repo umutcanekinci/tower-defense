@@ -55,12 +55,11 @@ class GameEventsMixin:
         button = panel["speed_toggle_button"]
         if not button.is_clicked(event, self.mouse.position):
             return
-        if self.game_state.speed == 1:
-            self.game_state.speed = 2
-            button.set_state("active")
-        else:
-            self.game_state.speed = 1
-            button.set_state(None)
+        next_speed, next_state = {1: (2, "x2_active"), 2: (4, "x4_active")}.get(
+            self.game_state.speed, (1, None)
+        )
+        self.game_state.speed = next_speed
+        button.set_state(next_state)
 
     def _toggle_music(self) -> None:
         self.audio.toggle_music()
