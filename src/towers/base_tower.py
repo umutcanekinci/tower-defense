@@ -29,6 +29,7 @@ class BaseTower(RotatableObject):
         self.last_reload_time = 0
         self.bullets: list = []
         self.now: int = 0
+        self.hp: int | None = self.maxHP
 
     # ── config-derived stats ──────────────────────────────────────────────────
 
@@ -64,8 +65,20 @@ class BaseTower(RotatableObject):
     def shoot_sound(self) -> str | None:
         return self._config.shoot_sounds[self.tower_type - 1]
 
+    @property
+    def maxHP(self) -> int | None:
+        hps = self._config.hps[self.tower_type - 1]
+        if hps is None:
+            return None
+        return hps[self.level - 1]
+
     def is_max_level(self) -> bool:
         return self.level >= self.max_level
+
+    def decrease_hp(self, damage: int) -> None:
+        if self.hp is None:
+            return
+        self.hp -= damage
 
     # ── action hit-rects (screen space, zoom-aware) ───────────────────────────
 
@@ -95,6 +108,7 @@ class BaseTower(RotatableObject):
         price = self.upgrade_price
         self.level += 1
         self.load(self.assets.image_path(f"tower_{self.tower_type}_lvl{self.level}"))
+        self.hp = self.maxHP  # refill on upgrade
         game_state.decrease_money(price)
         game_state.selected_tower = self
 
@@ -141,7 +155,7 @@ class BaseTower(RotatableObject):
     # ── polymorphic interface ─────────────────────────────────────────────────
 
     def should_remove(self) -> bool:
-        return False
+        return self.hp is not None and self.hp <= 0
 
     def get_blocking_position(self) -> tuple | None:
         return self.row, self.col

@@ -25,6 +25,7 @@ class TowerConfig:
     ranges:       list[list[int]]
     damages:      list[list[int]]
     speeds:       list[list[int]]
+    hps:          list[list[int] | None]  # None = invulnerable (e.g. planes)
     shoot_sounds: list[str | None]   # asset key per tower type; None = silent
 
 

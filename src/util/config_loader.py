@@ -16,6 +16,7 @@ class EnemyStats:
     damage: int
     range: int | None = None             # tanks only
     fire_interval_ms: int | None = None  # tanks only
+    bullet_damage: int | None = None     # tanks only
 
 
 def load_tower_config() -> TowerConfig:
@@ -29,6 +30,7 @@ def load_tower_config() -> TowerConfig:
         ranges       = [t["ranges"]    for t in towers],
         damages      = [t["damages"]   for t in towers],
         speeds       = [t["speeds"]    for t in towers],
+        hps          = [t.get("hps")   for t in towers],
         shoot_sounds = [t.get("shoot_sound") for t in towers],
     )
 
@@ -45,6 +47,7 @@ def load_enemy_stats() -> dict[int, EnemyStats]:
             damage=v["damage"],
             range=v.get("range"),
             fire_interval_ms=v.get("fire_interval_ms"),
+            bullet_damage=v.get("bullet_damage"),
         )
         for k, v in data["enemies"].items()
     }

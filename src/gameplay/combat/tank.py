@@ -28,6 +28,7 @@ class Tank(Enemy):
         stats = _BASE_STATS[enemy_type]
         self.range:            int = stats.range or 280
         self.fire_interval_ms: int = stats.fire_interval_ms or 2500
+        self.bullet_damage:    int = stats.bullet_damage or 20
 
         muzzle_path = assets.image_path(f"enemy_{enemy_type}_muzzle")
         self._muzzle_base: pygame.Surface = load_image(muzzle_path)
@@ -56,11 +57,13 @@ class Tank(Enemy):
         self.bullets.append(TankBullet(self, nearest))
 
     def _nearest_tower(self, ctx: "IGameContext") -> tuple:
-        if not ctx.towers:
+        # Skip towers that aren't targetable (planes — no HP system).
+        candidates = [t for t in ctx.towers if t.maxHP is not None]
+        if not candidates:
             return (None, 0)
         best = None
         best_dist = float("inf")
-        for t in ctx.towers:
+        for t in candidates:
             d = (t.position - self.position).length_squared()
             if d < best_dist:
                 best, best_dist = t, d
@@ -91,6 +94,7 @@ class TankBullet(RotatableObject):
         super().__init__(tank.assets.image_path("tank_bullet"), tank.position)
         self.tank = tank
         self.target_tower = target_tower
+        self.damage = tank.bullet_damage
         self.rotate_to_angle(angle_between_points(self.position, target_tower.position))
 
     def update(self, ctx: "IGameContext") -> None:
@@ -103,7 +107,7 @@ class TankBullet(RotatableObject):
 
         delta = self.target_tower.position - self.position
         if delta.length() <= self.EXPLODE_DISTANCE:
-            ctx.towers.remove(self.target_tower)
+            self.target_tower.decrease_hp(self.damage)
             self._remove()
             return
 

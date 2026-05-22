@@ -9,6 +9,7 @@ enemies:
   2: {hp: 55,  speed: 1.6, kill_money: 10, damage: 1}   # fast runner
   3: {hp: 160, speed: 0.9, kill_money: 28, damage: 2}   # bruiser
   4: {hp: 420, speed: 0.7, kill_money: 75, damage: 3}   # heavy
-  # Tanks: rotating muzzle, fire at nearest turret in range (destroys on hit).
-  5: {hp: 800,  speed: 0.5, kill_money: 200, damage: 5, range: 280, fire_interval_ms: 2500}
-  6: {hp: 1500, speed: 0.4, kill_money: 400, damage: 8, range: 320, fire_interval_ms: 1800}
+  # Tanks: rotating muzzle, fire bullets at nearest ground tower in range.
+  # bullet_damage chips at tower HP (towers/yaml hps) until the tower falls.
+  5: {hp: 800,  speed: 0.5, kill_money: 200, damage: 5, range: 280, fire_interval_ms: 2500, bullet_damage: 20}
+  6: {hp: 1500, speed: 0.4, kill_money: 400, damage: 8, range: 320, fire_interval_ms: 1800, bullet_damage: 35}
