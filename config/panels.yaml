@@ -187,6 +187,8 @@ panels:
         parent: upgrade_plane_button
         font_size: 21
         text: "UPG PLANES"
+        states:
+          hover: "5K $"
 
       tower_panel_bg:
         anchor: bottom

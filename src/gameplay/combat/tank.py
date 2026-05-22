@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 
 class Tank(Enemy):
-    MUZZLE_TIP_FORWARD = 40  # px from tank center to muzzle tip along aim direction
+    MUZZLE_TIP_FORWARD = 55  # px from tank center to muzzle tip along aim direction
 
     def __init__(self, id: int, enemy_type: int, level: int,
                  waypoints: list[Vector2], assets) -> None:
