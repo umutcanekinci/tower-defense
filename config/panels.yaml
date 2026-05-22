@@ -7,7 +7,7 @@ groups:
 
 object_templates:
   btn-sm:
-    size: [375, 100]
+    size: [64, 64]
     asset: btn
     hover: btn_hover
     nine_slice: 10
@@ -16,28 +16,34 @@ object_templates:
     asset: btn
     hover: btn_hover
     nine_slice: 10
+  music_toggle_icon:
+    parent: music_toggle_button
+    position: [CENTER, CENTER]
+    size: [32, 32]
+    asset: icon_music
+    states:
+      paused:
+        asset: icon_music_disabled
   button_text:
     type: text
     font: Impact
     font_size: 48
     position: [CENTER, CENTER]
-  fee_text_bg:
-    size: [80, 32]
-    color: [0, 0, 0, 100]
   fee_text:
     type: text
     font: ComicSansMs
     font_size: 18
     color: green
     text: "0 $"
-    position: [CENTER, CENTER]
-  music_toggle:
-    position: [25, 25]
-    size: [64, 64]
-    asset: icon_music
-    states:
-      paused:
-        asset: icon_music_disabled
+    background_color: [0, 0, 0, 100]
+    padding: [6, 16]
+  stat_text:
+    type: text
+    background_color: [ 50, 50, 50, 200 ]
+    font: ComicSansMs
+    font_size: 27
+    bold: true
+    color: white
 
 panels:
   main_menu:
@@ -63,8 +69,11 @@ panels:
         parent: exit
         text: "EXIT"
 
-      music_toggle:
-        extends: music_toggle
+      music_toggle_button:
+        extends: btn-sm
+        position: [25, 25]
+      music_toggle_icon:
+        extends: music_toggle_icon
 
       kenney_logo:
         anchor: bottom-right
@@ -81,70 +90,48 @@ panels:
         asset: social_media
       back:
         extends: btn-sm
+        size: [375, 100]
         position: [93, 840]
       back_text:
         extends: button_text
         parent: back
         text: "BACK"
-      music_toggle:
-        extends: music_toggle
+      music_toggle_button:
+        extends: btn-sm
+        position: [25, 25]
+      music_toggle_icon:
+        extends: music_toggle_icon
 
   game:
     objects:
-      level_background:
-        position: [15, 15]
-        size: [130, 50]
-        color: [50, 50, 50, 200]
       level_text:
-        parent: level_background
-        position: [10, CENTER]
-        type: text
+        extends: stat_text
+        position: [15, 15]
+        padding: [5, 10]
         text: "Level 1"
-        font: ComicSansMs
-        font_size: 27
-        bold: true
-        color: white
-      live_background:
-        position: [15, 75]
-        size: [100, 50]
-        color: [50, 50, 50, 200]
-      live_image:
-        parent: live_background
-        position: [10, CENTER]
-        size: [32, 32]
-        asset: heart
       live_text:
-        parent: live_background
-        position: [50, CENTER]
-        type: text
+        extends: stat_text
+        position: [15, 75]
+        padding: [ 5, 10, 5, 50 ]
         text: "13"
-        font: ComicSansMs
-        font_size: 27
-        bold: true
-        color: white
-      coin_background:
-        position: [15, 135]
-        size: [150, 50]
-        color: [50, 50, 50, 200]
+      live_image:
+        parent: live_text
+        position: [10, CENTER]
+        size: [ 32, 32 ]
+        asset: heart
+      coin_text:
+        extends: stat_text
+        position: [ 15, 135 ]
+        padding: [ 5, 10, 5, 50 ]
+        text: "0"
       coin_image:
-        parent: coin_background
+        parent: coin_text
         type: animated
         position: [10, CENTER]
         size: [32, 32]
         asset: coin_sheet
         frame_count: 5
         fps: 8
-      coin_text:
-        parent: coin_background
-        position: [50, CENTER]
-        type: text
-        text: "0"
-        font: ComicSansMs
-        font_size: 27
-        bold: true
-        color: white
-
-
 
       control_panel_bg:
         anchor: top-right
@@ -156,6 +143,7 @@ panels:
         objects:
           menu_button:          { extends: btn-sm, size: [60, 60] }
           start_pause_button:   { extends: btn-sm, size: [60, 60] }
+          music_toggle_button:  { extends: btn-sm, size: [60, 60] }
           speed_toggle_button:
             extends: btn-sm
             size: [60, 60]
@@ -182,18 +170,18 @@ panels:
         states:
           pause:
             asset: icon_pause
+      music_toggle_icon:
+        extends: music_toggle_icon
       speed_toggle_button_icon:
         parent: speed_toggle_button
         position: [CENTER, CENTER]
         size: [32, 32]
         asset: icon_speed_x2
-
       upgrade_plane_button_text:
         extends: button_text
         parent: upgrade_plane_button
         font_size: 21
         text: "UPG PLANES"
-
 
       tower_panel_bg:
         anchor: bottom
@@ -213,23 +201,11 @@ panels:
             states:
               lvl2:
                 asset: buy_tower_4_lvl2
-      fee_bgs:
+      fee_texts:
         parent: tower_panel_bg
         layout: { direction: horizontal, start: [40, 120], spacing: 170 }
         objects:
-          fee_text_bg_1: { extends: fee_text_bg }
-          fee_text_bg_2: { extends: fee_text_bg }
-          fee_text_bg_3: { extends: fee_text_bg }
-          fee_text_bg_4: { extends: fee_text_bg }
-      fee_text_1:
-        extends: fee_text
-        parent: fee_text_bg_1
-      fee_text_2:
-        extends: fee_text
-        parent: fee_text_bg_2
-      fee_text_3:
-        extends: fee_text
-        parent: fee_text_bg_3
-      fee_text_4:
-        extends: fee_text
-        parent: fee_text_bg_4
+          fee_text_1: { extends: fee_text }
+          fee_text_2: { extends: fee_text }
+          fee_text_3: { extends: fee_text }
+          fee_text_4: { extends: fee_text }

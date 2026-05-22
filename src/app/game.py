@@ -173,6 +173,9 @@ class Game(Application):
         elif self.panel_manager.current_panel == "game":
             self._handle_game_event(event)
         self.panel_manager.handle_event(event, self.mouse.position)
+        objects = self.panel_manager[self.panel_manager.current_panel]
+        if objects["music_toggle_button"].is_clicked(event, self.mouse.position):
+            self._toggle_music()
 
     def _handle_main_menu_event(self, event) -> None:
         objects = self.panel_manager["main_menu"]
@@ -182,15 +185,11 @@ class Game(Application):
             self.panel_manager.current_panel = "contact"
         elif objects["exit"].is_clicked(event, self.mouse.position):
             self.on_exit_request()
-        if objects["music_toggle"].is_clicked(event, self.mouse.position):
-            self._toggle_music()
 
     def _handle_contact_event(self, event) -> None:
         panel = self.panel_manager["contact"]
         if panel["back"].is_clicked(event, self.mouse.position):
             self.panel_manager.current_panel = "main_menu"
-        if panel["music_toggle"].is_clicked(event, self.mouse.position):
-            self._toggle_music()
 
     def _handle_game_event(self, event) -> None:
         if self.panel_manager["game"]["menu_button"].is_clicked(event, self.mouse.position):
@@ -232,8 +231,8 @@ class Game(Application):
     def _toggle_music(self) -> None:
         self.audio.toggle_music()
         state = "paused" if self.audio.is_music_paused else None
-        for tab in ("main_menu", "contact"):
-            self.panel_manager[tab]["music_toggle"].set_state(state)
+        for tab in self.panel_manager.keys():
+            self.panel_manager[tab]["music_toggle_icon"].set_state(state)
 
     # ── render pipeline ───────────────────────────────────────────────────────
 

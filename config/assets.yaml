@@ -11,8 +11,9 @@ images:
 
   # ── Menu buttons (normal + hover pairs) ───────────────────────────────
   btn:               {folder: gui/Green/Default, name: button_rectangle_depth_flat}
-  btn_hover:         {folder: gui/Red/Default, name: button_rectangle_depth_flat}
+  btn_hover:         {folder: gui/Grey/Default, name: button_rectangle_depth_flat}
   btn_active:        {folder: gui/Yellow/Default, name: button_rectangle_depth_flat}
+  btn_active_2:      {folder: gui/Red/Default, name: button_rectangle_depth_flat}
 
   # ── In-game control buttons ───────────────────────────────────────────
   icon_play:         {folder: icons/Large, name: icon_play}
