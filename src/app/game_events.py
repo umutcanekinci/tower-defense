@@ -1,3 +1,14 @@
+import pygame
+
+
+def _activate_on_click_or_space(button, event, mouse_position) -> bool:
+    if button.is_clicked(event, mouse_position):
+        return True
+    if event.type == pygame.KEYUP and event.key == pygame.K_SPACE and getattr(button, "focused", False):
+        return True
+    return False
+
+
 class GameEventsMixin:
     """Per-panel input dispatch for Game.
 
@@ -9,11 +20,11 @@ class GameEventsMixin:
 
     def _handle_main_menu_event(self, event) -> None:
         panel = self.panel_manager["main_menu"]
-        if panel["play"].is_clicked(event, self.mouse.position):
+        if _activate_on_click_or_space(panel["play"], event, self.mouse.position):
             self.panel_manager.current_panel = "game"
-        elif panel["contact"].is_clicked(event, self.mouse.position):
+        elif _activate_on_click_or_space(panel["contact"], event, self.mouse.position):
             self.panel_manager.current_panel = "contact"
-        elif panel["exit"].is_clicked(event, self.mouse.position):
+        elif _activate_on_click_or_space(panel["exit"], event, self.mouse.position):
             self.on_exit_request()
 
     def _handle_contact_event(self, event) -> None:

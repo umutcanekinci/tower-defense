@@ -8,6 +8,7 @@ from pygame import Rect
 from app.game_events import GameEventsMixin
 from pygame_core.application import Application
 from pygame_core.asset_manager import AssetManager
+from pygame_core.ui_widgets.menu_controller import MenuController
 from pygame_core.mouse import Mouse
 from pygame_core.panel_manager import PanelManager
 from pygame_core.panel_loader_ext import PanelLoaderExt
@@ -86,6 +87,10 @@ class Game(GameEventsMixin, Application):
             "main_menu": self._handle_main_menu_event,
             "contact":   self._handle_contact_event,
             "game":      self._handle_game_event,
+        }
+        main_menu_buttons = [self.panel_manager["main_menu"][n] for n in ("play", "contact", "exit")]
+        self.menu_controllers = {
+            "main_menu": MenuController(main_menu_buttons, self.audio),
         }
 
     def load_panels(self, window_transform) -> None:
@@ -173,9 +178,11 @@ class Game(GameEventsMixin, Application):
 
     @override
     def handle_event(self, event):
+        self.panel_manager.handle_event(event, self.mouse.position)
+        if controller := self.menu_controllers.get(self.panel_manager.current_panel):
+            controller.handle_event(event, self.mouse.position)
         if handler := self.handlers.get(self.panel_manager.current_panel):
             handler(event)
-        self.panel_manager.handle_event(event, self.mouse.position)
         panel = self.panel_manager[self.panel_manager.current_panel]
         if panel["music_toggle_button"].is_clicked(event, self.mouse.position):
             self._toggle_music()
