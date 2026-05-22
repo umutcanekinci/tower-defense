@@ -18,6 +18,7 @@ from util.config_loader import load_tower_config
 from pygame_core.camera import Camera
 from util.constants import TILE_SIZE
 from pygame_core.debug import Debug
+from ui import hp_bar
 from ui.menu_background import MenuBackground
 from pygame_core.splash_screen import SplashScreen
 from pygame_core.ecs.game_audio import GameAudio
@@ -222,6 +223,7 @@ class Game(GameEventsMixin, Application):
                 tower.draw(self.game_state, self.camera, self.window)
                 for bullet in tower.bullets:
                     self.camera.draw(self.window, bullet)
+                hp_bar.draw(self.window, self.camera, tower.position, tower.hp, tower.maxHP)
 
         def _draw_enemies(self) -> None:
             for enemy in self.enemies:
@@ -230,6 +232,7 @@ class Game(GameEventsMixin, Application):
                     enemy.draw_muzzle(self.window, self.camera)
                     for bullet in enemy.bullets:
                         self.camera.draw(self.window, bullet)
+                hp_bar.draw(self.window, self.camera, enemy.position, enemy.hp, enemy.maxHP)
 
         old_clip = self.window.get_clip()
         self.window.set_clip(self.game_area)
