@@ -22,8 +22,10 @@ def _color(ratio: float) -> tuple[int, int, int]:
 
 
 def draw(surface: pygame.Surface, camera, world_pos, hp, max_hp,
-         offset: int = DEFAULT_OFFSET) -> None:
-    if max_hp is None or hp is None or hp >= max_hp:
+         offset: int = DEFAULT_OFFSET, force: bool = False) -> None:
+    if max_hp is None or hp is None:
+        return
+    if not force and hp >= max_hp:
         return
     ratio = max(0.0, min(1.0, hp / max_hp))
     center = camera.world_to_screen(world_pos)

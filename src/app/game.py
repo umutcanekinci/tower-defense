@@ -223,7 +223,8 @@ class Game(GameEventsMixin, Application):
                 tower.draw(self.game_state, self.camera, self.window)
                 for bullet in tower.bullets:
                     self.camera.draw(self.window, bullet)
-                hp_bar.draw(self.window, self.camera, tower.position, tower.hp, tower.maxHP)
+                hp_bar.draw(self.window, self.camera, tower.position, tower.hp, tower.maxHP,
+                            force=tower is self.game_state.selected_tower)
 
         def _draw_enemies(self) -> None:
             for enemy in self.enemies:
