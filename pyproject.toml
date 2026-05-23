@@ -1,5 +1,11 @@
 [project]
 name = "tower-defense"
 version = "0.1.0"
-requires-python = ">=3.14"
-dependencies = []
+requires-python = ">=3.12"
+dependencies = [
+    "pygame-ce",
+    "colorama",
+    "pyyaml",
+    "pytmx",
+    "pygame-core @ https://github.com/umutcanekinci/pygame-core/zipball/master",
+]
