@@ -17,7 +17,7 @@ class Tile(RotatableObject):
         self.type = tile_type
         self.row = row
         self.col = col
-        self.decoration = None
+        self.decoration: RotatableObject | None = None
 
         if len(tile_type) > 2 and tile_type[1:3] == "+B":
             dec_id = tile_type[tile_type.index("+B") + 2]

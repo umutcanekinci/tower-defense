@@ -1,5 +1,8 @@
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from towers.base_tower import BaseTower
 
 
 @dataclass
@@ -38,7 +41,7 @@ class GameState:
         self.level:          int  = 1
         self.speed:          int  = 1
         self.is_started:     bool = False
-        self.selected_tower        = None
+        self.selected_tower: "BaseTower | None" = None
         self.plane_level:    int  = 1
 
         self._money_cbs: list[Callable[[int], None]] = []

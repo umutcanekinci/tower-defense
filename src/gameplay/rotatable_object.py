@@ -7,6 +7,7 @@ from pygame_core.asset_path import ImagePath, PathLike
 from pygame_core.ecs.components.sprite_renderer2d import SpriteRenderer2D
 from pygame_core.ecs.state_object import StateObject
 
+
 # Angle (atan2 / screen-coord convention) the sprite's "forward" points in its source PNG.
 FACE_RIGHT = 0
 FACE_DOWN  = 90
@@ -19,7 +20,7 @@ class RotatableObject(StateObject):
 		self.position = Vector2(pos)  # must precede super() — ImageObject.__init__ triggers self.load(), which reads self.position
 		super().__init__(pos=pos, image_path=image_path)
 		self.rect.center = pos
-		self.rotated_image = None
+		self.rotated_image: pygame.Surface | None = None
 		self.is_rotated = False
 		self.sprite_orientation = sprite_orientation
 
@@ -44,4 +45,7 @@ class RotatableObject(StateObject):
 
 	@override
 	def draw(self, surface: pygame.Surface) -> None:
-		surface.blit(self.rotated_image if self.is_rotated else self.image, self.rect)
+		if self.is_rotated and self.rotated_image is not None:
+			surface.blit(self.rotated_image, self.rect)
+		else:
+			super().draw(surface)
