@@ -26,7 +26,11 @@
       "Bash(PYTHONPATH=\"src;src/pygame_core;src/pygame_core/pygame_core\" timeout 6 python __main__.py)",
       "PowerShell(\\(Get-ChildItem \"C:\\\\Users\\\\user\\\\PycharmProjects\\\\tower-defense\\\\assets\\\\images\\\\icons\\\\Default\\\\\" -Force\\).Name | Select-Object -First 50)",
       "Bash(PYTHONPATH='src;src/pygame_core;src/pygame_core/pygame_core' python -c ' *)",
-      "PowerShell(Rename-Item *)"
+      "PowerShell(Rename-Item *)",
+      "Bash(cd *)",
+      "Bash(cp \"C:/Users/user/PycharmProjects/2048-idle-evolution/assets/sounds/switch-a.ogg\" \"C:/Users/user/PycharmProjects/tower-defense/assets/sounds/\")",
+      "Bash(cp \"C:/Users/user/PycharmProjects/2048-idle-evolution/assets/sounds/switch-b.ogg\" \"C:/Users/user/PycharmProjects/tower-defense/assets/sounds/\")",
+      "mcp__ide__getDiagnostics"
     ]
   }
 }
