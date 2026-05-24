@@ -1,13 +1,18 @@
 import pygame
+from pygame.math import Vector2
 
 from domain.game_state import GameState, TowerConfig
+from gameplay.combat.projectile import Bomb
 from towers.base_tower import BaseTower
+
+BOMB_DROP_INTERVAL_MS = 500
 
 
 class PlaneTower(BaseTower):
     def __init__(self, tower_type: int, row: int, col: int, config: TowerConfig, assets, audio, map_width: int) -> None:
         super().__init__(tower_type, row, col, config, assets, audio)
         self._map_width = map_width
+        self._last_bomb_drop_at = pygame.time.get_ticks()
 
     def update(self, game_state: GameState, enemies: list) -> None:
         new_level = game_state.plane_level
@@ -17,6 +22,17 @@ class PlaneTower(BaseTower):
         if game_state.is_started and not self._is_off_map():
             self.position.x += self.speed
             self.rect.center = self.position
+            self._maybe_drop_bomb()
+
+    def _maybe_drop_bomb(self) -> None:
+        now = pygame.time.get_ticks()
+        if now - self._last_bomb_drop_at < BOMB_DROP_INTERVAL_MS:
+            return
+        self._last_bomb_drop_at = now
+        # Bomb inherits the plane's forward momentum at release; drag in Bomb.update
+        # then slows it while the plane keeps cruising, so it lands behind the plane.
+        drop_velocity = Vector2(self.speed, 0)
+        self.bullets.append(Bomb(self, drop_velocity))
 
     def draw(self, game_state: GameState, camera, surface: pygame.Surface) -> None:
         shadow = self.assets.get_image(f"tower_{self.tower_type}_shadow_lvl{self.level}")

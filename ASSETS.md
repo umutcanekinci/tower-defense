@@ -1,13 +1,16 @@
-NEW
+# ASSETS
 
-[UI IMAGES/SOUNDS](https://www.kenney.nl/assets/ui-pack)
+## Kenney Assets
 
-https://www.kenney.nl/assets/tower-defense-top-down
+[UI IMAGES & SOUNDS](https://www.kenney.nl/assets/ui-pack)
 
-https://laredgames.itch.io/gems-coins-free
 
-https://www.kenney.nl/assets/impact-sounds
+[TOWER DEFENSE TOP-DOWN](https://www.kenney.nl/assets/tower-defense-top-down)
 
-OLD
+[IMPACT SOUNDS](https://www.kenney.nl/assets/impact-sounds)
 
-https://www.kenney.nl/assets/ui-pack-adventure
+[SMOKE PARTICLES](https://www.kenney.nl/assets/smoke-particles)
+
+## Others
+
+[ Gems & Coins (Free)](https://laredgames.itch.io/gems-coins-free)

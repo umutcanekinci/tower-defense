@@ -34,10 +34,10 @@ towers:
     hps:         [120, 200]
     shoot_sound: tower_3_shoot
 
-  - type: 4  # Plane — cosmetic flyover (no attack); speeds = movement
+  - type: 4  # Plane — drops bombs along flight path; ranges = explosion radius
     prices:    [600, 1200]
     max_level: 2
-    ranges:    [35, 35]
+    ranges:    [96, 128]
     damages:   [100, 200]
-    speeds:    [4, 2]
+    speeds:    [2, 1]
     # No hps: planes are not targetable by tanks and don't track HP.

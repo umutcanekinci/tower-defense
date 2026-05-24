@@ -54,6 +54,31 @@ images:
   bullet_2_lvl2:     {folder: projectiles, name: 2L2}
   bullet_2_lvl3:     {folder: projectiles, name: 2L3}
 
+  # ── Bomb explosion particles (planes drop bombs that explode) ─────────
+  explosion_0:       {folder: particles/Explosion, name: explosion00}
+  explosion_1:       {folder: particles/Explosion, name: explosion01}
+  explosion_2:       {folder: particles/Explosion, name: explosion02}
+  explosion_3:       {folder: particles/Explosion, name: explosion03}
+  explosion_4:       {folder: particles/Explosion, name: explosion04}
+  explosion_5:       {folder: particles/Explosion, name: explosion05}
+  explosion_6:       {folder: particles/Explosion, name: explosion06}
+  explosion_7:       {folder: particles/Explosion, name: explosion07}
+  explosion_8:       {folder: particles/Explosion, name: explosion08}
+
+  black_smoke_0:     {folder: "particles/Black smoke", name: blackSmoke00}
+  black_smoke_1:     {folder: "particles/Black smoke", name: blackSmoke01}
+  black_smoke_2:     {folder: "particles/Black smoke", name: blackSmoke02}
+  black_smoke_3:     {folder: "particles/Black smoke", name: blackSmoke03}
+  black_smoke_4:     {folder: "particles/Black smoke", name: blackSmoke04}
+  black_smoke_5:     {folder: "particles/Black smoke", name: blackSmoke05}
+  black_smoke_6:     {folder: "particles/Black smoke", name: blackSmoke06}
+  black_smoke_7:     {folder: "particles/Black smoke", name: blackSmoke07}
+  black_smoke_8:     {folder: "particles/Black smoke", name: blackSmoke08}
+  black_smoke_9:     {folder: "particles/Black smoke", name: blackSmoke09}
+  black_smoke_10:    {folder: "particles/Black smoke", name: blackSmoke10}
+  black_smoke_11:    {folder: "particles/Black smoke", name: blackSmoke11}
+  black_smoke_12:    {folder: "particles/Black smoke", name: blackSmoke12}
+
 
   # ── Enemy sprites ─────────────────────────────────────────────────────
   enemy_1:           {folder: enemy, name: E1}
