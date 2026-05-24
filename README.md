@@ -36,11 +36,11 @@ All stats live in `config/towers.yaml`, `config/enemies.yaml`, and `config/waves
 ```bash
 git clone --recurse-submodules https://github.com/umutcanekinci/tower-defense.git
 cd tower-defense
-pip install -r requirements.txt
-python __main__.py
+uv sync
+uv run python __main__.py
 ```
 
-`src/pygame_core` is a git submodule — if you forgot `--recurse-submodules`, run `git submodule update --init`.
+Dependencies are managed with [uv](https://docs.astral.sh/uv/) (see `pyproject.toml` and `uv.lock`). `src/pygame_core` is a git submodule installed as an editable path dependency — if you forgot `--recurse-submodules`, run `git submodule update --init`.
 
 ## Project layout
 
