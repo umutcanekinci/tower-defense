@@ -1,6 +1,6 @@
-# Tower Defense
+# Chokepoint
 
-A 2D tower defense game built with [pygame-ce](https://github.com/pygame-community/pygame-ce). Defend the path through 25 waves of escalating enemies by buying, placing, and upgrading towers along a fixed Tiled-authored map.
+Chokepoint is a 2D tower defense game built with [pygame-ce](https://github.com/pygame-community/pygame-ce). Defend the path through 25 waves of escalating enemies by buying, placing, and upgrading towers along a fixed Tiled-authored map.
 
 ![Gameplay](docs/preview.gif)
 
@@ -51,8 +51,8 @@ All stats live in `config/towers.yaml`, `config/enemies.yaml`, and `config/waves
 ## Running
 
 ```bash
-git clone --recurse-submodules https://github.com/umutcanekinci/tower-defense.git
-cd tower-defense
+git clone --recurse-submodules https://github.com/umutcanekinci/chokepoint.git
+cd chokepoint
 uv sync
 uv run python __main__.py
 ```
@@ -85,7 +85,7 @@ Art and UI from [Kenney](https://www.kenney.nl/) — [Tower Defense (Top-Down)](
 ## Contributing
 
 1. Fork this repository.
-2. Clone your fork: `git clone --recurse-submodules https://github.com/<you>/tower-defense.git`
+2. Clone your fork: `git clone --recurse-submodules https://github.com/<you>/chokepoint.git`
 3. Create a branch: `git checkout -b feature/<your-feature>`
 4. Commit + push: `git commit -am "<message>" && git push origin feature/<your-feature>`
 5. Open a pull request.
@@ -94,7 +94,7 @@ Art and UI from [Kenney](https://www.kenney.nl/) — [Tower Defense (Top-Down)](
 
 Umutcan Ekinci — [umutcannekinci@gmail.com](mailto:umutcannekinci@gmail.com)
 
-See also the [contributors](https://github.com/umutcanekinci/tower-defense/contributors).
+See also the [contributors](https://github.com/umutcanekinci/chokepoint/contributors).
 
 ## License
 

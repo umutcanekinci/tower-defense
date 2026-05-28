@@ -1,4 +1,4 @@
-"""Tiled .tmx loader for the tower-defense game.
+"""Tiled .tmx loader for the Chokepoint game.
 
 Replaces the legacy string-grid `Tilemap` for maps authored in Tiled. The
 legacy class still works for hand-coded grids; nothing here touches it.

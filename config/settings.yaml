@@ -1,7 +1,7 @@
 window:
   size: [1920, 1080]
   fps: 165
-  title: "TOWER DEFENSE"
+  title: "Chokepoint"
 
 gameplay:
   starting_money: 2000

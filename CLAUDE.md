@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Running the Game
 
 ```bash
-cd C:\Users\user\PycharmProjects\tower-defense
+cd C:\Users\user\PycharmProjects\chokepoint
 python __main__.py
 ```
 
