@@ -20,7 +20,7 @@ class PlaneTower(BaseTower):
             self.level = new_level
             self.load(self.assets.image_path(f"tower_{self.tower_type}_lvl{self.level}"))
         if game_state.is_started and not self._is_off_map():
-            self.position.x += self.speed
+            self.position.x += self.speed * game_state.speed
             self.rect.center = self.position
             self._maybe_drop_bomb()
 
