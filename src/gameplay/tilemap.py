@@ -1,7 +1,9 @@
-"""Tiled .tmx loader for the Chokepoint game.
+"""Tower-defense Tiled map for Chokepoint.
 
-Replaces the legacy string-grid `Tilemap` for maps authored in Tiled. The
-legacy class still works for hand-coded grids; nothing here touches it.
+Extends `pygame_core.tilemap.TiledMap` with the TD-specific parsing this game
+needs on top of the generic loader: the enemy path, the spawn marker, and the
+buildable grid. Generic concerns (tile dimensions, object iteration, the
+offscreen pre-render, and the camera-aware draw) live in the base class.
 
 TMX conventions this loader expects:
 
@@ -19,10 +21,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pygame
 import pytmx
 from pygame.math import Vector2
-from pytmx.util_pygame import load_pygame
+
+from pygame_core.tilemap import TiledMap
 
 
 _WAY_LAYER = "Road"
@@ -30,42 +32,26 @@ _MARKERS_GROUP = "Markers"
 _PATHS_GROUP = "Paths"
 
 
-class Tilemap:
-    """Loads a Tiled .tmx and exposes the surface Game needs."""
+class Tilemap(TiledMap):
+    """A Tiled .tmx plus Chokepoint's tower-defense parsing."""
 
     def __init__(self, tmx_path: str | Path) -> None:
-        self._tmx = load_pygame(str(tmx_path))
-        self.tile_size = self._tmx.tilewidth
-        if self._tmx.tilewidth != self._tmx.tileheight:
-            raise ValueError("non-square tiles are not supported")
-
-        self.cols: int = self._tmx.width
-        self.rows: int = self._tmx.height
-
+        super().__init__(tmx_path)
         self.waypoints: list[Vector2] = self._load_first_path()
         self._spawn_col, self._spawn_row = self._load_marker("spawn")
         self.buildable_grid: list[list[bool]] = self._compute_buildable()
 
-        self._native_surface: pygame.Surface | None = None
-        self._scaled_surface: pygame.Surface | None = None
-        self._scaled_factor:  float = 1.0
-
     # ── loaders ───────────────────────────────────────────────────────────
 
-    def _iter_objects(self, group_name: str):
-        for layer in self._tmx.layers:
-            if isinstance(layer, pytmx.TiledObjectGroup) and layer.name == group_name:
-                yield from layer
-
     def _load_first_path(self) -> list[Vector2]:
-        for obj in self._iter_objects(_PATHS_GROUP):
+        for obj in self.iter_objects(_PATHS_GROUP):
             points = getattr(obj, "points", None)
             if points:
                 return [Vector2(p.x, p.y) for p in points]
         return []
 
     def _load_marker(self, name: str) -> tuple[int | None, int | None]:
-        for obj in self._iter_objects(_MARKERS_GROUP):
+        for obj in self.iter_objects(_MARKERS_GROUP):
             if (obj.name or "").lower() == name.lower():
                 col = int(obj.x // self.tile_size)
                 row = int(obj.y // self.tile_size)
@@ -74,7 +60,7 @@ class Tilemap:
 
     def _compute_buildable(self) -> list[list[bool]]:
         grid = [[True for _ in range(self.cols)] for _ in range(self.rows)]
-        for layer in self._tmx.layers:
+        for layer in self.tmx.layers:
             if not isinstance(layer, pytmx.TiledTileLayer) or layer.name != _WAY_LAYER:
                 continue
             for x, y, gid in layer.iter_data():
@@ -84,39 +70,5 @@ class Tilemap:
 
     # ── public API ────────────────────────────────────────────────────────
 
-    @property
-    def map_width(self) -> int:
-        return self.cols * self.tile_size
-
-    @property
-    def map_height(self) -> int:
-        return self.rows * self.tile_size
-
     def get_spawn_tile(self) -> list[int | None]:
         return [self._spawn_col, self._spawn_row]
-
-    def draw(self, surface: pygame.Surface, camera) -> None:
-        if self._native_surface is None:
-            self._native_surface = self.pre_render()
-        if abs(self._scaled_factor - camera.scale) > 1e-6 or self._scaled_surface is None:
-            self._scaled_factor  = camera.scale
-            self._scaled_surface = (
-                self._native_surface if abs(camera.scale - 1.0) < 1e-6
-                else pygame.transform.scale_by(self._native_surface, camera.scale)
-            )
-        old_clip = surface.get_clip()
-        surface.set_clip(camera.rect)
-        surface.blit(self._scaled_surface, camera.world_to_screen((0, 0)))
-        surface.set_clip(old_clip)
-
-    def pre_render(self) -> pygame.Surface:
-        """Render the full map to an offscreen surface (no camera offset)."""
-        surf = pygame.Surface((self.map_width, self.map_height))
-        ts = self.tile_size
-        for layer in self._tmx.visible_layers:
-            if not isinstance(layer, pytmx.TiledTileLayer):
-                continue
-            for x, y, image in layer.tiles():
-                if image is not None:
-                    surf.blit(image, (x * ts, y * ts))
-        return surf
