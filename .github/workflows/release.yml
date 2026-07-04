@@ -36,7 +36,8 @@ jobs:
           submodules: recursive
 
       - name: Set up uv + Python
-        uses: astral-sh/setup-uv@v8
+        # setup-uv publishes no floating major tag; pin an exact version.
+        uses: astral-sh/setup-uv@v8.2.0
         with:
           python-version: "3.12"
 
