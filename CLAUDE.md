@@ -5,17 +5,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Running the Game
 
 ```bash
-cd C:\Users\user\PycharmProjects\chokepoint
-python __main__.py
+cd C:\Users\user\Desktop\projects\chokepoint
+python __main__.py         # or: uv run python __main__.py
 ```
 
-No tests, no lint config, no build step.
+No tests, no lint config.
+
+### Building a distributable
+
+`pyinstaller chokepoint.spec --noconfirm` produces a standalone onedir bundle in
+`dist/` (bundling `assets/` + `config/`); the tag-triggered
+`.github/workflows/release.yml` builds Windows/macOS/Linux zips and publishes a
+GitHub Release. Because the game loads assets/config by **cwd-relative** paths,
+`__main__.py` chdirs into `util.paths.resource_root()` at startup — which is the
+project root from source and `sys._MEIPASS` when frozen — so the same relative
+paths resolve in both. `config_loader` anchors to that root too.
 
 ## Architecture
 
 ### Entry point → Game class
 
-`__main__.py` creates `Game()` and calls `game.run()`. `Game` (in `src/game.py`) extends `pygame_core.Application` and is the top-level orchestrator: it wires all subsystems in `__init__`, runs a splash screen, then hands control to the `Application` base class loop which calls `update()` / `draw()` / `handle_event()` each frame.
+`__main__.py` creates `Game()` and calls `game.run()`. `Game` (in `src/app/game.py`) extends `pygame_core.Application` and is the top-level orchestrator: it wires all subsystems in `__init__`, runs a splash screen, then hands control to the `Application` base class loop which calls `update()` / `draw()` / `handle_event()` each frame.
 
 ### Subsystems wired by Game
 
@@ -25,7 +35,7 @@ No tests, no lint config, no build step.
 | `camera` | `Camera` | Edge-scroll camera for the 1536×1080 game area; applies world→screen offset to all drawn entities |
 | `assets` | `AssetManager` | Loads all images/sounds from `config/assets.yaml`; accessed via string keys everywhere |
 | `panel_manager` | `PanelManager` | Holds named panels ("main_menu", "contact", "game"); switching is `panel_manager.current_panel = "name"` |
-| `tilemap` | `Tilemap` | 22×16 tile grid; tiles created lazily in `run()` after splash |
+| `tilemap` | `Tilemap` | 47×34 tile grid loaded from a Tiled `.tmx`; pre-rendered once after splash |
 | `wave_manager` | `WaveManager` | Reads `config/waves.yaml`; spawns enemies on a timer; advances `game_state.level` when wave clears |
 | `hud` | `GameHUD` | Draws money, lives, level, tower prices; subscribes to `GameState` listeners |
 | `tower_controller` | `TowerPlacementController` | Handles buy/place/select/upgrade/sell; shares the `towers` list reference |
@@ -33,11 +43,12 @@ No tests, no lint config, no build step.
 
 ### Panel / UI system
 
-Panels are defined in `config/panels.yaml` and loaded by `PanelLoaderExt` (in `src/core/panel_loader_ext.py`), which extends the venv `PanelLoader` with **object-level template inheritance** via `object_templates:`.
+Panels are defined in `config/panels.yaml` and loaded by `PanelLoaderExt` (in `src/pygame_core/pygame_core/panel_loader_ext.py`, the engine submodule), which extends the base `PanelLoader` with **object-level template inheritance** via `object_templates:`.
 
-Two factory types are registered in `game.py`:
+Three factory types are registered in `game.py`:
 - `"object"` (default) → `panel_factory.make_factory(assets)` → creates `GuiObject` or `HoverableGuiObject`
-- `"text"` → `panel_factory.make_text_factory()` → creates `TextObject`
+- `"text"` → `panel_factory.make_text_factory(assets)` → creates `TextObject`
+- `"animated"` → `panel_factory.make_animated_factory(assets)` → creates animated sprite objects
 
 YAML keys for image objects: `position`, `size`, `asset`, `hover`, `states`, `nine_slice`, `extends`.  
 YAML keys for text objects: `type: text`, `position`, `text`, `font`, `font_size`, `color`.
@@ -54,7 +65,7 @@ YAML keys for text objects: `type: text`, `position`, `text`, `font`, `font_size
 
 ### Projectiles / IGameContext
 
-`Projectile` and `MuzzleFlash` (in `src/projectile.py`) receive an `IGameContext` on `update()`. `Game` satisfies this protocol via `.enemies`, `.speed`, `.map_width`, `.map_height`, and `.increase_money()`. This avoids circular imports — projectiles never import `Game`.
+`Projectile` and `MuzzleFlash` (in `src/gameplay/combat/projectile.py`) receive an `IGameContext` on `update()`. `Game` satisfies this protocol via `.enemies`, `.speed`, `.map_width`, `.map_height`, and `.increase_money()`. This avoids circular imports — projectiles never import `Game`.
 
 ### Rendering order (game panel)
 
@@ -72,7 +83,7 @@ Tilemap → towers + bullets → enemies → border lines → HUD → tower plac
 
 ### Coordinate system
 
-Tile size is 64 px. Map is 22×16 tiles = 1408×1024 px world space. The camera viewport is 1536×1080 (game area) — the full map fits without scrolling. HUD occupies 384 px on the right (x: 1536–1920). All entity positions are world-space center points stored as `pygame.math.Vector2`.
+Tile size is 64 px. Map is 47×34 tiles = 3008×2176 px world space. The camera viewport is the 1536×1080 game area; the map is larger than the viewport, so the `Camera` edge-scrolls and zooms over it. HUD occupies 384 px on the right (x: 1536–1920). All entity positions are world-space center points stored as `pygame.math.Vector2`.
 
 ### Adding a new tower type
 

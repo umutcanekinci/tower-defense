@@ -9,5 +9,12 @@ dependencies = [
     "pytmx",
 ]
 
+[dependency-groups]
+# Tooling for producing distributable builds (see chokepoint.spec / CI).
+build = [
+    "pyinstaller>=6.0",
+    "pillow",
+]
+
 [tool.uv.sources]
 pygame-core = { path = "src/pygame_core", editable = true }

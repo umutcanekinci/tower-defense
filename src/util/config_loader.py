@@ -1,11 +1,13 @@
 from dataclasses import dataclass
-from pathlib import Path
 
 import yaml
 
 from domain.game_state import TowerConfig, WaveDef
+from util.paths import resource_path
 
-_CONFIG_DIR = Path(__file__).resolve().parents[2] / "config"
+# Anchored to the resource root (not this file) so it resolves inside a
+# PyInstaller bundle, where module files are relocated but bundled data is not.
+_CONFIG_DIR = resource_path("config")
 
 
 @dataclass
