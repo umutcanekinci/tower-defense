@@ -44,7 +44,9 @@ All stats live in `config/towers.yaml`, `config/enemies.yaml`, and `config/waves
 
 ## Download
 
-Grab a ready-to-play build for your OS from the [latest release](https://github.com/umutcanekinci/chokepoint/releases/latest) — no Python required. Unzip and run:
+[![Available on itch.io](https://jessemillar.github.io/available-on-itchio-badge/badge-color.png)](https://umutcanekinci.itch.io/chokepoint)
+
+Grab a ready-to-play build for your OS from [itch.io](https://umutcanekinci.itch.io/chokepoint) or the [latest GitHub release](https://github.com/umutcanekinci/chokepoint/releases/latest) — no Python required. Unzip and run:
 
 | OS | Run |
 |----|-----|
@@ -94,7 +96,7 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-The workflow builds on each OS, zips the bundle, and attaches all three to a GitHub Release (with auto-generated notes). Use the workflow's **Run workflow** button to test a build without publishing.
+The workflow builds on each OS, zips the bundle, attaches all three to a GitHub Release (with auto-generated notes), and pushes each build to its [itch.io](https://umutcanekinci.itch.io/chokepoint) channel via [Butler](https://itch.io/docs/butler/). Use the workflow's **Run workflow** button to test a build without publishing.
 
 ## Project layout
 
@@ -115,7 +117,7 @@ See [CLAUDE.md](CLAUDE.md) for the full architecture overview.
 
 ## Credits
 
-Art and UI from [Kenney](https://www.kenney.nl/) — [Tower Defense (Top-Down)](https://www.kenney.nl/assets/tower-defense-top-down) and [UI Pack](https://www.kenney.nl/assets/ui-pack). Coin pickup art from [La Red Games — Gems & Coins](https://laredgames.itch.io/gems-coins-free).
+Art, UI, and sound from [Kenney](https://www.kenney.nl/) — [Tower Defense (Top-Down)](https://www.kenney.nl/assets/tower-defense-top-down), [UI Pack](https://www.kenney.nl/assets/ui-pack), [Impact Sounds](https://www.kenney.nl/assets/impact-sounds), and [Smoke Particles](https://www.kenney.nl/assets/smoke-particles). Coin pickup art from [La Red Games — Gems & Coins](https://laredgames.itch.io/gems-coins-free).
 
 ## Contributing
 
