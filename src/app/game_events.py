@@ -31,6 +31,8 @@ class GameEventsMixin:
             self.panel_manager.current_panel = "game"
         elif self._activate(panel["contact"], event):
             self.panel_manager.current_panel = "contact"
+        elif self._activate(panel["settings"], event):
+            self.panel_manager.current_panel = "settings"
         elif self._activate(panel["exit"], event):
             self.on_exit_request()
 
@@ -38,6 +40,19 @@ class GameEventsMixin:
         panel = self.panel_manager["contact"]
         if self._activate(panel["back"], event):
             self.panel_manager.current_panel = "main_menu"
+
+    def _handle_settings_event(self, event) -> None:
+        panel = self.panel_manager["settings"]
+        if self._activate(panel["back"], event):
+            self.panel_manager.current_panel = "main_menu"
+        elif self._activate(panel["window_size_back_button"], event):
+            self._cycle_window_size(-1)
+        elif self._activate(panel["window_size_next_button"], event):
+            self._cycle_window_size(1)
+
+    def _cycle_window_size(self, step: int) -> None:
+        self.cycle_windowed_resolution(step)
+        self._refresh_window_size_label()
 
     def _handle_game_event(self, event) -> None:
         panel = self.panel_manager["game"]

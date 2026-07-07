@@ -52,9 +52,10 @@ panels:
       main_menu_buttons:
         layout: { direction: vertical, start: [CENTER, 300], spacing: 120 }
         objects:
-          play:    { extends: btn-lg }
-          contact: { extends: btn-lg }
-          exit:    { extends: btn-lg }
+          play:     { extends: btn-lg }
+          contact:  { extends: btn-lg }
+          settings: { extends: btn-lg }
+          exit:     { extends: btn-lg }
 
       play_text:
         extends: button_text
@@ -64,6 +65,10 @@ panels:
         extends: button_text
         parent: contact
         text: "CONTACT US"
+      settings_text:
+        extends: button_text
+        parent: settings
+        text: "SETTINGS"
       exit_text:
         extends: button_text
         parent: exit
@@ -88,6 +93,63 @@ panels:
         position: [CENTER, CENTER]
         size: [750, 750]
         asset: social_media
+      back:
+        extends: btn-sm
+        size: [375, 100]
+        position: [93, 840]
+      back_text:
+        extends: button_text
+        parent: back
+        text: "BACK"
+      music_toggle_button:
+        extends: btn-sm
+        position: [25, 25]
+      music_toggle_icon:
+        extends: music_toggle_icon
+
+  settings:
+    extends: [menu_chrome]
+    objects:
+      settings_title_text:
+        type: text
+        font: Impact
+        font_size: 48
+        color: white
+        position: [CENTER, 320]
+        text: "SETTINGS"
+
+      window_size_label_text:
+        type: text
+        font: ComicSansMs
+        font_size: 24
+        color: white
+        position: [CENTER, 460]
+        text: "WINDOW SIZE"
+
+      window_size_back_button:
+        extends: btn-sm
+        position: [710, 520]
+      window_size_back_button_text:
+        extends: button_text
+        parent: window_size_back_button
+        text: "<"
+      window_size_value_text:
+        type: text
+        font: ComicSansMs
+        font_size: 32
+        color: white
+        background_color: [0, 0, 0, 100]
+        padding: [8, 24]
+        position: [CENTER, 512]
+        text: "1920x1080"
+      window_size_next_button:
+        extends: btn-sm
+        position: [1150, 520]
+      window_size_next_button_text:
+        extends: button_text
+        parent: window_size_next_button
+        text: ">"
+
       back:
         extends: btn-sm
         size: [375, 100]

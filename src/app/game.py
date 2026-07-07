@@ -88,9 +88,11 @@ class Game(GameEventsMixin, Application):
         self.handlers = {
             "main_menu": self._handle_main_menu_event,
             "contact":   self._handle_contact_event,
+            "settings":  self._handle_settings_event,
             "game":      self._handle_game_event,
         }
-        main_menu_buttons = [self.panel_manager["main_menu"][n] for n in ("play", "contact", "exit")]
+        self._refresh_window_size_label()
+        main_menu_buttons = [self.panel_manager["main_menu"][n] for n in ("play", "contact", "settings", "exit")]
         self.menu_controllers = {
             "main_menu": MenuController(
                 main_menu_buttons,
@@ -111,6 +113,10 @@ class Game(GameEventsMixin, Application):
         loader.register("text", panel_factory.make_text_factory(self.assets))
         loader.register("animated", panel_factory.make_animated_factory(self.assets))
         loader.load("config/panels.yaml")
+
+    def _refresh_window_size_label(self) -> None:
+        w, h = self.windowed_resolution
+        self.panel_manager["settings"]["window_size_value_text"].set_text(f"{w}x{h}")
 
     # ── IGameContext interface ────────────────────────────────────────────────
 
@@ -149,7 +155,7 @@ class Game(GameEventsMixin, Application):
     @override
     def update(self) -> None:
         self.panel_manager.update()
-        if self.panel_manager.current_panel in ("main_menu", "contact"):
+        if self.panel_manager.current_panel in ("main_menu", "contact", "settings"):
             self.menu_bg.update()
         if self.panel_manager.current_panel == "game":
             self._update_game()
@@ -211,7 +217,7 @@ class Game(GameEventsMixin, Application):
         self.window.fill((0, 0, 0))
         if self.panel_manager.current_panel == "game":
             self._draw_game()
-        elif self.panel_manager.current_panel in ("main_menu", "contact"):
+        elif self.panel_manager.current_panel in ("main_menu", "contact", "settings"):
             self.menu_bg.draw(self.window)
             self.window.blit(self.menu_overlay, (0, 0))
         self.panel_manager.draw(self.window)
