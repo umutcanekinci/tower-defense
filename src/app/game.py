@@ -132,7 +132,11 @@ class Game(GameEventsMixin, Application):
     # ── lifecycle ─────────────────────────────────────────────────────────────
 
     def run(self):
-        self.splash.run(self.window, self.clock, self._fps)
+        # SplashScreen runs its own loop with direct pygame.display.update()
+        # calls, bypassing Application._present()'s scale step -- draw it
+        # straight onto the real display surface rather than the offscreen
+        # logical canvas, or it would never actually reach the screen.
+        self.splash.run(self.display_surface, self.clock, self._fps)
         super().run()
 
     def _init_wave_manager(self) -> None:
