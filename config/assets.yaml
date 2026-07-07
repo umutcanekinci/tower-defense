@@ -2,12 +2,12 @@
 
 images:
   # ── Backgrounds & general ─────────────────────────────────────────────
-  bg_main:           {folder: others, name: bg}
-  logo:              {folder: others, name: logo}
-  pygame_logo:       {folder: others, name: pygame_logo}
-  kenney_logo:       {folder: others, name: kenney_logo}
-  social_media:      {folder: others, name: social_media}
-  heart:             {folder: others, name: heart}
+  bg_main:           {folder: branding, name: bg}
+  logo:              {folder: branding, name: logo}
+  pygame_logo:       {folder: branding, name: pygame_logo}
+  kenney_logo:       {folder: branding, name: kenney_logo}
+  social_media:      {folder: branding, name: social_media}
+  heart:             {folder: hud, name: heart}
 
   # ── Menu buttons (normal + hover pairs) ───────────────────────────────
   btn:               {folder: gui/Green/Default, name: button_rectangle_depth_flat}
@@ -81,24 +81,24 @@ images:
 
 
   # ── Enemy sprites ─────────────────────────────────────────────────────
-  enemy_1:           {folder: enemy, name: E1}
-  enemy_2:           {folder: enemy, name: E2}
-  enemy_3:           {folder: enemy, name: E3}
-  enemy_4:           {folder: enemy, name: E4}
-  enemy_5:           {folder: enemy, name: E5}
-  enemy_6:           {folder: enemy, name: E6}
-  enemy_5_muzzle:    {folder: enemy, name: E5_Muzzle}
-  enemy_6_muzzle:    {folder: enemy, name: E6_Muzzle}
+  enemy_1:           {folder: enemies, name: E1}
+  enemy_2:           {folder: enemies, name: E2}
+  enemy_3:           {folder: enemies, name: E3}
+  enemy_4:           {folder: enemies, name: E4}
+  enemy_5:           {folder: enemies, name: E5}
+  enemy_6:           {folder: enemies, name: E6}
+  enemy_5_muzzle:    {folder: enemies, name: E5_Muzzle}
+  enemy_6_muzzle:    {folder: enemies, name: E6_Muzzle}
   tank_bullet:       {folder: projectiles, name: Tank_Bullet}
   tank_muzzle_flash: {folder: muzzle_flashes, name: Tank_Muzzle_Effect}
 
   # ── Tile overlays (placement preview) ─────────────────────────────────
-  tile_block:        {folder: others, name: block}
-  tile_enable:       {folder: others, name: enable}
+  tile_block:        {folder: tiles, name: block}
+  tile_enable:       {folder: tiles, name: enable}
 
-  btn_sell:    { folder: button, name: sell }
+  btn_sell:    { folder: buttons, name: sell }
   btn_upgrade: { folder: icons/Large, name: icon_jump }
-  btn_max:     { folder: button, name: max }
+  btn_max:     { folder: buttons, name: max }
   btn_menu:    { folder: icons/Large, name: icon_menu}
 
   icon_music: { folder: icons/Large, name: icon_music }
