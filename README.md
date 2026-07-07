@@ -12,7 +12,7 @@ You start with **$200** and **10 lives**. Buy towers from the HUD on the right, 
 
 | Menu | Gameplay | Upgrades |
 |------|----------|----------|
-| ![](docs/screenshot-1.png) | ![](docs/screenshot-2.png) | ![](docs/screenshot-3.png) |
+| ![](docs/screenshots/screenshot-1.png) | ![](docs/screenshots/screenshot-2.png) | ![](docs/screenshots/screenshot-3.png) |
 
 ### Enemies
 
