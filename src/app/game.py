@@ -102,6 +102,11 @@ class Game(GameEventsMixin, Application):
         }
         self._refresh_window_size_label()
         self._refresh_window_mode_label()
+        settings_panel = self.panel_manager["settings"]
+        settings_panel["sfx_volume_slider"].set_value(self.audio.sfx_volume())
+        settings_panel["sfx_volume_slider"].on_change = self._on_sfx_volume_changed
+        settings_panel["music_volume_slider"].set_value(self.audio.music_volume())
+        settings_panel["music_volume_slider"].on_change = self._on_music_volume_changed
         self._refresh_sfx_volume_label()
         self._refresh_music_volume_label()
         main_menu_buttons = [self.panel_manager["main_menu"][n] for n in ("play", "contact", "settings", "exit")]
@@ -124,6 +129,7 @@ class Game(GameEventsMixin, Application):
         loader.register("object", panel_factory.make_factory(self.assets), default=True)
         loader.register("text", panel_factory.make_text_factory(self.assets))
         loader.register("animated", panel_factory.make_animated_factory(self.assets))
+        loader.register("slider", panel_factory.make_slider_factory(self.assets))
         loader.load("config/panels.yaml")
 
     def _refresh_window_size_label(self) -> None:

@@ -189,30 +189,18 @@ panels:
         color: white
         position: [CENTER, 740]
         text: "SFX VOLUME"
-
-      sfx_volume_back_button:
-        extends: btn-sm
-        position: [710, 800]
-      sfx_volume_back_button_text:
-        extends: button_text
-        parent: sfx_volume_back_button
-        text: "<"
       sfx_volume_value_text:
         type: text
         font: ComicSansMs
-        font_size: 32
+        font_size: 24
         color: white
-        background_color: [0, 0, 0, 100]
-        padding: [8, 24]
-        position: [CENTER, 792]
+        position: [CENTER, 778]
         text: "100%"
-      sfx_volume_next_button:
-        extends: btn-sm
-        position: [1150, 800]
-      sfx_volume_next_button_text:
-        extends: button_text
-        parent: sfx_volume_next_button
-        text: ">"
+      sfx_volume_slider:
+        type: slider
+        position: [710, 814]
+        size: [440, 28]
+        value: 1.0
 
       music_volume_label_text:
         type: text
@@ -221,30 +209,18 @@ panels:
         color: white
         position: [CENTER, 880]
         text: "BGM VOLUME"
-
-      music_volume_back_button:
-        extends: btn-sm
-        position: [710, 940]
-      music_volume_back_button_text:
-        extends: button_text
-        parent: music_volume_back_button
-        text: "<"
       music_volume_value_text:
         type: text
         font: ComicSansMs
-        font_size: 32
+        font_size: 24
         color: white
-        background_color: [0, 0, 0, 100]
-        padding: [8, 24]
-        position: [CENTER, 932]
+        position: [CENTER, 918]
         text: "100%"
-      music_volume_next_button:
-        extends: btn-sm
-        position: [1150, 940]
-      music_volume_next_button_text:
-        extends: button_text
-        parent: music_volume_next_button
-        text: ">"
+      music_volume_slider:
+        type: slider
+        position: [710, 954]
+        size: [440, 28]
+        value: 1.0
 
       back:
         extends: btn-sm
