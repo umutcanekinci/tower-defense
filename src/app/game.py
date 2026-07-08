@@ -21,6 +21,7 @@ from pygame_core.debug import Debug
 from ui import hp_bar
 from ui.menu_background import MenuBackground
 from pygame_core.splash_screen import SplashScreen
+from pygame_core.save_store import SaveStore
 from pygame_core.ecs.game_audio import GameAudio
 from gameplay.combat.enemy import Enemy
 from ui.game_hud import GameHUD
@@ -55,7 +56,13 @@ class Game(GameEventsMixin, Application):
         camera   = self.settings["camera"]
         audio    = self.settings["audio"]
 
+        self.settings_store = SaveStore("settings")
+        saved_settings = self.settings_store.load()
+        audio["music_volume"] = saved_settings.get("music_volume", audio["music_volume"])
+        audio["sfx_volume"]   = saved_settings.get("sfx_volume", audio["sfx_volume"])
+
         super().__init__(tuple(window["size"]), window["title"], window["fps"], Mouse(TILE_SIZE))
+        self._restore_window_mode(saved_settings)
 
         window_transform = Transform((0, 0), self.size)
         self.towers:       list[BaseTower] = []
@@ -144,6 +151,28 @@ class Game(GameEventsMixin, Application):
 
     def _refresh_music_volume_label(self) -> None:
         self.panel_manager["settings"]["music_volume_value_text"].set_text(f"{round(self.audio.music_volume() * 100)}%")
+
+    # ── settings persistence ─────────────────────────────────────────────────
+
+    def _restore_window_mode(self, saved_settings: dict) -> None:
+        """Applies a saved window mode/size on top of Application.__init__'s
+        default (always exclusive fullscreen). Restoring the size first is
+        what set_windowed_resolution() is for, but it also switches to
+        windowed mode as a side effect -- harmless here since we immediately
+        follow it with whatever mode was actually saved."""
+        if "window_size" in saved_settings:
+            self.set_windowed_resolution(tuple(saved_settings["window_size"]))
+        mode = saved_settings.get("window_mode", "fullscreen")
+        mode_methods = {"fullscreen": self.full_screen, "borderless": self.borderless_full_screen, "windowed": self.minimize}
+        mode_methods.get(mode, self.full_screen)()
+
+    def _save_settings(self) -> None:
+        self.settings_store.save({
+            "window_mode":  self._window_mode,
+            "window_size":  list(self.windowed_resolution),
+            "sfx_volume":   self.audio.sfx_volume(),
+            "music_volume": self.audio.music_volume(),
+        })
 
     # ── IGameContext interface ────────────────────────────────────────────────
 
@@ -311,5 +340,12 @@ class Game(GameEventsMixin, Application):
         if self.panel_manager.current_panel == "main_menu":
             self.exit()
         elif self.panel_manager.current_panel in ("contact", "settings", "game"):
+            if self.panel_manager.current_panel == "settings":
+                self._save_settings()
             self.panel_manager.current_panel = "main_menu"
             self.game_state.is_started = False
+
+    @override
+    def exit(self) -> None:
+        self._save_settings()
+        super().exit()

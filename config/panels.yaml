@@ -198,7 +198,7 @@ panels:
         text: "100%"
       sfx_volume_slider:
         type: slider
-        position: [710, 814]
+        position: [CENTER, 814]
         size: [440, 28]
         value: 1.0
 
@@ -218,7 +218,7 @@ panels:
         text: "100%"
       music_volume_slider:
         type: slider
-        position: [710, 954]
+        position: [CENTER, 954]
         size: [440, 28]
         value: 1.0
 

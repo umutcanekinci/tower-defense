@@ -1,5 +1,8 @@
 # Database files
 *.db
+
+# Player-local settings/save data (pygame_core SaveStore)
+/saves/
 .vscode
 .venv
 

@@ -44,6 +44,7 @@ class GameEventsMixin:
     def _handle_settings_event(self, event) -> None:
         panel = self.panel_manager["settings"]
         if self._activate(panel["back"], event):
+            self._save_settings()
             self.panel_manager.current_panel = "main_menu"
         elif self._activate(panel["window_size_back_button"], event):
             self._cycle_window_size(-1)
