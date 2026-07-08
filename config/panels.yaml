@@ -230,6 +230,15 @@ panels:
         extends: button_text
         parent: back
         text: "BACK"
+      reset:
+        extends: btn-sm
+        size: [375, 100]
+        position: [493, 840]
+      reset_text:
+        extends: button_text
+        parent: reset
+        font_size: 36
+        text: "RESET TO DEFAULT"
       music_toggle_button:
         extends: btn-sm
         position: [25, 25]

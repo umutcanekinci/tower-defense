@@ -55,6 +55,7 @@ class Game(GameEventsMixin, Application):
         splash   = self.settings["splash"]
         camera   = self.settings["camera"]
         audio    = self.settings["audio"]
+        self._default_audio_settings = dict(audio)  # kept for "reset to defaults"
 
         self.settings_store = SaveStore("settings")
         saved_settings = self.settings_store.load()
@@ -173,6 +174,25 @@ class Game(GameEventsMixin, Application):
             "sfx_volume":   self.audio.sfx_volume(),
             "music_volume": self.audio.music_volume(),
         })
+
+    def _reset_settings(self) -> None:
+        """Restores window mode/size and both volumes to config/settings.yaml's
+        shipped defaults (not merely the values from the last save), then
+        persists immediately -- Reset is a deliberate action, not a live drag,
+        so it shouldn't wait for the player to also press Back."""
+        self.clear_windowed_resolution_override()
+        self.full_screen()
+        self.audio.set_sfx_volume(self._default_audio_settings["sfx_volume"])
+        self.audio.set_music_volume(self._default_audio_settings["music_volume"])
+
+        settings_panel = self.panel_manager["settings"]
+        settings_panel["sfx_volume_slider"].set_value(self.audio.sfx_volume())
+        settings_panel["music_volume_slider"].set_value(self.audio.music_volume())
+        self._refresh_window_size_label()
+        self._refresh_window_mode_label()
+        self._refresh_sfx_volume_label()
+        self._refresh_music_volume_label()
+        self._save_settings()
 
     # ── IGameContext interface ────────────────────────────────────────────────
 
