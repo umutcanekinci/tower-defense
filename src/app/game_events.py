@@ -70,7 +70,7 @@ class GameEventsMixin:
             self._cycle_window_mode(1)
 
     def _cycle_window_size(self, step: int) -> None:
-        self.cycle_windowed_resolution(step)
+        self.cycle_resolution(step)
         self._refresh_window_size_label()
 
     def _cycle_window_mode(self, step: int) -> None:

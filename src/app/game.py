@@ -192,7 +192,7 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
         loader.load("config/panels.yaml")
 
     def _refresh_window_size_label(self) -> None:
-        w, h = self.windowed_resolution
+        w, h = self.resolution
         self.panel_manager["settings"]["window_size_value_text"].set_text(f"{w}x{h}")
 
     def _refresh_window_mode_label(self) -> None:
@@ -208,12 +208,13 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
 
     def _restore_window_mode(self, saved_settings: dict) -> None:
         """Applies a saved window mode/size on top of Application.__init__'s
-        default (always exclusive fullscreen). Restoring the size first is
-        what set_windowed_resolution() is for, but it also switches to
-        windowed mode as a side effect -- harmless here since we immediately
-        follow it with whatever mode was actually saved."""
+        default (always exclusive fullscreen). set_resolution() only resizes
+        immediately if already windowed (mode and resolution are independent
+        settings) -- called here while still in the just-constructed default
+        fullscreen, it just remembers the size for whichever mode is applied
+        next, below."""
         if "window_size" in saved_settings:
-            self.set_windowed_resolution(tuple(saved_settings["window_size"]))
+            self.set_resolution(tuple(saved_settings["window_size"]))
         mode = saved_settings.get("window_mode", "fullscreen")
         mode_methods = {"fullscreen": self.full_screen, "borderless": self.borderless_full_screen, "windowed": self.minimize}
         mode_methods.get(mode, self.full_screen)()
@@ -221,7 +222,7 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
     def _save_settings(self) -> None:
         self.settings_store.save({
             "window_mode":  self._window_mode,
-            "window_size":  list(self.windowed_resolution),
+            "window_size":  list(self.resolution),
             "sfx_volume":   self.audio.sfx_volume(),
             "music_volume": self.audio.music_volume(),
         })
@@ -231,7 +232,7 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
         shipped defaults (not merely the values from the last save), then
         persists immediately -- Reset is a deliberate action, not a live drag,
         so it shouldn't wait for the player to also press Back."""
-        self.clear_windowed_resolution_override()
+        self.clear_resolution_override()
         self.full_screen()
         self.audio.set_sfx_volume(self._default_audio_settings["sfx_volume"])
         self.audio.set_music_volume(self._default_audio_settings["music_volume"])
