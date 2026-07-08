@@ -72,6 +72,11 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
         self.save_store      = SaveStore("save")
         self._starting_money = gameplay["starting_money"]
         self._starting_lives = gameplay["starting_lives"]
+        # panels.yaml's positions/sizes/font sizes are authored for this
+        # resolution; _load_panel_layout() shrinks (never grows) UI chrome
+        # by the same factor the canvas falls short of it, so buttons/panels
+        # stay fully on-screen at smaller windows instead of overflowing.
+        self._authored_ui_size = tuple(window["size"])
 
         super().__init__(tuple(window["size"]), window["title"], window["fps"], Mouse(TILE_SIZE))
         self._restore_window_mode(saved_settings)
@@ -174,6 +179,12 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
         resize can re-run just this part (positions/sizes depend on the
         window_transform passed in) without re-parsing config/assets.yaml."""
         loader = PanelLoaderExt(self.panel_manager, window_transform, self.assets)
+        loader.authored_size = self._authored_ui_size
+        loader.scale = min(
+            1.0,
+            window_transform.width  / self._authored_ui_size[0],
+            window_transform.height / self._authored_ui_size[1],
+        )
         loader.register("object", panel_factory.make_factory(self.assets), default=True)
         loader.register("text", panel_factory.make_text_factory(self.assets))
         loader.register("animated", panel_factory.make_animated_factory(self.assets))
