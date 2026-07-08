@@ -281,6 +281,6 @@ class Game(GameEventsMixin, Application):
     def on_exit_request(self):
         if self.panel_manager.current_panel == "main_menu":
             self.exit()
-        elif self.panel_manager.current_panel in ("contact", "game"):
+        elif self.panel_manager.current_panel in ("contact", "settings", "game"):
             self.panel_manager.current_panel = "main_menu"
             self.game_state.is_started = False
