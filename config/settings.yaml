@@ -18,3 +18,7 @@ camera:
   zoom_step: 0.10
   zoom_min: 0.5
   zoom_max: 2.0
+
+audio:
+  music_volume: 1.0
+  sfx_volume: 1.0

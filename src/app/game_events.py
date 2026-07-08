@@ -10,6 +10,8 @@ class GameEventsMixin:
     and mutates game state via the surrounding Game.
     """
 
+    VOLUME_STEP = 0.1
+
     def _activate(self, button, event) -> bool:
         """True when the button was activated (click or focused-Space/Enter).
         Plays the button's `on_click_sound` (or the default click) on success."""
@@ -53,6 +55,14 @@ class GameEventsMixin:
             self._cycle_window_mode(-1)
         elif self._activate(panel["window_mode_next_button"], event):
             self._cycle_window_mode(1)
+        elif self._activate(panel["sfx_volume_back_button"], event):
+            self._cycle_sfx_volume(-1)
+        elif self._activate(panel["sfx_volume_next_button"], event):
+            self._cycle_sfx_volume(1)
+        elif self._activate(panel["music_volume_back_button"], event):
+            self._cycle_music_volume(-1)
+        elif self._activate(panel["music_volume_next_button"], event):
+            self._cycle_music_volume(1)
 
     def _cycle_window_size(self, step: int) -> None:
         self.cycle_windowed_resolution(step)
@@ -62,6 +72,14 @@ class GameEventsMixin:
         self.cycle_window_mode(step)
         self._refresh_window_mode_label()
         self._refresh_window_size_label()
+
+    def _cycle_sfx_volume(self, step: int) -> None:
+        self.audio.set_sfx_volume(self.audio.sfx_volume() + step * self.VOLUME_STEP)
+        self._refresh_sfx_volume_label()
+
+    def _cycle_music_volume(self, step: int) -> None:
+        self.audio.set_music_volume(self.audio.music_volume() + step * self.VOLUME_STEP)
+        self._refresh_music_volume_label()
 
     def _handle_game_event(self, event) -> None:
         panel = self.panel_manager["game"]

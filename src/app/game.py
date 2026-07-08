@@ -53,6 +53,7 @@ class Game(GameEventsMixin, Application):
         gameplay = self.settings["gameplay"]
         splash   = self.settings["splash"]
         camera   = self.settings["camera"]
+        audio    = self.settings["audio"]
 
         super().__init__(tuple(window["size"]), window["title"], window["fps"], Mouse(TILE_SIZE))
 
@@ -81,6 +82,8 @@ class Game(GameEventsMixin, Application):
         self.load_panels(window_transform)
 
         self.audio            = GameAudio(str(self.assets.sound_path("bg_music")))
+        self.audio.set_music_volume(audio["music_volume"])
+        self.audio.set_sfx_volume(audio["sfx_volume"])
         self.hud              = GameHUD(self.game_state, self.tower_config, self.panel_manager)
         self.tower_controller = TowerPlacementController(self.towers, self.tower_config, self.assets, self.audio, self.game_state, self.camera, self.panel_manager, self.tilemap.buildable_grid, self.tilemap.map_width, self.game_area)
 
@@ -99,6 +102,8 @@ class Game(GameEventsMixin, Application):
         }
         self._refresh_window_size_label()
         self._refresh_window_mode_label()
+        self._refresh_sfx_volume_label()
+        self._refresh_music_volume_label()
         main_menu_buttons = [self.panel_manager["main_menu"][n] for n in ("play", "contact", "settings", "exit")]
         self.menu_controllers = {
             "main_menu": MenuController(
@@ -127,6 +132,12 @@ class Game(GameEventsMixin, Application):
 
     def _refresh_window_mode_label(self) -> None:
         self.panel_manager["settings"]["window_mode_value_text"].set_text(WINDOW_MODE_LABELS[self._window_mode])
+
+    def _refresh_sfx_volume_label(self) -> None:
+        self.panel_manager["settings"]["sfx_volume_value_text"].set_text(f"{round(self.audio.sfx_volume() * 100)}%")
+
+    def _refresh_music_volume_label(self) -> None:
+        self.panel_manager["settings"]["music_volume_value_text"].set_text(f"{round(self.audio.music_volume() * 100)}%")
 
     # ── IGameContext interface ────────────────────────────────────────────────
 
