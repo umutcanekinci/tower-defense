@@ -150,6 +150,38 @@ panels:
         parent: window_size_next_button
         text: ">"
 
+      window_mode_label_text:
+        type: text
+        font: ComicSansMs
+        font_size: 24
+        color: white
+        position: [CENTER, 600]
+        text: "WINDOW MODE"
+
+      window_mode_back_button:
+        extends: btn-sm
+        position: [710, 660]
+      window_mode_back_button_text:
+        extends: button_text
+        parent: window_mode_back_button
+        text: "<"
+      window_mode_value_text:
+        type: text
+        font: ComicSansMs
+        font_size: 32
+        color: white
+        background_color: [0, 0, 0, 100]
+        padding: [8, 24]
+        position: [CENTER, 652]
+        text: "FULLSCREEN"
+      window_mode_next_button:
+        extends: btn-sm
+        position: [1150, 660]
+      window_mode_next_button_text:
+        extends: button_text
+        parent: window_mode_next_button
+        text: ">"
+
       back:
         extends: btn-sm
         size: [375, 100]

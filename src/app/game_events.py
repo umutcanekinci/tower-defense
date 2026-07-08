@@ -49,9 +49,18 @@ class GameEventsMixin:
             self._cycle_window_size(-1)
         elif self._activate(panel["window_size_next_button"], event):
             self._cycle_window_size(1)
+        elif self._activate(panel["window_mode_back_button"], event):
+            self._cycle_window_mode(-1)
+        elif self._activate(panel["window_mode_next_button"], event):
+            self._cycle_window_mode(1)
 
     def _cycle_window_size(self, step: int) -> None:
         self.cycle_windowed_resolution(step)
+        self._refresh_window_size_label()
+
+    def _cycle_window_mode(self, step: int) -> None:
+        self.cycle_window_mode(step)
+        self._refresh_window_mode_label()
         self._refresh_window_size_label()
 
     def _handle_game_event(self, event) -> None:

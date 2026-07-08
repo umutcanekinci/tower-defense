@@ -31,6 +31,12 @@ from gameplay.combat.tower_placement import TowerPlacementController
 from towers import BaseTower, GroundTower
 from gameplay.combat.wave_manager import WaveManager
 
+WINDOW_MODE_LABELS = {
+    "fullscreen": "FULLSCREEN",
+    "borderless": "BORDERLESS",
+    "windowed":   "WINDOWED",
+}
+
 
 class Game(GameEventsMixin, Application):
     """Top-level orchestrator.
@@ -92,6 +98,7 @@ class Game(GameEventsMixin, Application):
             "game":      self._handle_game_event,
         }
         self._refresh_window_size_label()
+        self._refresh_window_mode_label()
         main_menu_buttons = [self.panel_manager["main_menu"][n] for n in ("play", "contact", "settings", "exit")]
         self.menu_controllers = {
             "main_menu": MenuController(
@@ -117,6 +124,9 @@ class Game(GameEventsMixin, Application):
     def _refresh_window_size_label(self) -> None:
         w, h = self.windowed_resolution
         self.panel_manager["settings"]["window_size_value_text"].set_text(f"{w}x{h}")
+
+    def _refresh_window_mode_label(self) -> None:
+        self.panel_manager["settings"]["window_mode_value_text"].set_text(WINDOW_MODE_LABELS[self._window_mode])
 
     # ── IGameContext interface ────────────────────────────────────────────────
 
@@ -157,6 +167,8 @@ class Game(GameEventsMixin, Application):
         self.panel_manager.update()
         if self.panel_manager.current_panel in ("main_menu", "contact", "settings"):
             self.menu_bg.update()
+        if self.panel_manager.current_panel == "settings":
+            self._refresh_window_mode_label()  # picks up F11-triggered mode changes
         if self.panel_manager.current_panel == "game":
             self._update_game()
 
