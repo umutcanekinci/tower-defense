@@ -118,17 +118,26 @@ panels:
         position: [CENTER, 320]
         text: "SETTINGS"
 
+      graphics_column:
+        position: [160, 400]
+        size: [700, 350]
+      audio_column:
+        position: [1060, 400]
+        size: [700, 350]
+
       window_size_label_text:
         type: text
         font: ComicSansMs
         font_size: 24
         color: white
-        position: [CENTER, 460]
+        parent: graphics_column
+        position: [CENTER, 60]
         text: "WINDOW SIZE"
 
       window_size_back_button:
         extends: btn-sm
-        position: [710, 520]
+        parent: graphics_column
+        position: [0, 120]
       window_size_back_button_text:
         extends: button_text
         parent: window_size_back_button
@@ -140,11 +149,13 @@ panels:
         color: white
         background_color: [0, 0, 0, 100]
         padding: [8, 24]
-        position: [CENTER, 512]
+        parent: graphics_column
+        position: [CENTER, 112]
         text: "1920x1080"
       window_size_next_button:
         extends: btn-sm
-        position: [1150, 520]
+        parent: graphics_column
+        position: [636, 120]
       window_size_next_button_text:
         extends: button_text
         parent: window_size_next_button
@@ -155,12 +166,14 @@ panels:
         font: ComicSansMs
         font_size: 24
         color: white
-        position: [CENTER, 600]
+        parent: graphics_column
+        position: [CENTER, 220]
         text: "WINDOW MODE"
 
       window_mode_back_button:
         extends: btn-sm
-        position: [710, 660]
+        parent: graphics_column
+        position: [0, 280]
       window_mode_back_button_text:
         extends: button_text
         parent: window_mode_back_button
@@ -172,11 +185,13 @@ panels:
         color: white
         background_color: [0, 0, 0, 100]
         padding: [8, 24]
-        position: [CENTER, 652]
+        parent: graphics_column
+        position: [CENTER, 272]
         text: "FULLSCREEN"
       window_mode_next_button:
         extends: btn-sm
-        position: [1150, 660]
+        parent: graphics_column
+        position: [636, 280]
       window_mode_next_button_text:
         extends: button_text
         parent: window_mode_next_button
@@ -187,18 +202,21 @@ panels:
         font: ComicSansMs
         font_size: 24
         color: white
-        position: [CENTER, 740]
+        parent: audio_column
+        position: [CENTER, 60]
         text: "SFX VOLUME"
       sfx_volume_value_text:
         type: text
         font: ComicSansMs
         font_size: 24
         color: white
-        position: [CENTER, 778]
+        parent: audio_column
+        position: [CENTER, 98]
         text: "100%"
       sfx_volume_slider:
         type: slider
-        position: [CENTER, 814]
+        parent: audio_column
+        position: [CENTER, 134]
         size: [440, 28]
         value: 1.0
 
@@ -207,18 +225,21 @@ panels:
         font: ComicSansMs
         font_size: 24
         color: white
-        position: [CENTER, 880]
+        parent: audio_column
+        position: [CENTER, 220]
         text: "BGM VOLUME"
       music_volume_value_text:
         type: text
         font: ComicSansMs
         font_size: 24
         color: white
-        position: [CENTER, 918]
+        parent: audio_column
+        position: [CENTER, 258]
         text: "100%"
       music_volume_slider:
         type: slider
-        position: [CENTER, 954]
+        parent: audio_column
+        position: [CENTER, 294]
         size: [440, 28]
         value: 1.0
 
