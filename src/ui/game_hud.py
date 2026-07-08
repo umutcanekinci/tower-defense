@@ -45,3 +45,19 @@ class GameHUD:
 		self._on_money_changed(self._game_state.money)
 		self._on_level_changed(self._game_state.level)
 		self._on_lives_changed(self._game_state.lives)
+
+	def rebind_panel(self, panel_manager: PanelManager) -> None:
+		"""Re-fetch this HUD's text objects from a freshly (re)built
+		panel_manager -- e.g. after a canvas resize rebuilds the game panel's
+		objects from scratch. Keeps this same GameHUD instance (and its
+		already-registered GameState listeners) rather than constructing a
+		new one, which would leak the old listeners: GameState has no
+		listener-removal mechanism, so a fresh GameHUD per resize would pile
+		up duplicate callbacks pointing at orphaned text objects."""
+		self.live_text  = panel_manager["game"]["live_text"]
+		self.coin_text  = panel_manager["game"]["coin_text"]
+		self.level_text = panel_manager["game"]["level_text"]
+		self.fee_texts  = [panel_manager["game"][f"fee_text_{i + 1}"] for i in range(4)]
+		for i, fee_text in enumerate(self.fee_texts):
+			fee_text.set_text(f"{self._tower_config.prices[i][0]} $")
+		self.refresh()

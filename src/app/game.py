@@ -50,6 +50,12 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
     # ── construction ──────────────────────────────────────────────────────────
 
     def __init__(self):
+        # Guards on_canvas_resized() firing while Application.__init__ (called
+        # below) sets up the very first display mode -- game_area/camera/
+        # panel_manager don't exist yet at that point. Flipped True once the
+        # rest of this constructor has finished building them.
+        self._construction_complete = False
+
         self.settings = yaml.safe_load(Path("config/settings.yaml").read_text())
         window   = self.settings["window"]
         gameplay = self.settings["gameplay"]
@@ -100,7 +106,10 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
         self.hud              = GameHUD(self.game_state, self.tower_config, self.panel_manager)
         self.tower_controller = TowerPlacementController(self.towers, self.tower_config, self.assets, self.audio, self.game_state, self.camera, self.panel_manager, self.tilemap.buildable_grid, self.tilemap.map_width, self.game_area)
 
-        self.menu_bg = MenuBackground(self.tilemap.pre_render(), self.size)
+        # Cached (not cheap -- iterates every tile): reused by _reflow_panels()
+        # to rebuild menu_bg at the new size without re-rendering the tilemap.
+        self._tilemap_surface = self.tilemap.pre_render()
+        self.menu_bg = MenuBackground(self._tilemap_surface, self.size)
         self.menu_overlay = pygame.Surface(self.size, pygame.SRCALPHA)
         self.menu_overlay.fill((0, 0, 0, 120))
         self.splash = SplashScreen([self.assets.image_path("pygame_logo")], fade_ms=splash["fade_ms"], hold_ms=splash["hold_ms"])
@@ -114,6 +123,14 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
             "settings":  self._handle_settings_event,
             "game":      self._handle_game_event,
         }
+        self._bind_settings_ui()
+        self._build_menu_controllers()
+        self._construction_complete = True
+
+    def _bind_settings_ui(self) -> None:
+        """(Re-)applies live audio/window state to the settings panel's
+        sliders and labels -- needed both at startup and after a canvas
+        resize rebuilds those objects from scratch."""
         self._refresh_window_size_label()
         self._refresh_window_mode_label()
         settings_panel = self.panel_manager["settings"]
@@ -123,6 +140,11 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
         settings_panel["music_volume_slider"].on_change = self._on_music_volume_changed
         self._refresh_sfx_volume_label()
         self._refresh_music_volume_label()
+
+    def _build_menu_controllers(self) -> None:
+        """(Re-)builds the keyboard-nav controllers from the current panel
+        objects -- they hold direct button references, so a canvas resize
+        (which rebuilds those objects) must rebuild these too."""
         main_menu_buttons = [self.panel_manager["main_menu"][n] for n in ("play", "contact", "settings", "exit")]
         play_menu_buttons = [self.panel_manager["play_menu"][n] for n in ("new_game", "continue_game", "back")]
         self.menu_controllers = {
@@ -145,7 +167,12 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
         missing = self.assets.validate()
         if missing:
             raise RuntimeError("Missing assets:\n" + "\n".join(missing))
+        self._load_panel_layout(window_transform)
 
+    def _load_panel_layout(self, window_transform) -> None:
+        """The YAML-parsing half of load_panels(), split out so a canvas
+        resize can re-run just this part (positions/sizes depend on the
+        window_transform passed in) without re-parsing config/assets.yaml."""
         loader = PanelLoaderExt(self.panel_manager, window_transform, self.assets)
         loader.register("object", panel_factory.make_factory(self.assets), default=True)
         loader.register("text", panel_factory.make_text_factory(self.assets))
@@ -238,6 +265,41 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
         if not self.tilemap.waypoints:
             raise RuntimeError("TMX has no Paths/polyline; enemies have nowhere to go")
         self.wave_manager = WaveManager(self.tilemap.waypoints, self.assets)
+
+    # ── canvas resize ────────────────────────────────────────────────────────
+
+    @override
+    def on_canvas_resized(self, new_size: tuple[int, int]) -> None:
+        if not self._construction_complete:
+            return  # Application.__init__ is still setting up the first display mode
+        self._reflow_camera(new_size)
+        self._reflow_panels(new_size)
+
+    def _reflow_camera(self, new_size: tuple[int, int]) -> None:
+        """game_area IS camera.rect (same Rect object, shared by reference
+        with TowerPlacementController too) -- mutating it in place propagates
+        everywhere it's already shared, no reassignment needed."""
+        w, h = new_size
+        self.game_area.update(0, 0, w, h)
+        self.camera.scroll_rect.update(0, 0, w, h)
+        self.camera._clamp_offset()
+
+    def _reflow_panels(self, new_size: tuple[int, int]) -> None:
+        """Rebuilds every panel object against the new canvas size, reusing
+        the existing panel_manager (add_object() overwrites by name, so
+        stale objects are simply replaced) rather than replacing it -- that
+        keeps TowerPlacementController's stored panel_manager reference
+        valid. GameHUD is re-bound rather than reconstructed so its
+        already-registered GameState listeners aren't duplicated (GameState
+        has no listener-removal mechanism)."""
+        self._load_panel_layout(Transform((0, 0), new_size))
+        self.hud.rebind_panel(self.panel_manager)
+        self._bind_settings_ui()
+        self._build_menu_controllers()
+        self._sync_game_ui()
+        self.menu_bg = MenuBackground(self._tilemap_surface, new_size)
+        self.menu_overlay = pygame.Surface(new_size, pygame.SRCALPHA)
+        self.menu_overlay.fill((0, 0, 0, 120))
 
     # ── update ────────────────────────────────────────────────────────────────
 
