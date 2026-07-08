@@ -37,3 +37,11 @@ class GameHUD:
 		for i, fee_text in enumerate(self.fee_texts):
 			fee_text.set_color("green" if money >= self._tower_config.prices[i][0] else "red")
 		self.coin_text.set_color("red" if money == 0 else "white")
+
+	def refresh(self) -> None:
+		"""Re-sync all HUD text/colors from the current GameState -- for when
+		fields were set directly (e.g. restoring a save) rather than through
+		the mutator methods that normally fire these listeners."""
+		self._on_money_changed(self._game_state.money)
+		self._on_level_changed(self._game_state.level)
+		self._on_lives_changed(self._game_state.lives)

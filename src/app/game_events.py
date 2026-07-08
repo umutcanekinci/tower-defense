@@ -28,13 +28,25 @@ class GameEventsMixin:
     def _handle_main_menu_event(self, event) -> None:
         panel = self.panel_manager["main_menu"]
         if self._activate(panel["play"], event):
-            self.panel_manager.current_panel = "game"
+            if self._has_saved_game():
+                self.panel_manager.current_panel = "play_menu"
+            else:
+                self._start_new_game()
         elif self._activate(panel["contact"], event):
             self.panel_manager.current_panel = "contact"
         elif self._activate(panel["settings"], event):
             self.panel_manager.current_panel = "settings"
         elif self._activate(panel["exit"], event):
             self.on_exit_request()
+
+    def _handle_play_menu_event(self, event) -> None:
+        panel = self.panel_manager["play_menu"]
+        if self._activate(panel["new_game"], event):
+            self._start_new_game()
+        elif self._activate(panel["continue_game"], event):
+            self._load_game()
+        elif self._activate(panel["back"], event):
+            self.panel_manager.current_panel = "main_menu"
 
     def _handle_contact_event(self, event) -> None:
         panel = self.panel_manager["contact"]
@@ -77,8 +89,9 @@ class GameEventsMixin:
     def _handle_game_event(self, event) -> None:
         panel = self.panel_manager["game"]
         if self._activate(panel["menu_button"], event):
-            self.panel_manager.current_panel = "main_menu"
             self.game_state.is_started = False
+            self._save_game()
+            self.panel_manager.current_panel = "main_menu"
             return
         self.camera.handle_event(event, self.mouse.position)
         self.tower_controller.handle_event(event, self.mouse.position)

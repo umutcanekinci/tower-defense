@@ -6,6 +6,7 @@ import yaml
 from pygame import Rect
 
 from app.game_events import GameEventsMixin
+from app.game_save import GameSaveMixin
 from pygame_core.application import Application
 from pygame_core.asset_manager import AssetManager
 from pygame_core.ui_widgets.menu_controller import MenuController
@@ -39,7 +40,7 @@ WINDOW_MODE_LABELS = {
 }
 
 
-class Game(GameEventsMixin, Application):
+class Game(GameEventsMixin, GameSaveMixin, Application):
     """Top-level orchestrator.
 
     Responsibilities: wiring subsystems, routing input per panel,
@@ -61,6 +62,10 @@ class Game(GameEventsMixin, Application):
         saved_settings = self.settings_store.load()
         audio["music_volume"] = saved_settings.get("music_volume", audio["music_volume"])
         audio["sfx_volume"]   = saved_settings.get("sfx_volume", audio["sfx_volume"])
+
+        self.save_store      = SaveStore("save")
+        self._starting_money = gameplay["starting_money"]
+        self._starting_lives = gameplay["starting_lives"]
 
         super().__init__(tuple(window["size"]), window["title"], window["fps"], Mouse(TILE_SIZE))
         self._restore_window_mode(saved_settings)
@@ -104,6 +109,7 @@ class Game(GameEventsMixin, Application):
         self.click_sound_path = self.assets.sound_path("click")
         self.handlers = {
             "main_menu": self._handle_main_menu_event,
+            "play_menu": self._handle_play_menu_event,
             "contact":   self._handle_contact_event,
             "settings":  self._handle_settings_event,
             "game":      self._handle_game_event,
@@ -118,9 +124,16 @@ class Game(GameEventsMixin, Application):
         self._refresh_sfx_volume_label()
         self._refresh_music_volume_label()
         main_menu_buttons = [self.panel_manager["main_menu"][n] for n in ("play", "contact", "settings", "exit")]
+        play_menu_buttons = [self.panel_manager["play_menu"][n] for n in ("new_game", "continue_game", "back")]
         self.menu_controllers = {
             "main_menu": MenuController(
                 main_menu_buttons,
+                self.audio,
+                self.assets.sound_path("switch_up"),
+                self.assets.sound_path("switch_down"),
+            ),
+            "play_menu": MenuController(
+                play_menu_buttons,
                 self.audio,
                 self.assets.sound_path("switch_up"),
                 self.assets.sound_path("switch_down"),
@@ -231,7 +244,7 @@ class Game(GameEventsMixin, Application):
     @override
     def update(self) -> None:
         self.panel_manager.update()
-        if self.panel_manager.current_panel in ("main_menu", "contact", "settings"):
+        if self.panel_manager.current_panel in ("main_menu", "play_menu", "contact", "settings"):
             self.menu_bg.update()
         if self.panel_manager.current_panel == "settings":
             self._refresh_window_mode_label()  # picks up F11-triggered mode changes
@@ -265,6 +278,7 @@ class Game(GameEventsMixin, Application):
                 self.enemies.remove(enemy)
                 self.game_state.decrease_lives(enemy.damage)
                 if self.game_state.lives == 0:
+                    self.save_store.delete()  # a lost run isn't continuable
                     self.exit()
                 continue
             if not self.game_state.is_started:
@@ -295,7 +309,7 @@ class Game(GameEventsMixin, Application):
         self.window.fill((0, 0, 0))
         if self.panel_manager.current_panel == "game":
             self._draw_game()
-        elif self.panel_manager.current_panel in ("main_menu", "contact", "settings"):
+        elif self.panel_manager.current_panel in ("main_menu", "play_menu", "contact", "settings"):
             self.menu_bg.draw(self.window)
             self.window.blit(self.menu_overlay, (0, 0))
         self.panel_manager.draw(self.window)
@@ -357,13 +371,16 @@ class Game(GameEventsMixin, Application):
 
     @override
     def on_exit_request(self):
-        if self.panel_manager.current_panel == "main_menu":
+        panel = self.panel_manager.current_panel
+        if panel == "main_menu":
             self.exit()
-        elif self.panel_manager.current_panel in ("contact", "settings", "game"):
-            if self.panel_manager.current_panel == "settings":
+        elif panel in ("play_menu", "contact", "settings", "game"):
+            if panel == "settings":
                 self._save_settings()
+            elif panel == "game":
+                self.game_state.is_started = False
+                self._save_game()
             self.panel_manager.current_panel = "main_menu"
-            self.game_state.is_started = False
 
     @override
     def exit(self) -> None:

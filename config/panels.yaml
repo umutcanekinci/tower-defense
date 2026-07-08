@@ -86,6 +86,43 @@ panels:
         size: [144, 56]
         asset: kenney_logo
 
+  play_menu:
+    extends: [menu_chrome]
+    objects:
+      play_menu_title_text:
+        type: text
+        font: Impact
+        font_size: 48
+        color: white
+        position: [CENTER, 320]
+        text: "PLAY"
+
+      play_menu_buttons:
+        layout: { direction: vertical, start: [CENTER, 460], spacing: 120 }
+        objects:
+          new_game:      { extends: btn-lg }
+          continue_game: { extends: btn-lg }
+          back:          { extends: btn-lg }
+
+      new_game_text:
+        extends: button_text
+        parent: new_game
+        text: "NEW GAME"
+      continue_game_text:
+        extends: button_text
+        parent: continue_game
+        text: "CONTINUE"
+      back_text:
+        extends: button_text
+        parent: back
+        text: "BACK"
+
+      music_toggle_button:
+        extends: btn-sm
+        position: [25, 25]
+      music_toggle_icon:
+        extends: music_toggle_icon
+
   contact:
     extends: [menu_chrome]
     objects:
