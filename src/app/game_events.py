@@ -41,10 +41,10 @@ class GameEventsMixin:
 
     def _handle_play_menu_event(self, event) -> None:
         panel = self.panel_manager["play_menu"]
-        if self._activate(panel["new_game"], event):
-            self._start_new_game()
-        elif self._activate(panel["continue_game"], event):
+        if self._activate(panel["continue_game"], event):
             self._load_game()
+        elif self._activate(panel["new_game"], event):
+            self._start_new_game()
         elif self._activate(panel["back"], event):
             self.panel_manager.current_panel = "main_menu"
 

@@ -100,8 +100,8 @@ panels:
       play_menu_buttons:
         layout: { direction: vertical, start: [CENTER, 460], spacing: 120 }
         objects:
-          new_game:      { extends: btn-lg }
           continue_game: { extends: btn-lg }
+          new_game:      { extends: btn-lg }
           back:          { extends: btn-lg }
 
       new_game_text:

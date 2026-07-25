@@ -174,7 +174,7 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
         objects -- they hold direct button references, so a canvas resize
         (which rebuilds those objects) must rebuild these too."""
         main_menu_buttons = [self.panel_manager["main_menu"][n] for n in ("play", "contact", "settings", "exit")]
-        play_menu_buttons = [self.panel_manager["play_menu"][n] for n in ("new_game", "continue_game", "back")]
+        play_menu_buttons = [self.panel_manager["play_menu"][n] for n in ("continue_game", "new_game", "back")]
         self.menu_controllers = {
             "main_menu": MenuController(
                 main_menu_buttons,
