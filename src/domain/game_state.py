@@ -43,6 +43,7 @@ class GameState:
         self.is_started:     bool = False
         self.selected_tower: "BaseTower | None" = None
         self.plane_level:    int  = 1
+        self.has_won:        bool = False
 
         self._money_cbs: list[Callable[[int], None]] = []
         self._lives_cbs: list[Callable[[int], None]] = []

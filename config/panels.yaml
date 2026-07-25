@@ -417,3 +417,52 @@ panels:
           fee_text_2: { extends: fee_text }
           fee_text_3: { extends: fee_text }
           fee_text_4: { extends: fee_text }
+
+      # Victory popup -- hidden by default (Game toggles .active on each of
+      # these when wave 25 clears); declared last so it draws on top.
+      victory_overlay:
+        position: [0, 0]
+        size: WINDOW
+        color: [0, 0, 0, 170]
+      victory_panel_bg:
+        position: [CENTER, CENTER]
+        size: [700, 620]
+        asset: btn
+        nine_slice: 10
+      victory_title_text:
+        type: text
+        font: Impact
+        font_size: 56
+        color: [255, 215, 0]
+        parent: victory_panel_bg
+        position: [CENTER, 70]
+        text: "YOU WON!"
+      victory_subtitle_text:
+        type: text
+        font: ComicSansMs
+        font_size: 22
+        color: white
+        parent: victory_panel_bg
+        position: [CENTER, 140]
+        text: "Wave 25 cleared"
+
+      victory_buttons:
+        parent: victory_panel_bg
+        layout: { direction: vertical, start: [CENTER, 220], spacing: 130 }
+        objects:
+          victory_continue:   { extends: btn-lg, size: [520, 90] }
+          victory_play_again: { extends: btn-lg, size: [520, 90] }
+          victory_main_menu:  { extends: btn-lg, size: [520, 90] }
+      victory_continue_text:
+        extends: button_text
+        parent: victory_continue
+        font_size: 30
+        text: "CONTINUE (ENDLESS)"
+      victory_play_again_text:
+        extends: button_text
+        parent: victory_play_again
+        text: "PLAY AGAIN"
+      victory_main_menu_text:
+        extends: button_text
+        parent: victory_main_menu
+        text: "MAIN MENU"

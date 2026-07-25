@@ -87,6 +87,9 @@ class GameEventsMixin:
         self._refresh_music_volume_label()
 
     def _handle_game_event(self, event) -> None:
+        if self._victory_popup_open:
+            self._handle_victory_popup_event(event)
+            return
         panel = self.panel_manager["game"]
         if self._activate(panel["menu_button"], event):
             self.game_state.is_started = False
@@ -98,6 +101,21 @@ class GameEventsMixin:
         self._handle_upgrade_plane_button(event)
         self._handle_start_pause(event)
         self._handle_speed_toggle(event)
+
+    def _handle_victory_popup_event(self, event) -> None:
+        panel = self.panel_manager["game"]
+        if self._activate(panel["victory_continue"], event):
+            self._close_victory_popup()
+            self.game_state.is_started = True
+            panel["start_pause_button_icon"].set_state("pause")
+        elif self._activate(panel["victory_play_again"], event):
+            self._close_victory_popup()
+            self._start_new_game()
+        elif self._activate(panel["victory_main_menu"], event):
+            self._close_victory_popup()
+            self.game_state.is_started = False
+            self._save_game()
+            self.panel_manager.current_panel = "main_menu"
 
     def _handle_upgrade_plane_button(self, event) -> None:
         panel = self.panel_manager["game"]

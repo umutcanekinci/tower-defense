@@ -34,6 +34,7 @@ class GameSaveMixin:
                 "speed":       self.game_state.speed,
                 "is_started":  self.game_state.is_started,
                 "plane_level": self.game_state.plane_level,
+                "has_won":     self.game_state.has_won,
             },
             "towers": [
                 {
@@ -79,6 +80,7 @@ class GameSaveMixin:
         self._restore_enemies(data.get("enemies", []))
         self._restore_wave_manager(data.get("wave_manager", {}))
 
+        self._victory_popup_open = False
         self.tower_controller.buying_tower_type = 0
         self._sync_game_ui()
         self.panel_manager.current_panel = "game"
@@ -91,6 +93,7 @@ class GameSaveMixin:
         gs.speed          = saved.get("speed", gs.speed)
         gs.is_started     = saved.get("is_started", False)
         gs.plane_level    = saved.get("plane_level", 1)
+        gs.has_won        = saved.get("has_won", False)
         gs.selected_tower = None
 
     def _restore_towers(self, saved: list) -> None:
@@ -147,8 +150,10 @@ class GameSaveMixin:
         gs.speed          = 1
         gs.is_started     = False
         gs.plane_level    = 1
+        gs.has_won        = False
         gs.selected_tower = None
         self._init_wave_manager()
+        self._victory_popup_open = False
         self.tower_controller.buying_tower_type = 0
 
         self._sync_game_ui()
@@ -167,4 +172,5 @@ class GameSaveMixin:
         plane_state = "lvl2" if self.game_state.plane_level == 2 else None
         panel["buy_tower_4"].set_state(plane_state)
         panel["upgrade_plane_button"].set_state("purchased" if plane_state else None)
+        self._set_victory_popup_active(self._victory_popup_open)
         self.hud.refresh()

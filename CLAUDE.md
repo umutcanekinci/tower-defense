@@ -31,7 +31,7 @@ paths resolve in both. `config_loader` anchors to that root too.
 
 | Object | Class | Responsibility |
 |--------|-------|----------------|
-| `game_state` | `GameState` | Pure data (money, lives, speed, level, is_started); fires listener callbacks on money/level change |
+| `game_state` | `GameState` | Pure data (money, lives, speed, level, is_started, has_won); fires listener callbacks on money/level change |
 | `camera` | `Camera` | Edge-scroll camera for the 1536×1080 game area; applies world→screen offset to all drawn entities |
 | `assets` | `AssetManager` | Loads all images/sounds from `config/assets.yaml`; accessed via string keys everywhere |
 | `panel_manager` | `PanelManager` | Holds named panels ("main_menu", "contact", "game"); switching is `panel_manager.current_panel = "name"` |

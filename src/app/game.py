@@ -39,6 +39,20 @@ WINDOW_MODE_LABELS = {
     "windowed":   "WINDOWED",
 }
 
+# Clearing this wave triggers the victory popup once per run (config/waves.yaml
+# keeps generating waves past it -- "Continue" just keeps playing those).
+WIN_WAVE = 25
+
+# Toggled together via _set_victory_popup_active() -- the panel/GuiObject
+# system has no group-visibility concept, so each object's .active is set
+# individually (see config/panels.yaml's victory_* objects).
+_VICTORY_POPUP_OBJECTS = (
+    "victory_overlay", "victory_panel_bg", "victory_title_text", "victory_subtitle_text",
+    "victory_continue", "victory_continue_text",
+    "victory_play_again", "victory_play_again_text",
+    "victory_main_menu", "victory_main_menu_text",
+)
+
 
 class Game(GameEventsMixin, GameSaveMixin, Application):
     """Top-level orchestrator.
@@ -88,6 +102,8 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
 
         self.game_area        = Rect(*gameplay["game_area"])
         self.game_state       = GameState(start_money=gameplay["starting_money"], start_lives=gameplay["starting_lives"])
+        self.game_state.add_level_listener(self._on_level_changed)
+        self._victory_popup_open = False
         self.assets           = AssetManager()
         self.tower_config     = load_tower_config()
         self.tilemap          = Tilemap("assets/tiled_project/tiled_tilemap.tmx")
@@ -277,6 +293,28 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
         if not self.tilemap.waypoints:
             raise RuntimeError("TMX has no Paths/polyline; enemies have nowhere to go")
         self.wave_manager = WaveManager(self.tilemap.waypoints, self.assets)
+
+    # ── victory popup ─────────────────────────────────────────────────────────
+
+    def _on_level_changed(self, level: int) -> None:
+        if level == WIN_WAVE + 1 and not self.game_state.has_won:
+            self._trigger_victory()
+
+    def _trigger_victory(self) -> None:
+        self.game_state.has_won = True
+        self.game_state.is_started = False
+        self.panel_manager["game"]["start_pause_button_icon"].set_state(None)
+        self._victory_popup_open = True
+        self._set_victory_popup_active(True)
+
+    def _close_victory_popup(self) -> None:
+        self._victory_popup_open = False
+        self._set_victory_popup_active(False)
+
+    def _set_victory_popup_active(self, active: bool) -> None:
+        panel = self.panel_manager["game"]
+        for name in _VICTORY_POPUP_OBJECTS:
+            panel[name].active = active
 
     # ── canvas resize ────────────────────────────────────────────────────────
 
