@@ -15,6 +15,13 @@ build = [
     "pyinstaller>=6.0",
     "pillow",
 ]
+dev = ["pytest>=8"]
 
 [tool.uv.sources]
 pygame-core = { path = "src/pygame_core", editable = true }
+
+[tool.pytest.ini_options]
+# Puts src/ + src/pygame_core on sys.path so tests can `import app.game` /
+# `import gameplay.*` etc. without per-file path hacks (mirrors __main__.py).
+pythonpath = ["src", "src/pygame_core"]
+testpaths = ["tests"]

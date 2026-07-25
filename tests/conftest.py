@@ -1,0 +1,74 @@
+"""Shared pytest setup and fixtures for chokepoint's app-level test suite.
+
+Run from the repo root (`uv run pytest`, matching how __main__.py assumes
+cwd == repo root for its own "config/..."-relative paths).
+"""
+
+import os
+
+# Dummy SDL drivers so pygame can run headless (e.g. in CI) without opening a
+# real window or probing for a sound device. Must be set before pygame is
+# imported anywhere.
+os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
+os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
+
+import pygame
+import pytest
+
+from pygame_core.asset_manager import AssetManager
+from util.config_loader import load_tower_config
+
+pygame.init()
+# RotatableObject/StateObject load images via convert_alpha(), which raises
+# without a display surface. Application.__init__ normally provides one via
+# set_resolution(); these tests construct game objects directly, with no
+# Application/Game involved, so they need their own.
+pygame.display.set_mode((1, 1))
+
+
+@pytest.fixture(scope="session")
+def assets() -> AssetManager:
+    manager = AssetManager()
+    manager.load_manifest("config/assets.yaml")
+    missing = manager.validate()
+    assert not missing, f"Missing assets: {missing}"
+    return manager
+
+
+@pytest.fixture(scope="session")
+def tower_config():
+    return load_tower_config()
+
+
+class FakeContext:
+    """Minimal stand-in for domain.protocols.IGameContext -- its docstring
+    explicitly calls out lightweight test stubs as a valid implementer."""
+
+    def __init__(self, *, map_width=3008, map_height=2176, speed=1):
+        self.enemies = []
+        self.towers = []
+        self.speed = speed
+        self.map_width = map_width
+        self.map_height = map_height
+        self.money_earned = 0
+
+    def increase_money(self, amount: int) -> None:
+        self.money_earned += amount
+
+
+@pytest.fixture
+def ctx() -> FakeContext:
+    return FakeContext()
+
+
+@pytest.fixture
+def fake_ticks(monkeypatch):
+    """A controllable stand-in for pygame.time.get_ticks().
+
+    Set fake_ticks["t"] = <ms> to move the clock without real sleeps, for
+    deterministic tests of cooldowns/timers (wave spawn intervals, tank fire
+    rate, bomb fall duration, ...).
+    """
+    state = {"t": 0}
+    monkeypatch.setattr(pygame.time, "get_ticks", lambda: state["t"])
+    return state

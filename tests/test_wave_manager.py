@@ -1,0 +1,142 @@
+import pytest
+from pygame.math import Vector2
+
+from domain.game_state import GameState
+from gameplay.combat.enemy import Enemy
+from gameplay.combat.tank import Tank
+from gameplay.combat.wave_manager import WAVE_COMPOSITIONS, WaveManager
+
+WAYPOINTS = [Vector2(0, 0), Vector2(500, 0)]
+
+
+def make_started_state(level=1) -> GameState:
+    gs = GameState(start_money=200, start_lives=10)
+    gs.is_started = True
+    gs.level = level
+    return gs
+
+
+def drain_queue(wm: WaveManager, enemies: list, gs: GameState, fake_ticks, start_t: int = 0) -> int:
+    """Advances fake time until every queued enemy for the current wave has
+    spawned. Returns the tick at which the last one spawned."""
+    t = start_t
+    for _ in range(len(wm._spawn_queue)):
+        t += wm._spawn_interval_ms
+        fake_ticks["t"] = t
+        wm.update(enemies, gs)
+    return t
+
+
+def test_requires_nonempty_waypoints(assets):
+    with pytest.raises(ValueError):
+        WaveManager([], assets)
+
+
+def test_does_nothing_when_not_started(assets):
+    wm = WaveManager(WAYPOINTS, assets)
+    gs = make_started_state()
+    gs.is_started = False
+    enemies = []
+
+    wm.update(enemies, gs)
+
+    assert enemies == []
+    assert wm._spawn_queue == []
+
+
+def test_builds_spawn_queue_matching_wave_composition_on_level_start(assets):
+    wm = WaveManager(WAYPOINTS, assets)
+    gs = make_started_state(level=1)
+
+    wm.update([], gs)
+
+    expected = [t for t, count in WAVE_COMPOSITIONS[1].groups for _ in range(count)]
+    assert wm._spawn_queue == expected
+
+
+def test_spawns_nothing_before_the_interval_elapses(assets, fake_ticks):
+    wm = WaveManager(WAYPOINTS, assets)
+    gs = make_started_state(level=1)
+    enemies = []
+
+    fake_ticks["t"] = 0
+    wm.update(enemies, gs)  # builds the queue; too soon to spawn yet
+    assert enemies == []
+
+    fake_ticks["t"] = wm._spawn_interval_ms - 1
+    wm.update(enemies, gs)
+    assert enemies == []
+
+
+def test_spawns_first_enemy_once_interval_elapses(assets, fake_ticks):
+    wm = WaveManager(WAYPOINTS, assets)
+    gs = make_started_state(level=1)
+    enemies = []
+
+    fake_ticks["t"] = 0
+    wm.update(enemies, gs)
+    fake_ticks["t"] = wm._spawn_interval_ms
+    wm.update(enemies, gs)
+
+    assert len(enemies) == 1
+    assert isinstance(enemies[0], Enemy)
+
+
+def test_wave_25_spawns_the_first_tank_type_as_a_tank_instance(assets, fake_ticks):
+    # config/waves.yaml wave 25 includes one type-5 (Tank) enemy.
+    wm = WaveManager(WAYPOINTS, assets)
+    gs = make_started_state(level=25)
+    enemies = []
+
+    fake_ticks["t"] = 0
+    wm.update(enemies, gs)
+    assert 5 in wm._spawn_queue
+
+    drain_queue(wm, enemies, gs, fake_ticks)
+
+    tanks = [e for e in enemies if e.enemy_type in (5, 6)]
+    non_tanks = [e for e in enemies if e.enemy_type not in (5, 6)]
+    assert tanks and all(isinstance(e, Tank) for e in tanks)
+    assert non_tanks and all(isinstance(e, Enemy) and not isinstance(e, Tank) for e in non_tanks)
+
+
+def test_advances_level_after_queue_drains_and_delay_passes_with_no_enemies(assets, fake_ticks):
+    wm = WaveManager(WAYPOINTS, assets)
+    gs = make_started_state(level=1)
+    enemies = []
+
+    fake_ticks["t"] = 0
+    wm.update(enemies, gs)
+    last_spawn_t = drain_queue(wm, enemies, gs, fake_ticks)
+    enemies.clear()  # pretend every enemy died
+
+    fake_ticks["t"] = last_spawn_t + WaveManager.LEVEL_END_DELAY_MS
+    wm.update(enemies, gs)
+
+    assert gs.level == 2
+
+
+def test_does_not_advance_level_while_enemies_are_still_alive(assets, fake_ticks):
+    wm = WaveManager(WAYPOINTS, assets)
+    gs = make_started_state(level=1)
+    enemies = []
+
+    fake_ticks["t"] = 0
+    wm.update(enemies, gs)
+    last_spawn_t = drain_queue(wm, enemies, gs, fake_ticks)
+    # enemies deliberately left non-empty -- still "alive"
+
+    fake_ticks["t"] = last_spawn_t + WaveManager.LEVEL_END_DELAY_MS
+    wm.update(enemies, gs)
+
+    assert gs.level == 1
+
+
+def test_waves_beyond_the_last_authored_entry_are_generated_dynamically(assets):
+    wm = WaveManager(WAYPOINTS, assets)
+    beyond_max_defined = max(WAVE_COMPOSITIONS) + 5
+    gs = make_started_state(level=beyond_max_defined)
+
+    wm.update([], gs)
+
+    assert wm._spawn_queue  # non-empty: a wave got generated, not skipped
