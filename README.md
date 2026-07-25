@@ -16,12 +16,16 @@ You start with **$200** and **10 lives**. Buy towers from the HUD on the right, 
 
 ### Enemies
 
-| # | Role         | HP  | Speed | Reward | Damage |
-|---|--------------|-----|-------|--------|--------|
-| 1 | Grunt        | 20  | 1.0   | 4      | 1      |
-| 2 | Fast runner  | 55  | 1.6   | 10     | 1      |
-| 3 | Bruiser      | 160 | 0.9   | 28     | 2      |
-| 4 | Tank         | 420 | 0.7   | 75     | 3      |
+| # | Role         | HP   | Speed | Reward | Damage |
+|---|--------------|------|-------|--------|--------|
+| 1 | Grunt        | 20   | 1.0   | 4      | 1      |
+| 2 | Fast runner  | 55   | 1.6   | 10     | 1      |
+| 3 | Bruiser      | 160  | 0.9   | 28     | 2      |
+| 4 | Heavy        | 420  | 0.7   | 75     | 3      |
+| 5 | Tank         | 800  | 0.5   | 200    | 5      |
+| 6 | Siege tank   | 1500 | 0.4   | 400    | 8      |
+
+Types 5–6 are armed: while advancing, they fire on the nearest ground tower in range, chipping away its HP until it's destroyed.
 
 ### Towers
 
@@ -30,7 +34,7 @@ You start with **$200** and **10 lives**. Buy towers from the HUD on the right, 
 | 1 | Rapid gun      | 1      | $80        | Cheap starter — fast, low damage         |
 | 2 | Homing missile | 3      | $220       | Tracks targets; scales hard with upgrades |
 | 3 | Heavy cannon   | 2      | $380       | Long-range artillery, slow heavy hits    |
-| 4 | Plane          | 2      | $600       | Cosmetic flyover (no attack)             |
+| 4 | Plane          | 2      | $600       | Flies over the map, dropping bombs along its path |
 
 All stats live in `config/towers.yaml`, `config/enemies.yaml`, and `config/waves.yaml` — tweak freely.
 
@@ -61,7 +65,7 @@ Grab a ready-to-play build for your OS from [itch.io](https://umutcanekinci.itch
 ## Requirements (from source)
 
 - Python 3.12+
-- [pygame-ce](https://github.com/pygame-community/pygame-ce), pyyaml, pytmx (resolved automatically from `pyproject.toml` / `uv.lock`)
+- [pygame-ce](https://github.com/pygame-community/pygame-ce), colorama, pyyaml, pytmx (resolved automatically from `pyproject.toml` / `uv.lock`)
 - [uv](https://docs.astral.sh/uv/) (optional but recommended)
 
 ## Running

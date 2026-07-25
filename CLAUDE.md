@@ -61,7 +61,7 @@ YAML keys for text objects: `type: text`, `position`, `text`, `font`, `font_size
 
 - Types 1 & 3: instant-hit `MuzzleFlash` at barrel tips (twin barrels for type 1 and type 3 lvl 2)
 - Type 2: homing `Projectile`
-- Type 4: cosmetic plane that flies across the map, no attacking
+- Type 4: plane that flies across the map, dropping `Bomb` projectiles (splash damage) along its path
 
 ### Projectiles / IGameContext
 
