@@ -466,3 +466,46 @@ panels:
         extends: button_text
         parent: victory_main_menu
         text: "MAIN MENU"
+
+      # Game over popup -- hidden by default (Game toggles .active on each of
+      # these when lives hit 0); declared last so it draws on top.
+      gameover_overlay:
+        position: [0, 0]
+        size: WINDOW
+        color: [0, 0, 0, 170]
+      gameover_panel_bg:
+        position: [CENTER, CENTER]
+        size: [700, 480]
+        asset: btn
+        nine_slice: 10
+      gameover_title_text:
+        type: text
+        font: Impact
+        font_size: 56
+        color: [220, 60, 60]
+        parent: gameover_panel_bg
+        position: [CENTER, 70]
+        text: "GAME OVER"
+      gameover_subtitle_text:
+        type: text
+        font: ComicSansMs
+        font_size: 22
+        color: white
+        parent: gameover_panel_bg
+        position: [CENTER, 140]
+        text: "You ran out of lives"
+
+      gameover_buttons:
+        parent: gameover_panel_bg
+        layout: { direction: vertical, start: [CENTER, 220], spacing: 130 }
+        objects:
+          gameover_play_again: { extends: btn-lg, size: [520, 90] }
+          gameover_main_menu:  { extends: btn-lg, size: [520, 90] }
+      gameover_play_again_text:
+        extends: button_text
+        parent: gameover_play_again
+        text: "PLAY AGAIN"
+      gameover_main_menu_text:
+        extends: button_text
+        parent: gameover_main_menu
+        text: "MAIN MENU"

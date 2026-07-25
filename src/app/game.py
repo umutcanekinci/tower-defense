@@ -53,6 +53,12 @@ _VICTORY_POPUP_OBJECTS = (
     "victory_main_menu", "victory_main_menu_text",
 )
 
+_GAMEOVER_POPUP_OBJECTS = (
+    "gameover_overlay", "gameover_panel_bg", "gameover_title_text", "gameover_subtitle_text",
+    "gameover_play_again", "gameover_play_again_text",
+    "gameover_main_menu", "gameover_main_menu_text",
+)
+
 
 class Game(GameEventsMixin, GameSaveMixin, Application):
     """Top-level orchestrator.
@@ -103,7 +109,8 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
         self.game_area        = Rect(*gameplay["game_area"])
         self.game_state       = GameState(start_money=gameplay["starting_money"], start_lives=gameplay["starting_lives"])
         self.game_state.add_level_listener(self._on_level_changed)
-        self._victory_popup_open = False
+        self._victory_popup_open  = False
+        self._gameover_popup_open = False
         self.assets           = AssetManager()
         self.tower_config     = load_tower_config()
         self.tilemap          = Tilemap("assets/tiled_project/tiled_tilemap.tmx")
@@ -316,6 +323,23 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
         for name in _VICTORY_POPUP_OBJECTS:
             panel[name].active = active
 
+    # ── game over popup ──────────────────────────────────────────────────────
+
+    def _trigger_game_over(self) -> None:
+        self.game_state.is_started = False
+        self.panel_manager["game"]["start_pause_button_icon"].set_state(None)
+        self._gameover_popup_open = True
+        self._set_gameover_popup_active(True)
+
+    def _close_gameover_popup(self) -> None:
+        self._gameover_popup_open = False
+        self._set_gameover_popup_active(False)
+
+    def _set_gameover_popup_active(self, active: bool) -> None:
+        panel = self.panel_manager["game"]
+        for name in _GAMEOVER_POPUP_OBJECTS:
+            panel[name].active = active
+
     # ── canvas resize ────────────────────────────────────────────────────────
 
     @override
@@ -389,9 +413,9 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
             if enemy.reached_end():
                 self.enemies.remove(enemy)
                 self.game_state.decrease_lives(enemy.damage)
-                if self.game_state.lives == 0:
+                if self.game_state.lives == 0 and not self._gameover_popup_open:
                     self.save_store.delete()  # a lost run isn't continuable
-                    self.exit()
+                    self._trigger_game_over()
                 continue
             if not self.game_state.is_started:
                 continue
@@ -491,7 +515,8 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
                 self._save_settings()
             elif panel == "game":
                 self.game_state.is_started = False
-                self._save_game()
+                if not self._gameover_popup_open:
+                    self._save_game()  # a lost run isn't continuable -- nothing to save
             self.panel_manager.current_panel = "main_menu"
 
     @override

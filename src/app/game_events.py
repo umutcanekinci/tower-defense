@@ -90,6 +90,9 @@ class GameEventsMixin:
         if self._victory_popup_open:
             self._handle_victory_popup_event(event)
             return
+        if self._gameover_popup_open:
+            self._handle_gameover_popup_event(event)
+            return
         panel = self.panel_manager["game"]
         if self._activate(panel["menu_button"], event):
             self.game_state.is_started = False
@@ -115,6 +118,15 @@ class GameEventsMixin:
             self._close_victory_popup()
             self.game_state.is_started = False
             self._save_game()
+            self.panel_manager.current_panel = "main_menu"
+
+    def _handle_gameover_popup_event(self, event) -> None:
+        panel = self.panel_manager["game"]
+        if self._activate(panel["gameover_play_again"], event):
+            self._close_gameover_popup()
+            self._start_new_game()
+        elif self._activate(panel["gameover_main_menu"], event):
+            self._close_gameover_popup()
             self.panel_manager.current_panel = "main_menu"
 
     def _handle_upgrade_plane_button(self, event) -> None:

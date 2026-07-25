@@ -80,7 +80,8 @@ class GameSaveMixin:
         self._restore_enemies(data.get("enemies", []))
         self._restore_wave_manager(data.get("wave_manager", {}))
 
-        self._victory_popup_open = False
+        self._victory_popup_open  = False
+        self._gameover_popup_open = False
         self.tower_controller.buying_tower_type = 0
         self._sync_game_ui()
         self.panel_manager.current_panel = "game"
@@ -153,7 +154,8 @@ class GameSaveMixin:
         gs.has_won        = False
         gs.selected_tower = None
         self._init_wave_manager()
-        self._victory_popup_open = False
+        self._victory_popup_open  = False
+        self._gameover_popup_open = False
         self.tower_controller.buying_tower_type = 0
 
         self._sync_game_ui()
@@ -173,4 +175,5 @@ class GameSaveMixin:
         panel["buy_tower_4"].set_state(plane_state)
         panel["upgrade_plane_button"].set_state("purchased" if plane_state else None)
         self._set_victory_popup_active(self._victory_popup_open)
+        self._set_gameover_popup_active(self._gameover_popup_open)
         self.hud.refresh()
