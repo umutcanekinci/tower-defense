@@ -49,3 +49,13 @@ class RotatableObject(StateObject):
 			surface.blit(self.rotated_image, self.rect)
 		else:
 			super().draw(surface)
+
+	@property
+	@override
+	def image(self) -> pygame.Surface | None:
+		# Drawable.image (see pygame_core's camera.py): camera.draw() reads
+		# this directly now instead of checking is_rotated/rotated_image
+		# itself, so the rotation switch lives here instead.
+		if self.is_rotated and self.rotated_image is not None:
+			return self.rotated_image
+		return super().image
