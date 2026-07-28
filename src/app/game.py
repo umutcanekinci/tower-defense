@@ -286,16 +286,6 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
     def increase_money(self, amount: int) -> None:
         self.game_state.increase_money(amount)
 
-    # ── lifecycle ─────────────────────────────────────────────────────────────
-
-    def run(self):
-        # SplashScreen runs its own loop with direct pygame.display.update()
-        # calls, bypassing Application._present()'s scale step -- draw it
-        # straight onto the real display surface rather than the offscreen
-        # logical canvas, or it would never actually reach the screen.
-        self.splash.run(self.display_surface, self.clock, self._fps)
-        super().run()
-
     def _init_wave_manager(self) -> None:
         if not self.tilemap.waypoints:
             raise RuntimeError("TMX has no Paths/polyline; enemies have nowhere to go")
