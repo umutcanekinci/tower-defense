@@ -12,7 +12,7 @@ from pathlib import Path
 import yaml
 
 sys.path.insert(0, "src")
-sys.path.insert(0, "src/pygame_core")
+sys.path.insert(0, "src/pygamine")
 
 
 def check_config_yaml() -> None:

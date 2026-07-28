@@ -15,7 +15,7 @@ os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 import pygame
 import pytest
 
-from pygame_core.asset_manager import AssetManager
+from pygamine.asset_manager import AssetManager
 from util.config_loader import load_tower_config
 
 pygame.init()

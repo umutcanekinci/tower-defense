@@ -25,7 +25,7 @@ paths resolve in both. `config_loader` anchors to that root too.
 
 ### Entry point → Game class
 
-`__main__.py` creates `Game()` and calls `game.run()`. `Game` (in `src/app/game.py`) extends `pygame_core.Application` and is the top-level orchestrator: it wires all subsystems in `__init__`, runs a splash screen, then hands control to the `Application` base class loop which calls `update()` / `draw()` / `handle_event()` each frame.
+`__main__.py` creates `Game()` and calls `game.run()`. `Game` (in `src/app/game.py`) extends `pygamine.Application` and is the top-level orchestrator: it wires all subsystems in `__init__`, runs a splash screen, then hands control to the `Application` base class loop which calls `update()` / `draw()` / `handle_event()` each frame.
 
 ### Subsystems wired by Game
 
@@ -43,7 +43,7 @@ paths resolve in both. `config_loader` anchors to that root too.
 
 ### Panel / UI system
 
-Panels are defined in `config/panels.yaml` and loaded by `PanelLoaderExt` (in `src/pygame_core/pygame_core/panel_loader_ext.py`, the engine submodule), which extends the base `PanelLoader` with **object-level template inheritance** via `object_templates:`.
+Panels are defined in `config/panels.yaml` and loaded by `PanelLoaderExt` (in `src/pygamine/pygamine/panel_loader_ext.py`, the engine submodule), which extends the base `PanelLoader` with **object-level template inheritance** via `object_templates:`.
 
 Three factory types are registered in `game.py`:
 - `"object"` (default) → `panel_factory.make_factory(assets)` → creates `GuiObject` or `HoverableGuiObject`

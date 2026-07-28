@@ -109,14 +109,14 @@ The workflow builds on each OS, zips the bundle, attaches all three to a GitHub 
 ## Project layout
 
 ```
-__main__.py            Entry point — injects src/ + src/pygame_core/ into sys.path
+__main__.py            Entry point — injects src/ + src/pygamine/ into sys.path
 src/app/game.py        Game class — wires all subsystems
 src/domain/            Pure data (GameState, protocols)
 src/gameplay/          Combat, tilemap, enemies, projectiles
 src/towers/            Tower hierarchy and factory
 src/ui/                HUD, HP bars, menu background
 src/util/              Config loaders, constants
-src/pygame_core/       Engine submodule (Application, Animator, PanelLoaderExt, ...)
+src/pygamine/       Engine submodule (Application, Animator, PanelLoaderExt, ...)
 config/                YAML: assets, panels, towers, enemies, waves
 assets/                Images, sounds, fonts, Tiled project
 ```

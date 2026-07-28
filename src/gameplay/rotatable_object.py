@@ -2,10 +2,10 @@ from typing import override
 import pygame
 from pygame.math import Vector2
 
-from pygame_core.math_utils import angle_between_delta
-from pygame_core.asset_path import ImagePath, PathLike
-from pygame_core.ecs.components.sprite_renderer2d import SpriteRenderer2D
-from pygame_core.ecs.state_object import StateObject
+from pygamine.math_utils import angle_between_delta
+from pygamine.asset_path import ImagePath, PathLike
+from pygamine.ecs.components.sprite_renderer2d import SpriteRenderer2D
+from pygamine.ecs.state_object import StateObject
 
 
 # Angle (atan2 / screen-coord convention) the sprite's "forward" points in its source PNG.
@@ -53,7 +53,7 @@ class RotatableObject(StateObject):
 	@property
 	@override
 	def image(self) -> pygame.Surface | None:
-		# Drawable.image (see pygame_core's camera.py): camera.draw() reads
+		# Drawable.image (see pygamine's camera.py): camera.draw() reads
 		# this directly now instead of checking is_rotated/rotated_image
 		# itself, so the rotation switch lives here instead.
 		if self.is_rotated and self.rotated_image is not None:

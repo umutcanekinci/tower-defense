@@ -12,8 +12,8 @@ from pygame.math import Vector2
 
 from gameplay.combat.enemy import Enemy, _BASE_STATS
 from gameplay.rotatable_object import RotatableObject
-from pygame_core.image import load_image
-from pygame_core.math_utils import angle_between_delta, angle_between_points
+from pygamine.image import load_image
+from pygamine.math_utils import angle_between_delta, angle_between_points
 
 if TYPE_CHECKING:
     from domain.protocols import IGameContext

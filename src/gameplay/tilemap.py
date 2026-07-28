@@ -1,6 +1,6 @@
 """Tower-defense Tiled map for Chokepoint.
 
-Extends `pygame_core.tilemap.TiledMap` with the TD-specific parsing this game
+Extends `pygamine.tilemap.TiledMap` with the TD-specific parsing this game
 needs on top of the generic loader: the enemy path, the spawn marker, and the
 buildable grid. Generic concerns (tile dimensions, object iteration, the
 offscreen pre-render, and the camera-aware draw) live in the base class.
@@ -24,7 +24,7 @@ from pathlib import Path
 import pytmx
 from pygame.math import Vector2
 
-from pygame_core.tilemap import TiledMap
+from pygamine.tilemap import TiledMap
 
 
 _WAY_LAYER = "Road"

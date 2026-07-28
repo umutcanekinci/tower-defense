@@ -1,5 +1,5 @@
 from domain.game_state import GameState, TowerConfig
-from pygame_core.panel_manager import PanelManager
+from pygamine.panel_manager import PanelManager
 
 
 class GameHUD:

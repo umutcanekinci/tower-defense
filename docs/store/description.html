@@ -147,14 +147,14 @@ uv run python __main__.py</code></pre>
 <p>If you forgot <code style="background: #eee; color: #333; padding: 2px 4px; border-radius: 3px;">--recurse-submodules</code>: <code style="background: #eee; color: #333; padding: 2px 4px; border-radius: 3px;">git submodule update --init</code>.</p>
 <p>Without <code style="background: #eee; color: #333; padding: 2px 4px; border-radius: 3px;">uv</code>: <code style="background: #eee; color: #333; padding: 2px 4px; border-radius: 3px;">pip install .</code> then <code style="background: #eee; color: #333; padding: 2px 4px; border-radius: 3px;">python __main__.py</code>.</p>
 <h2>Project Layout</h2>
-<pre style="background: #222; color: #eee; padding: 12px; border-radius: 5px; overflow-x: auto;"><code>__main__.py            Entry point &mdash; injects src/ + src/pygame_core/ into sys.path
+<pre style="background: #222; color: #eee; padding: 12px; border-radius: 5px; overflow-x: auto;"><code>__main__.py            Entry point &mdash; injects src/ + src/pygamine/ into sys.path
 src/app/game.py        Game class &mdash; wires all subsystems
 src/domain/            Pure data (GameState, protocols)
 src/gameplay/          Combat, tilemap, enemies, projectiles
 src/towers/            Tower hierarchy and factory
 src/ui/                HUD, HP bars, menu background
 src/util/              Config loaders, constants
-src/pygame_core/       Engine submodule (Application, Animator, PanelLoaderExt, ...)
+src/pygamine/       Engine submodule (Application, Animator, PanelLoaderExt, ...)
 config/                YAML: assets, panels, towers, enemies, waves
 assets/                Images, sounds, fonts, Tiled project</code></pre>
 <p>See <a target="_blank" href="https://github.com/umutcanekinci/chokepoint/blob/main/CLAUDE.md">CLAUDE.md</a> for the full architecture overview.</p>
