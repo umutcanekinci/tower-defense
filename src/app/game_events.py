@@ -141,8 +141,19 @@ class GameEventsMixin:
 
     def _handle_start_pause(self, event) -> None:
         panel = self.panel_manager["game"]
-        if not self._activate(panel["start_pause_button"], event):
+        button = panel["start_pause_button"]
+        # Space is the keyboard shortcut for the same toggle the button does
+        # -- there's no keyboard-focus system driving "game"-panel buttons
+        # (unlike main_menu/play_menu's MenuController), so this is checked
+        # directly rather than routed through _activate()'s focused-Space
+        # path, which only fires for a button that already has focus.
+        is_hotkey = event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE
+        if not (self._activate(button, event) or is_hotkey):
             return
+        if is_hotkey:
+            sound = getattr(button, "on_click_sound", None) or self.click_sound_path
+            if sound is not None:
+                self.audio.play_sfx(str(sound))
         self.game_state.is_started = not self.game_state.is_started
         panel["start_pause_button_icon"].set_state("pause" if self.game_state.is_started else None)
 
