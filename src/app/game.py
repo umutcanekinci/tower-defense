@@ -476,9 +476,9 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
         if not self._is_in_debug_mode: return
 
         debug_info = [
-            self.mouse.get_info(),
+            self.mouse.info(),
             self.camera.info(),
-            self.panel_manager["main_menu"]["play"].get_info,
+            self.panel_manager["main_menu"]["play"].info(),
         ]
         Debug.draw(self.window, pygame.font.SysFont("Consolas", 20), debug_info)
 
