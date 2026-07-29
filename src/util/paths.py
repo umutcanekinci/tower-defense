@@ -12,7 +12,7 @@ existing relative paths valid in both modes, ``__main__`` chdirs into
 :func:`resource_root` at startup, and anything that must resolve a bundled path
 without relying on the cwd uses :func:`resource_path`.
 
-Implementation lives in ``pygamine.paths`` -- shared with every sibling
+Implementation lives in ``pygamine.assets.paths`` -- shared with every sibling
 project, since the logic has nothing project-specific in it. Re-exported
 here so existing ``from util.paths import resource_root`` call sites don't
 need to change.
