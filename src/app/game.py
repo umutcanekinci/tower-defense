@@ -7,27 +7,27 @@ from pygame import Rect
 
 from app.game_events import GameEventsMixin
 from app.game_save import GameSaveMixin
-from pygamine.application import Application
-from pygamine.asset_manager import AssetManager
-from pygamine.ui_widgets.menu_controller import MenuController
-from pygamine.mouse import Mouse
-from pygamine.panel_manager import PanelManager
-from pygamine.panel_loader_ext import PanelLoaderExt
+from pygamine import Application
+from pygamine import AssetManager
+from pygamine import MenuController
+from pygamine import Mouse
+from pygamine import PanelManager
+from pygamine import PanelLoaderExt
 
 from pygamine import panel_factory
 from util.config_loader import load_tower_config
-from pygamine.camera import Camera
+from pygamine import Camera
 from util.constants import TILE_SIZE
-from pygamine.debug import Debug
+from pygamine import Debug
 from ui import hp_bar
 from ui.menu_background import MenuBackground
-from pygamine.splash_screen import SplashScreen
-from pygamine.save_store import SaveStore
-from pygamine.ecs.game_audio import GameAudio
+from pygamine import SplashScreen
+from pygamine import SaveStore
+from pygamine import GameAudio
 from gameplay.combat.enemy import Enemy
 from ui.game_hud import GameHUD
 from domain.game_state import GameState
-from pygamine.ecs.components.transform import Transform
+from pygamine import Transform
 from gameplay.tilemap import Tilemap
 from gameplay.combat.tower_placement import TowerPlacementController
 from towers import BaseTower, GroundTower

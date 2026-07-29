@@ -1,8 +1,8 @@
 import pygame
-from pygamine.asset_manager import AssetManager
-from pygamine.panel_manager import PanelManager
+from pygamine import AssetManager
+from pygamine import PanelManager
 
-from pygamine.camera import Camera
+from pygamine import Camera
 from util.constants import TILE_SIZE, HALF_TILE
 from domain.game_state import GameState, TowerConfig
 from towers import BaseTower, TowerFactory

@@ -2,10 +2,10 @@ from typing import override
 import pygame
 from pygame.math import Vector2
 
-from pygamine.math_utils import angle_between_delta
-from pygamine.asset_path import ImagePath, PathLike
-from pygamine.ecs.components.sprite_renderer2d import SpriteRenderer2D
-from pygamine.ecs.state_object import StateObject
+from pygamine import angle_between_delta
+from pygamine import ImagePath, PathLike
+from pygamine import SpriteRenderer2D
+from pygamine import StateObject
 
 
 # Angle (atan2 / screen-coord convention) the sprite's "forward" points in its source PNG.

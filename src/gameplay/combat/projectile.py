@@ -4,9 +4,9 @@ import pygame
 from pygame.math import Vector2
 
 from gameplay.rotatable_object import RotatableObject
-from pygamine.ecs.components.sprite_renderer2d import SpriteRenderer2D
-from pygamine.ecs.game_object import GameObject
-from pygamine.math_utils import angle_between_points
+from pygamine import SpriteRenderer2D
+from pygamine import GameObject
+from pygamine import angle_between_points
 
 if TYPE_CHECKING:
     from domain.protocols import IGameContext

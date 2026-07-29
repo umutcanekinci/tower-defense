@@ -3,7 +3,7 @@ from pygame.math import Vector2
 
 from util.constants import TILE_SIZE, HALF_TILE
 from gameplay.rotatable_object import RotatableObject
-from pygamine.ecs.state_object import StateObject
+from pygamine import StateObject
 from domain.game_state import GameState, TowerConfig
 
 UPGRADE_BTN_OFFSET = Vector2(-55, -105)

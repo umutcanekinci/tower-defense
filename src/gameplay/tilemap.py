@@ -24,7 +24,7 @@ from pathlib import Path
 import pytmx
 from pygame.math import Vector2
 
-from pygamine.tilemap import TiledMap
+from pygamine import TiledMap
 
 
 _WAY_LAYER = "Road"
