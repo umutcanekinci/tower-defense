@@ -14,7 +14,7 @@ from pygamine import Mouse
 from pygamine import PanelManager
 from pygamine import PanelLoaderExt
 
-from pygamine import panel_factory
+from pygamine import make_factory, make_text_factory, make_animated_factory, make_slider_factory
 from util.config_loader import load_tower_config
 from pygamine import Camera
 from util.constants import TILE_SIZE
@@ -208,10 +208,10 @@ class Game(GameEventsMixin, GameSaveMixin, Application):
             window_transform.width  / self._authored_ui_size[0],
             window_transform.height / self._authored_ui_size[1],
         )
-        loader.register("object", panel_factory.make_factory(self.assets), default=True)
-        loader.register("text", panel_factory.make_text_factory(self.assets))
-        loader.register("animated", panel_factory.make_animated_factory(self.assets))
-        loader.register("slider", panel_factory.make_slider_factory(self.assets))
+        loader.register("object", make_factory(self.assets), default=True)
+        loader.register("text", make_text_factory(self.assets))
+        loader.register("animated", make_animated_factory(self.assets))
+        loader.register("slider", make_slider_factory(self.assets))
         loader.load("config/panels.yaml")
 
     def _refresh_window_size_label(self) -> None:

@@ -43,7 +43,7 @@ paths resolve in both. `config_loader` anchors to that root too.
 
 ### Panel / UI system
 
-Panels are defined in `config/panels.yaml` and loaded by `PanelLoaderExt` (in `src/pygamine/pygamine/panel_loader_ext.py`, the engine submodule), which extends the base `PanelLoader` with **object-level template inheritance** via `object_templates:`.
+Panels are defined in `config/panels.yaml` and loaded by `PanelLoaderExt` (in `src/pygamine/pygamine/panels/panel_loader_ext.py`, the engine submodule), which extends the base `PanelLoader` with **object-level template inheritance** via `object_templates:`.
 
 Three factory types are registered in `game.py`:
 - `"object"` (default) → `panel_factory.make_factory(assets)` → creates `GuiObject` or `HoverableGuiObject`
