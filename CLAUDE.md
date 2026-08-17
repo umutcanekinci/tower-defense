@@ -9,7 +9,15 @@ cd C:\Users\user\Desktop\projects\chokepoint
 python __main__.py         # or: uv run python __main__.py
 ```
 
-No tests, no lint config.
+## Testing
+
+```bash
+uv run --group dev pytest tests/ -q                      # this app's own logic tests
+uv run --group dev pytest tests/ --cov --cov-report=term  # with coverage
+```
+
+`tests/conftest.py` runs pygame headless (`SDL_VIDEODRIVER=dummy`). No lint configuration
+in this project.
 
 ### Building a distributable
 
